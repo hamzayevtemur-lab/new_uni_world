@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Uni World</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        /* ── Login Screen ── */
+        #loginScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 4rem);
+        }
+
+        .login-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-logo h1 {
+            color: #1e3a5f;
+            font-size: 2rem;
+        }
+
+        .login-logo p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+
+        .login-card h2 {
+            color: #1e3a5f;
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+        }
+
+        .form-field {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-field label {
+            display: block;
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            font-size: 0.9rem;
+        }
+
+        .form-field input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-field input:focus {
+            outline: none;
+            border-color: #3d6fa6;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #3d6fa6, #2c5282);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(61, 111, 166, 0.4);
+        }
+
+        .login-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .login-hint {
+            margin-top: 1rem;
+            padding: 0.8rem 1rem;
+            background: #f0f9ff;
+            border-radius: 8px;
+            color: #0369a1;
+            font-size: 0.82rem;
+        }
+
+        /* ── Dashboard ── */
+        #adminDashboard {
+            display: none;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-header h1 {
+            color: #1e3a5f;
+            font-size: 1.8rem;
+        }
+
+        .admin-header p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .session-info {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+
+        /* ── Tabs ── */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: white;
+            padding: 0.9rem 1.8rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-btn.active {
+            background: #3d6fa6;
+            color: white;
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ── Stat cards ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card h3 {
+            color: #64748b;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-card .number {
+            color: #1e3a5f;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0.3rem 0;
+        }
+
+        .stat-card .icon {
+            font-size: 3rem;
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            opacity: 0.15;
+        }
+
+        /* ── Sections ── */
+        .panel {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .panel h2 {
+            color: #1e3a5f;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-size: 1.3rem;
+        }
+
+        .badge {
+            background: #ef4444;
+            color: white;
+            padding: 0.25rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .badge-green {
+            background: #10b981;
+        }
+
+        /* ── Comment items ── */
+        .comment-item {
+            border: 2px solid #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+        }
+
+        .comment-item:hover {
+            border-color: #3d6fa6;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .comment-author-info {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .author-circle {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3d6fa6, #2c5282);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .author-details h4 {
+            color: #1e3a5f;
+            margin-bottom: 0.2rem;
+        }
+
+        .author-details p {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .comment-rating {
+            font-size: 1.2rem;
+        }
+
+        .comment-text {
+            color: #475569;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            font-style: italic;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .approve-btn,
+        .delete-btn,
+        .edit-btn {
+            padding: 0.55rem 1.3rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .approve-btn {
+            background: #10b981;
+            color: white;
+        }
+
+        .approve-btn:hover {
+            background: #059669;
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #dc2626;
+        }
+
+        .edit-btn {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #d97706;
+        }
+
+        .approved-tag {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* ── News form ── */
+        .news-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .news-form-grid .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            font-size: 0.85rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3d6fa6;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 0;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .toggle-label input[type=checkbox] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #3d6fa6, #2c5282);
+            color: white;
+            padding: 0.85rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(61, 111, 166, 0.4);
+        }
+
+        .cancel-btn {
+            background: #94a3b8;
+            color: white;
+            padding: 0.85rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* ── Image Upload ── */
+        .image-upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .image-upload-area:hover,
+        .image-upload-area.dragover {
+            border-color: #3d6fa6;
+            background: #eff6ff;
+        }
+
+        .image-upload-area input[type=file] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-text {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .upload-text strong {
+            color: #3d6fa6;
+        }
+
+        .image-preview-wrap {
+            position: relative;
+            margin-top: 0.8rem;
+        }
+
+        .image-preview {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            display: block;
+        }
+
+        .remove-image-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .upload-progress {
+            margin-top: 0.8rem;
+            background: #e2e8f0;
+            border-radius: 20px;
+            height: 6px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .upload-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3d6fa6, #10b981);
+            border-radius: 20px;
+            transition: width 0.3s;
+            width: 0%;
+        }
+
+        .upload-status {
+            font-size: 0.82rem;
+            color: #64748b;
+            margin-top: 0.4rem;
+        }
+
+        /* ── News cards in admin ── */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .news-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .news-card:hover {
+            border-color: #3d6fa6;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .news-card.inactive {
+            opacity: 0.55;
+        }
+
+        .news-card-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            background: #e2e8f0;
+        }
+
+        .news-card-img-placeholder {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(135deg, #667eea22, #764ba222);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .news-card-body {
+            padding: 1.2rem;
+        }
+
+        .news-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: linear-gradient(135deg, #3d6fa6, #2c5282);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+        }
+
+        .news-card-title {
+            color: #1e3a5f;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .news-card-body-text {
+            color: #64748b;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-card-meta {
+            margin-top: 0.8rem;
+            font-size: 0.78rem;
+            color: #94a3b8;
+        }
+
+        .news-card-meta span {
+            margin-right: 0.8rem;
+        }
+
+        .news-card-actions {
+            padding: 1rem 1.2rem;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        /* ── Empty state ── */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #94a3b8;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #1e3a5f;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: #059669;
+        }
+
+        .toast.error {
+            background: #dc2626;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 1rem;
+            }
+
+            .news-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ── LOGIN ── -->
+    <div id="loginScreen">
+        <div class="login-card">
+            <div class="login-logo">
+                <h1>🌍 UNI WORLD</h1>
+                <p>Admin Panel — Secure Access</p>
+            </div>
+            <h2>Sign In</h2>
+            <div id="loginError" class="login-error">Invalid username or password.</div>
+            <div class="form-field">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter username" autocomplete="username">
+            </div>
+            <div class="form-field">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter password" autocomplete="current-password"
+                    onkeydown="if(event.key==='Enter') login()">
+            </div>
+            <button class="login-btn" onclick="login()">Sign In →</button>
+            <div class="login-hint">
+                🔒 Credentials are verified server-side. Session expires after 8 hours.
+            </div>
+        </div>
+    </div>
+
+    <!-- ── DASHBOARD ── -->
+    <div id="adminDashboard">
+        <div class="admin-container">
+
+            <div class="admin-header">
+                <div>
+                    <h1>🌍 Uni World Admin</h1>
+                    <p>Manage comments, news, and announcements</p>
+                </div>
+                <div class="header-right">
+                    <span class="session-info" id="sessionInfo"></span>
+                    <button class="logout-btn" onclick="logout()">Sign Out</button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Comments</h3>
+                    <div class="number" id="totalComments">—</div>
+                    <div class="icon">💬</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Pending Review</h3>
+                    <div class="number" id="pendingCount">—</div>
+                    <div class="icon">⏳</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg Rating</h3>
+                    <div class="number" id="avgRating">—</div>
+                    <div class="icon">⭐</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active News</h3>
+                    <div class="number" id="activeNewsCount">—</div>
+                    <div class="icon">📢</div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('pending', this)">
+                    ⏳ Pending Comments <span class="badge" id="pendingBadge">0</span>
+                </button>
+                <button class="tab-btn" onclick="switchTab('approved', this)">
+                    ✅ Approved Comments
+                </button>
+                <button class="tab-btn" onclick="switchTab('news', this)">
+                    📢 News &amp; Announcements
+                </button>
+            </div>
+
+            <!-- Pending Comments -->
+            <div id="pendingTab" class="tab-content active">
+                <div class="panel">
+                    <h2>Pending Comments</h2>
+                    <div id="pendingComments"></div>
+                </div>
+            </div>
+
+            <!-- Approved Comments -->
+            <div id="approvedTab" class="tab-content">
+                <div class="panel">
+                    <h2>Approved Comments</h2>
+                    <div id="approvedComments"></div>
+                </div>
+            </div>
+
+            <!-- News Tab -->
+            <div id="newsTab" class="tab-content">
+
+                <!-- Create / Edit Form -->
+                <div class="panel">
+                    <h2 id="newsFormTitle">➕ Create News / Announcement</h2>
+                    <div class="news-form-grid">
+                        <div class="form-group full-width">
+                            <label>Title *</label>
+                            <input type="text" id="newsTitle"
+                                placeholder="e.g. 100% Scholarship at Beijing University!">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Body / Description *</label>
+                            <textarea id="newsBody" placeholder="Full details of the announcement..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Badge Label</label>
+                            <input type="text" id="newsBadge" placeholder="e.g. 🎓 Scholarship, 🔥 Hot Deal, ⏰ Limited">
+                        </div>
+                        <div class="form-group">
+                            <label>Expires At (optional)</label>
+                            <input type="datetime-local" id="newsExpires">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Image</label>
+                            <div class="image-upload-area" id="uploadArea">
+                                <input type="file" id="imageFileInput" accept="image/*">
+                                <div id="uploadPlaceholder">
+                                    <div class="upload-icon">🖼️</div>
+                                    <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop</div>
+                                    <div class="upload-text" style="font-size:0.78rem;margin-top:0.3rem">JPG, PNG, WEBP
+                                        up to 10MB</div>
+                                </div>
+                                <div id="imagePreviewWrap" class="image-preview-wrap" style="display:none">
+                                    <img id="imagePreview" class="image-preview" src="" alt="Preview">
+                                    <button type="button" class="remove-image-btn" onclick="removeImage()">✕</button>
+                                </div>
+                            </div>
+                            <div class="upload-progress" id="uploadProgress">
+                                <div class="upload-progress-bar" id="uploadProgressBar"></div>
+                            </div>
+                            <div class="upload-status" id="uploadStatus"></div>
+                            <input type="hidden" id="newsImage">
+                        </div>
+                        <div class="form-group">
+                            <label>Link URL (optional)</label>
+                            <input type="url" id="newsLink" placeholder="https://...">
+                        </div>
+                        <div class="form-group">
+                            <label>Link Button Text</label>
+                            <input type="text" id="newsLinkText" placeholder="e.g. Apply Now, Learn More">
+                        </div>
+                        <div class="form-group">
+                            <div class="toggle-row">
+                                <label class="toggle-label">
+                                    <input type="checkbox" id="newsActive" checked>
+                                    Active (visible on site)
+                                </label>
+                                <label class="toggle-label">
+                                    <input type="checkbox" id="newsTicker">
+                                    Show in top ticker
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="submit-btn" onclick="saveNews()">💾 Save Announcement</button>
+                        <button class="cancel-btn" id="cancelEditBtn" onclick="cancelEdit()"
+                            style="display:none">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- News List -->
+                <div class="panel">
+                    <h2>All Announcements <span class="badge badge-green" id="newsListCount">0</span></h2>
+                    <div id="newsList" class="news-grid"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API_URL = '';
+        let authToken = null;
+        let editingNewsId = null;
+
+        // ── Auth ──
+
+        async function login() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errEl = document.getElementById('loginError');
+            errEl.style.display = 'none';
+
+            if (!username || !password) {
+                errEl.textContent = 'Please enter username and password.';
+                errEl.style.display = 'block';
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/api/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                if (!res.ok) throw new Error('Invalid credentials');
+                const data = await res.json();
+                authToken = data.token;
+                sessionStorage.setItem('adminToken', authToken);
+                showDashboard();
+            } catch (e) {
+                errEl.textContent = 'Invalid username or password.';
+                errEl.style.display = 'block';
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('adminToken');
+            authToken = null;
+            location.reload();
+        }
+
+        function showDashboard() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            document.getElementById('sessionInfo').textContent = '🔒 Session active';
+            loadData();
+        }
+
+        // Auto-restore session within same tab
+        const saved = sessionStorage.getItem('adminToken');
+        if (saved) { authToken = saved; showDashboard(); }
+
+        function authHeaders() {
+            return { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' };
+        }
+
+        // ── Helpers ──
+
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `toast show ${type}`;
+            setTimeout(() => t.className = 'toast', 3000);
+        }
+
+        function switchTab(tab, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+            if (tab === 'news') loadNews();
+        }
+
+        // ── Load all data ──
+
+        async function loadData() {
+            await Promise.all([loadPendingComments(), loadApprovedComments(), loadStats(), loadNews()]);
+        }
+
+        async function apiGet(path) {
+            const res = await fetch(`${API_URL}${path}`, { headers: authHeaders() });
+            if (res.status === 401) { logout(); throw new Error('Unauthorized'); }
+            return res.json();
+        }
+
+        // ── Comments ──
+
+        async function loadPendingComments() {
+            try {
+                const comments = await apiGet('/api/comments/pending');
+                document.getElementById('pendingBadge').textContent = comments.length;
+                document.getElementById('pendingCount').textContent = comments.length;
+                const container = document.getElementById('pendingComments');
+                if (!comments.length) {
+                    container.innerHTML = emptyState('📭', 'No pending comments', 'All comments have been reviewed');
+                    return;
+                }
+                container.innerHTML = comments.map(c => commentHtml(c, true)).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadApprovedComments() {
+            try {
+                const comments = await apiGet('/api/comments');
+                document.getElementById('approvedCount') && (document.getElementById('approvedCount').textContent = comments.length);
+                const container = document.getElementById('approvedComments');
+                if (!comments.length) {
+                    container.innerHTML = emptyState('📭', 'No approved comments yet', '');
+                    return;
+                }
+                container.innerHTML = comments.map(c => commentHtml(c, false)).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadStats() {
+            try {
+                const [pending, approved] = await Promise.all([
+                    apiGet('/api/comments/pending'),
+                    fetch(`${API_URL}/api/comments`).then(r => r.json())
+                ]);
+                const total = pending.length + approved.length;
+                const avg = approved.length
+                    ? (approved.reduce((s, c) => s + c.rating, 0) / approved.length).toFixed(1)
+                    : '—';
+                document.getElementById('totalComments').textContent = total;
+                document.getElementById('avgRating').textContent = avg;
+            } catch (e) { }
+        }
+
+        function commentHtml(c, isPending) {
+            const initials = c.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+            const stars = '⭐'.repeat(c.rating);
+            const date = new Date(c.created_at).toLocaleString();
+            const actions = isPending
+                ? `<button class="approve-btn" onclick="approveComment(${c.id})">✅ Approve</button>
+               <button class="delete-btn" onclick="deleteComment(${c.id})">🗑️ Delete</button>`
+                : `<span class="approved-tag">✅ Approved</span>
+               <button class="delete-btn" onclick="deleteComment(${c.id})">🗑️ Delete</button>`;
+            return `
+            <div class="comment-item">
+                <div class="comment-header">
+                    <div class="comment-author-info">
+                        <div class="author-circle">${initials}</div>
+                        <div class="author-details">
+                            <h4>${escHtml(c.name)}</h4>
+                            <p>${escHtml(c.country)} · ${date}</p>
+                        </div>
+                    </div>
+                    <div class="comment-rating">${stars}</div>
+                </div>
+                <div class="comment-text">"${escHtml(c.comment_text)}"</div>
+                <div class="comment-actions">${actions}</div>
+            </div>`;
+        }
+
+        async function approveComment(id) {
+            if (!confirm('Approve this comment?')) return;
+            try {
+                const res = await fetch(`${API_URL}/api/comments/${id}/approve`, {
+                    method: 'PUT', headers: authHeaders()
+                });
+                if (res.ok) { showToast('Comment approved! ✅'); loadData(); }
+            } catch (e) { showToast('Error', 'error'); }
+        }
+
+        async function deleteComment(id) {
+            if (!confirm('Delete this comment? This cannot be undone.')) return;
+            try {
+                const res = await fetch(`${API_URL}/api/comments/${id}`, {
+                    method: 'DELETE', headers: authHeaders()
+                });
+                if (res.ok) { showToast('Comment deleted 🗑️'); loadData(); }
+            } catch (e) { showToast('Error', 'error'); }
+        }
+
+        // ── News ──
+
+        async function loadNews() {
+            try {
+                const items = await apiGet('/api/admin/news');
+                document.getElementById('newsListCount').textContent = items.length;
+                const active = items.filter(n => n.is_active).length;
+                document.getElementById('activeNewsCount').textContent = active;
+                const container = document.getElementById('newsList');
+                if (!items.length) {
+                    container.innerHTML = emptyState('📢', 'No announcements yet', 'Create your first one above');
+                    return;
+                }
+                container.innerHTML = items.map(newsCardHtml).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        function newsCardHtml(n) {
+            const imgEl = n.image_url
+                ? `<img class="news-card-img" src="${escHtml(n.image_url)}" alt="" onerror="this.style.display='none'">`
+                : `<div class="news-card-img-placeholder">📢</div>`;
+            const badge = n.badge_text ? `<span class="news-badge">${escHtml(n.badge_text)}</span><br>` : '';
+            const expires = n.expires_at ? `⏰ Expires ${new Date(n.expires_at).toLocaleDateString()}` : '∞ No expiry';
+            const ticker = n.is_ticker ? ' · 📡 Ticker' : '';
+            const status = n.is_active ? '🟢 Active' : '🔴 Inactive';
+            return `
+            <div class="news-card ${n.is_active ? '' : 'inactive'}">
+                ${imgEl}
+                <div class="news-card-body">
+                    ${badge}
+                    <div class="news-card-title">${escHtml(n.title)}</div>
+                    <div class="news-card-body-text">${escHtml(n.body)}</div>
+                    <div class="news-card-meta">
+                        <span>${status}${ticker}</span>
+                        <span>${expires}</span>
+                    </div>
+                </div>
+                <div class="news-card-actions">
+                    <button class="edit-btn" onclick="editNews(${n.id})">✏️ Edit</button>
+                    <button class="delete-btn" onclick="deleteNews(${n.id})">🗑️ Delete</button>
+                </div>
+            </div>`;
+        }
+
+        async function saveNews() {
+            const title = document.getElementById('newsTitle').value.trim();
+            const body = document.getElementById('newsBody').value.trim();
+            if (!title || !body) { showToast('Title and body are required', 'error'); return; }
+
+            const payload = {
+                title,
+                body,
+                badge_text: document.getElementById('newsBadge').value.trim() || null,
+                image_url: document.getElementById('newsImage').value.trim() || null,
+                link_url: document.getElementById('newsLink').value.trim() || null,
+                link_text: document.getElementById('newsLinkText').value.trim() || null,
+                expires_at: document.getElementById('newsExpires').value || null,
+                is_active: document.getElementById('newsActive').checked,
+                is_ticker: document.getElementById('newsTicker').checked,
+            };
+
+            try {
+                const url = editingNewsId
+                    ? `${API_URL}/api/admin/news/${editingNewsId}`
+                    : `${API_URL}/api/admin/news`;
+                const method = editingNewsId ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method, headers: authHeaders(), body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    showToast(editingNewsId ? 'Announcement updated! 🎉' : 'Announcement created! 🎉');
+                    cancelEdit();
+                    loadNews();
+                    loadStats();
+                } else {
+                    showToast('Save failed', 'error');
+                }
+            } catch (e) { showToast('Network error', 'error'); }
+        }
+
+        let allNewsCache = [];
+
+        async function editNews(id) {
+            try {
+                const items = await apiGet('/api/admin/news');
+                allNewsCache = items;
+                const n = items.find(x => x.id === id);
+                if (!n) return;
+
+                editingNewsId = id;
+                document.getElementById('newsFormTitle').textContent = '✏️ Edit Announcement';
+                document.getElementById('newsTitle').value = n.title;
+                document.getElementById('newsBody').value = n.body;
+                document.getElementById('newsBadge').value = n.badge_text || '';
+                document.getElementById('newsImage').value = n.image_url || '';
+                document.getElementById('newsLink').value = n.link_url || '';
+                document.getElementById('newsLinkText').value = n.link_text || '';
+                document.getElementById('newsActive').checked = n.is_active;
+                document.getElementById('newsTicker').checked = n.is_ticker;
+                if (n.expires_at) {
+                    const d = new Date(n.expires_at);
+                    document.getElementById('newsExpires').value = d.toISOString().slice(0, 16);
+                } else {
+                    document.getElementById('newsExpires').value = '';
+                }
+                document.getElementById('cancelEditBtn').style.display = 'inline-block';
+
+                // Scroll to form
+                document.getElementById('newsFormTitle').scrollIntoView({ behavior: 'smooth' });
+            } catch (e) { showToast('Error loading news', 'error'); }
+        }
+
+        function cancelEdit() {
+            editingNewsId = null;
+            document.getElementById('newsFormTitle').textContent = '➕ Create News / Announcement';
+            document.getElementById('newsTitle').value = '';
+            document.getElementById('newsBody').value = '';
+            document.getElementById('newsBadge').value = '';
+            document.getElementById('newsImage').value = '';
+            document.getElementById('newsLink').value = '';
+            document.getElementById('newsLinkText').value = '';
+            document.getElementById('newsExpires').value = '';
+            document.getElementById('newsActive').checked = true;
+            document.getElementById('newsTicker').checked = false;
+            document.getElementById('cancelEditBtn').style.display = 'none';
+        }
+
+        async function deleteNews(id) {
+            if (!confirm('Delete this announcement? This cannot be undone.')) return;
+            try {
+                const res = await fetch(`${API_URL}/api/admin/news/${id}`, {
+                    method: 'DELETE', headers: authHeaders()
+                });
+                if (res.ok) { showToast('Announcement deleted 🗑️'); loadNews(); loadStats(); }
+            } catch (e) { showToast('Error', 'error'); }
+        }
+
+        // ── Utilities ──
+
+        function emptyState(icon, title, sub) {
+            return `<div class="empty-state">
+            <div class="empty-state-icon">${icon}</div>
+            <h3>${title}</h3>
+            ${sub ? `<p>${sub}</p>` : ''}
+        </div>`;
+        }
+
+        function escHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+    </script>
+</body>
+
+</html>
+
+<script>
+    // ── Cloudinary Image Upload ──────────────────────────────────────────────
+
+    const CLOUDINARY_CLOUD = 'dalsairse';
+    const CLOUDINARY_PRESET = 'uni_world_uploads';
+    const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`;
+
+    const fileInput = document.getElementById('imageFileInput');
+    const uploadArea = document.getElementById('uploadArea');
+
+    // Click or drag-drop on upload area
+    uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+    uploadArea.addEventListener('drop', e => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) handleImageFile(file);
+    });
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files[0]) handleImageFile(fileInput.files[0]);
+    });
+
+    function handleImageFile(file) {
+        if (!file.type.startsWith('image/')) {
+            showToast('Please select an image file', 'error'); return;
+        }
+        if (file.size > 10 * 1024 * 1024) {
+            showToast('Image must be under 10MB', 'error'); return;
+        }
+        uploadToCloudinary(file);
+    }
+
+    async function uploadToCloudinary(file) {
+        const progress = document.getElementById('uploadProgress');
+        const progressBar = document.getElementById('uploadProgressBar');
+        const status = document.getElementById('uploadStatus');
+
+        progress.style.display = 'block';
+        progressBar.style.width = '0%';
+        status.textContent = 'Uploading...';
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_PRESET);
+        formData.append('folder', 'uni_world');
+
+        try {
+            // Simulate progress while uploading
+            let fakeProgress = 0;
+            const ticker = setInterval(() => {
+                fakeProgress = Math.min(fakeProgress + 10, 85);
+                progressBar.style.width = fakeProgress + '%';
+            }, 150);
+
+            const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+            clearInterval(ticker);
+
+            if (!res.ok) throw new Error('Upload failed');
+            const data = await res.json();
+
+            // Use f_auto,q_auto for automatic format & quality optimization
+            const optimizedUrl = data.secure_url.replace('/upload/', '/upload/f_auto,q_auto,w_800/');
+
+            progressBar.style.width = '100%';
+            status.textContent = '✅ Uploaded successfully!';
+
+            // Set hidden input value
+            document.getElementById('newsImage').value = optimizedUrl;
+
+            // Show preview
+            document.getElementById('uploadPlaceholder').style.display = 'none';
+            document.getElementById('imagePreviewWrap').style.display = 'block';
+            document.getElementById('imagePreview').src = optimizedUrl;
+
+            setTimeout(() => { progress.style.display = 'none'; status.textContent = ''; }, 2000);
+
+        } catch (e) {
+            status.textContent = '❌ Upload failed. Please try again.';
+            progressBar.style.width = '0%';
+            showToast('Image upload failed', 'error');
+        }
+    }
+
+    function removeImage() {
+        document.getElementById('newsImage').value = '';
+        document.getElementById('imagePreview').src = '';
+        document.getElementById('imagePreviewWrap').style.display = 'none';
+        document.getElementById('uploadPlaceholder').style.display = 'block';
+        document.getElementById('uploadProgress').style.display = 'none';
+        document.getElementById('uploadStatus').textContent = '';
+        fileInput.value = '';
+    }
+
+    // When editing an existing news item that already has an image — show it in preview
+    const _origEditNews = editNews;
+    editNews = async function (id) {
+        await _origEditNews(id);
+        const url = document.getElementById('newsImage').value;
+        if (url) {
+            document.getElementById('uploadPlaceholder').style.display = 'none';
+            document.getElementById('imagePreviewWrap').style.display = 'block';
+            document.getElementById('imagePreview').src = url;
+        }
+    };
+
+    // Also patch cancelEdit to reset image UI
+    const _origCancelEdit = cancelEdit;
+    cancelEdit = function () {
+        _origCancelEdit();
+        removeImage();
+    };
+</script>
