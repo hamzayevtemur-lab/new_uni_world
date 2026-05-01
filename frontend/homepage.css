@@ -1522,7 +1522,9 @@ footer {
         gap: 2rem;
     }
 
+    
+
     .about-image {
-        height: 250px;
+        height: 250px;   
     }
 }
