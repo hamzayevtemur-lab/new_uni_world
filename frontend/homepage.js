@@ -1,273 +1,96 @@
-// Country Modal Data
-const countryData = {
-    latvia: {
-        flag: '🇱🇻',
-        name: 'Latvia',
-        numofpartnet: '10+',
-        universities: ['TSI universiteti', 'EKA University of Applied Sciences',],
-        description: 'Latvia offers high-quality European education at affordable costs. Known for its vibrant culture and modern universities.',
-        programs: ['Business Administration', 'Computer Science', 'Engineering', 'Medicine', 'Architecture'],
-        costOfLiving: '$600-800/month',
-        language: 'English programs available',
-        visaRequirements: 'Student visa required, processing time: 2-3 months'
-    },
-    netherlands: {
-        flag: '🇳🇱',
-        name: 'Netherlands',
-        numofpartnet: '10+',
-        universities: ['University', 'University'],
-        description: 'The Netherlands is home to world-renowned universities offering innovative programs in English.',
-        programs: ['Business', 'Technology', 'Social Sciences', 'Arts', 'Law'],
-        costOfLiving: '$900-1200/month',
-        language: 'English programs widely available',
-        visaRequirements: 'Student visa (MVV) required, processing time: 2-4 weeks'
-    },
-    germany: {
-        flag: '🇩🇪',
-        name: 'Germany',
-        numofpartnet: '10+',
-        universities: ['GISMA University of Applied Sciences', 'University of Europe of Applied Sciences', 'Frensenius University of Applied Sciences', 'Constructor University', 'SRH Berlin University of Applied Sciences'],
-        description: 'Germany offers tuition-free education at public universities with excellent research opportunities.',
-        programs: ['Engineering', 'Computer Science', 'Business', 'Medicine', 'Natural Sciences'],
-        costOfLiving: '$800-1100/month',
-        language: 'English and German programs',
-        visaRequirements: 'Student visa required, blocked account needed'
-    },
-    malaysia: {
-        flag: '🇲🇾',
-        name: 'Malaysia',
-        numofpartnet: '10+',
-        universities: ['University', 'University'],
-        description: 'Malaysia combines quality education with affordable living costs in a multicultural environment.',
-        programs: ['Business', 'Engineering', 'IT', 'Hospitality', 'Medicine'],
-        costOfLiving: '$400-600/month',
-        language: 'English programs available',
-        visaRequirements: 'Student pass required, processed through university'
-    },
-    uk: {
-        flag: '🇬🇧',
-        name: 'United Kingdom',
-        numofpartnet: '10+',
-        universities: ['University', 'University'],
-        description: 'The UK hosts some of the world\'s oldest and most prestigious universities with diverse programs.',
-        programs: ['Business', 'Engineering', 'Arts', 'Sciences', 'Law'],
-        costOfLiving: '$1200-1500/month',
-        language: 'English',
-        visaRequirements: 'Student visa (Tier 4) required, CAS needed'
-    },
-    china: {
-        flag: '🇨🇳',
-        name: 'China',
-        numofpartnet: '10+',
-        universities: ['Jiangsu University', 'Shenzhen University', 'Southern University of Science and Technology', 'Beijing Jiaotong University', 'Shanghai University'],
-        description: 'China offers numerous scholarships and cutting-edge programs in technology and business.',
-        programs: ['Engineering', 'Business', 'Medicine', 'Chinese Language', 'Technology'],
-        costOfLiving: '$200-500/month',
-        language: 'English and Chinese programs',
-        visaRequirements: 'X1/X2 student visa required'
-    },
-    korea: {
-        flag: '🇰🇷',
-        name: 'South Korea',
-        numofpartnet: '10+',
-        universities: ['Konkook university', 'Semyung university', 'Hosan university', 'Shinhan university', 'Korea politek university', 'Sahmyook university', 'Inha university',
-            'Singangi university', 'Tegu hani university', 'Tegu university', 'Hanshin university', 'Kemyong university', 'Dongshin university', 'Dong- university', 'Pusan national university'],
-        description: 'South Korea combines traditional culture with modern technology education and generous scholarships.',
-        programs: ['Engineering', 'Business', 'Korean Studies', 'Technology', 'Design'],
-        costOfLiving: '$700-1000/month',
-        language: 'English and Korean programs',
-        visaRequirements: 'D-2 student visa required'
-    },
-    uae: {
-        flag: '🇦🇪',
-        name: 'United Arab Emirates',
-        numofpartnet: '15+',
-        universities: ['Amity University Dubai', 'Walsh College', 'Middlesex University Dubai', ''],
-        description: 'UAE offers world-class education with state-of-the-art facilities in a rapidly growing region.',
-        programs: ['Business', 'Engineering', 'Hospitality', 'Technology', ''],
-        costOfLiving: '$800-1200/month',
-        language: 'English programs available',
-        visaRequirements: 'Student visa processed through university'
-    },
-    turkey: {
-        flag: '🇹🇷',
-        name: 'Turkey',
-        numofpartnet: '10+',
-        universities: ['University', 'University'],
-        description: 'Turkey offers a unique blend of Eastern and Western culture with affordable, high-quality education and rich historical heritage.',
-        programs: ['Business Administration', 'Engineering', 'Medicine', 'Architecture', 'Tourism & Hospitality'],
-        costOfLiving: '$400-600/month',
-        language: 'English and Turkish programs available',
-        visaRequirements: 'Student visa required, residence permit upon arrival'
-    },
-    singapore: {
-        flag: '🇸🇬',
-        name: 'Singapore',
-        numofpartnet: '10+',
-        universities: ['Management Development Institute of Singapore', 'Jain School of Global Management', 'Curtin University Singapore', ''],
-        description: 'Singapore offers world-class education with state-of-the-art facilities in a rapidly growing region.',
-        programs: ['Business Administration', 'Engineering', 'Medicine', 'Architecture', 'Tourism & Hospitality', 'IT and Ciber Security'],
-        costOfLiving: '$400-600/month',
-        language: 'English programs available',
-        visaRequirements: 'Student visa required, residence permit upon arrival'
-    }
-};
+// Country and service data loaded from DB on demand
+const _countryCache = {};
+const _serviceCache = {};
 
-// Service Modal Data
-const serviceData = {
-    application: {
-        icon: '📝',
-        title: 'Application Assistance',
-        description: 'Comprehensive support throughout your university application journey.',
-        details: [
-            'Profile assessment and improvement strategies',
-            'University and program selection guidance',
-            'Application timeline planning',
-            'Essay and personal statement review',
-            'Application submission support',
-            'Follow-up with universities'
-        ],
-        benefits: 'Increase your chances of acceptance with expert guidance from experienced consultants who understand what universities are looking for.'
-    },
-    selection: {
-        icon: '🎯',
-        title: 'University Selection',
-        description: 'Find the perfect university match for your academic and career goals.',
-        details: [
-            'Detailed university research and comparison',
-            'Program matching based on your interests',
-            'Career prospects analysis',
-            'Location and campus life information',
-            'Cost and scholarship opportunities',
-            'Ranking and accreditation verification'
-        ],
-        benefits: 'Make informed decisions with data-driven insights and personalized recommendations tailored to your unique profile.'
-    },
-    visa: {
-        icon: '💼',
-        title: 'Visa Support',
-        description: 'Navigate the complex visa process with confidence.',
-        details: [
-            'Visa requirement consultation',
-            'Document checklist and preparation',
-            'Application form assistance',
-            'Interview preparation and coaching',
-            'Financial documentation guidance',
-            'Embassy appointment scheduling'
-        ],
-        benefits: 'Maximize your visa approval chances with thorough preparation and expert guidance on country-specific requirements.'
-    },
-    scholarship: {
-        icon: '💰',
-        title: 'Scholarship Guidance',
-        description: 'Access funding opportunities to make your education affordable.',
-        details: [
-            'Scholarship database access',
-            'Eligibility assessment',
-            'Application essay writing',
-            'Financial need documentation',
-            'Multiple scholarship applications',
-            'Deadline management'
-        ],
-        benefits: 'Reduce your education costs significantly with our extensive scholarship network and proven application strategies.'
-    },
-    document: {
-        icon: '📄',
-        title: 'Document Preparation',
-        description: 'Create compelling application documents that stand out.',
-        details: [
-            'Personal statement writing and editing',
-            'CV/Resume optimization',
-            'Recommendation letter guidance',
-            'Academic transcript verification',
-            'Portfolio development (if needed)',
-            'Document translation services'
-        ],
-        benefits: 'Present your best self with professionally crafted documents that highlight your strengths and achievements.'
-    },
-    departure: {
-        icon: '✈️',
-        title: 'Pre-Departure Support',
-        description: 'Prepare for your new life abroad with comprehensive support.',
-        details: [
-            'Accommodation assistance',
-            'Flight booking guidance',
-            'Airport pickup arrangements',
-            'Banking and financial setup',
-            'Cultural orientation sessions',
-            'Packing lists and checklists'
-        ],
-        benefits: 'Start your journey with confidence, knowing you\'re fully prepared for life in your new country.'
-    }
-};
+async function openCountryModal(modalKey) {
+    const modal = document.getElementById('countryModal');
+    const content = document.getElementById('countryModalContent');
+    content.innerHTML = '<div style="text-align:center;padding:2rem;color:#64748b;">Loading...</div>';
+    modal.classList.add('active');
 
-function openCountryModal(country) {
-    const data = countryData[country];
-    const content = `
-                <div class="modal-header">
-                    <div class="modal-flag">${data.flag}</div>
-                    <h2>${data.name}</h2>
-                    <p>${data.numofpartnet} Partner Universities</p>
+    try {
+        // Load from cache or fetch
+        if (!_countryCache._all) {
+            const items = await fetch('/api/countries').then(r => r.json());
+            items.forEach(c => { _countryCache[c.modal_key || c.name.toLowerCase()] = c; });
+            _countryCache._all = true;
+        }
+        const data = _countryCache[modalKey] || _countryCache[modalKey.toLowerCase()];
+        if (!data) { content.innerHTML = '<p style="text-align:center;padding:2rem;">Country not found.</p>'; return; }
+
+        // Universities from DB for this country
+        const unis = await fetch('/api/universities').then(r => r.json());
+        const countryUnis = unis.filter(u => u.country && u.country.toLowerCase() === data.name.toLowerCase() && u.is_active);
+
+        const uniList = countryUnis.length
+            ? countryUnis.map(u => `<li>${escH(u.name)}${u.ranking ? ' <span style="color:#f59e0b;font-size:0.8em">⭐ '+escH(u.ranking)+'</span>' : ''}</li>`).join('')
+            : '<li>Contact us for partner universities</li>';
+
+        const programList = data.programs
+            ? data.programs.split(',').map(p => `<li>${escH(p.trim())}</li>`).join('')
+            : '';
+
+        content.innerHTML = `
+            <div class="modal-header">
+                <div class="modal-flag">${escH(data.flag_emoji || '🌍')}</div>
+                <h2>${escH(data.name)}</h2>
+                <p>${escH(data.university_count || '')}</p>
+            </div>
+            <div class="modal-body">
+                ${data.description ? `<p>${escH(data.description)}</p>` : ''}
+                ${countryUnis.length ? `<h3>Partner Universities</h3><ul>${uniList}</ul>` : ''}
+                ${programList ? `<h3>Popular Programs</h3><ul>${programList}</ul>` : ''}
+                ${data.cost_of_living ? `<h3>Living Costs</h3><p>${escH(data.cost_of_living)}</p>` : ''}
+                ${data.language ? `<h3>Language</h3><p>${escH(data.language)}</p>` : ''}
+                ${data.visa_requirements ? `<h3>Visa Requirements</h3><p>${escH(data.visa_requirements)}</p>` : ''}
+                <div class="modal-cta">
+                    <p>Ready to study in ${escH(data.name)}?</p>
+                    <a href="#contact">Contact Us Today</a>
                 </div>
-                <div class="modal-body">
-                    <p>${data.description}</p>
-
-                    <h3>Popular Universities</h3>
-                    <ul>
-                        ${data.universities.map(university => `<li>${university}</li>`).join('')}
-                    </ul>
-                    
-                    <h3>Popular Programs</h3>
-                    <ul>
-                        ${data.programs.map(program => `<li>${program}</li>`).join('')}
-                    </ul>
-                    
-                    <h3>Living Costs</h3>
-                    <p>${data.costOfLiving}</p>
-                    
-                    <h3>Language</h3>
-                    <p>${data.language}</p>
-                    
-                    <h3>Visa Requirements</h3>
-                    <p>${data.visaRequirements}</p>
-                    
-                    <div class="modal-cta">
-                        <p>Ready to study in ${data.name}?</p>
-                        <a href="#contact">Contact Us Today</a>
-                    </div>
-                </div>
-            `;
-    document.getElementById('countryModalContent').innerHTML = content;
-    document.getElementById('countryModal').classList.add('active');
+            </div>`;
+    } catch(e) {
+        content.innerHTML = '<p style="text-align:center;padding:2rem;color:#ef4444;">Failed to load. Please try again.</p>';
+    }
 }
 
-function openServiceModal(service) {
-    const data = serviceData[service];
-    const content = `
-                <div class="modal-header">
-                    <div class="modal-flag">${data.icon}</div>
-                    <h2>${data.title}</h2>
+async function openServiceModal(modalKey) {
+    const modal = document.getElementById('serviceModal');
+    const content = document.getElementById('serviceModalContent');
+    content.innerHTML = '<div style="text-align:center;padding:2rem;color:#64748b;">Loading...</div>';
+    modal.classList.add('active');
+
+    try {
+        if (!_serviceCache._all) {
+            const items = await fetch('/api/services').then(r => r.json());
+            items.forEach(s => { _serviceCache[s.modal_key || s.title.toLowerCase().replace(/\s+/g,'-')] = s; });
+            _serviceCache._all = true;
+        }
+        const data = _serviceCache[modalKey] || _serviceCache[modalKey.toLowerCase()];
+        if (!data) { content.innerHTML = '<p style="text-align:center;padding:2rem;">Service not found.</p>'; return; }
+
+        const detailList = data.details
+            ? data.details.split('\n').filter(l => l.trim()).map(l => `<li>${escH(l.trim())}</li>`).join('')
+            : '';
+
+        content.innerHTML = `
+            <div class="modal-header">
+                <div class="modal-flag">${escH(data.icon_emoji || '⭐')}</div>
+                <h2>${escH(data.title)}</h2>
+            </div>
+            <div class="modal-body">
+                ${data.description ? `<p>${escH(data.description)}</p>` : ''}
+                ${detailList ? `<h3>What We Offer</h3><ul>${detailList}</ul>` : ''}
+                ${data.benefits ? `<h3>Why Choose This Service?</h3><p>${escH(data.benefits)}</p>` : ''}
+                <div class="modal-cta">
+                    <p>Want to learn more about this service?</p>
+                    <a href="#contact">Schedule a Consultation</a>
                 </div>
-                <div class="modal-body">
-                    <p>${data.description}</p>
-                    
-                    <h3>What We Offer</h3>
-                    <ul>
-                        ${data.details.map(detail => `<li>${detail}</li>`).join('')}
-                    </ul>
-                    
-                    <h3>Why Choose This Service?</h3>
-                    <p>${data.benefits}</p>
-                    
-                    <div class="modal-cta">
-                        <p>Want to learn more about this service?</p>
-                        <a href="#contact">Schedule a Consultation</a>
-                    </div>
-                </div>
-            `;
-    document.getElementById('serviceModalContent').innerHTML = content;
-    document.getElementById('serviceModal').classList.add('active');
+            </div>`;
+    } catch(e) {
+        content.innerHTML = '<p style="text-align:center;padding:2rem;color:#ef4444;">Failed to load. Please try again.</p>';
+    }
 }
+
 
 function closeModal(modalId) {
     document.getElementById(modalId).classList.remove('active');
@@ -856,7 +679,82 @@ function getTimeAgo(date) {
 document.addEventListener('DOMContentLoaded', () => {
     loadComments();
     loadNewsAndTicker();
+    loadCountries();
+    loadServices();
+    loadUniversities();
 });
+
+// ── Countries ─────────────────────────────────────────────────────────────────
+
+async function loadCountries() {
+    try {
+        const items = await fetch('/api/countries').then(r => r.json());
+        const grid = document.getElementById('countriesGrid');
+        if (!grid) return;
+        if (!items || !items.length) {
+            grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:#94a3b8;">No countries added yet.</div>';
+            return;
+        }
+        grid.innerHTML = items.map(c => `
+            <div class="country-card">
+                <div class="country-flag">${escH(c.flag_emoji || '🌍')}</div>
+                <h3>${escH(c.name)}</h3>
+                <p>${escH(c.university_count || '')}</p>
+                <button class="country-btn" onclick="openCountryModal('${escH(c.modal_key || c.name.toLowerCase())}')">Learn More</button>
+            </div>`).join('');
+    } catch(e) { console.log('Countries load error', e); }
+}
+
+// ── Services ──────────────────────────────────────────────────────────────────
+
+async function loadServices() {
+    try {
+        const items = await fetch('/api/services').then(r => r.json());
+        const grid = document.getElementById('servicesGrid');
+        if (!grid) return;
+        if (!items || !items.length) {
+            grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:#94a3b8;">No services added yet.</div>';
+            return;
+        }
+        grid.innerHTML = items.map(s => `
+            <div class="service-card ${s.is_featured ? 'featured' : ''}">
+                <div class="service-icon">${escH(s.icon_emoji || '⭐')}</div>
+                <h3>${escH(s.title)}</h3>
+                <p>${escH(s.description || '')}</p>
+                <button class="service-link" onclick="openServiceModal('${escH(s.modal_key || '')}')">Read More →</button>
+            </div>`).join('');
+    } catch(e) { console.log('Services load error', e); }
+}
+
+// ── Universities ──────────────────────────────────────────────────────────────
+
+async function loadUniversities() {
+    try {
+        const items = await fetch('/api/universities').then(r => r.json());
+        const section = document.getElementById('universities');
+        const grid = document.getElementById('universitiesGrid');
+        if (!section || !grid || !items || !items.length) return;
+        grid.innerHTML = items.map(u => {
+            const img = u.image_url
+                ? `<img class="uni-card-img" src="${escH(u.image_url)}" alt="${escH(u.name)}" onerror="this.style.display='none'">`
+                : `<div class="uni-card-img-placeholder">🎓</div>`;
+            const ranking = u.ranking ? `<div class="uni-card-ranking">⭐ ${escH(u.ranking)}</div>` : '';
+            const link = u.link_url ? `<a class="uni-card-link" href="${escH(u.link_url)}" target="_blank">Visit Website →</a>` : '';
+            return `
+                <div class="uni-card">
+                    ${img}
+                    <div class="uni-card-body">
+                        <div class="uni-card-country">${escH(u.country || '')}</div>
+                        <div class="uni-card-name">${escH(u.name)}</div>
+                        ${ranking}
+                        <div class="uni-card-desc">${escH(u.description || '')}</div>
+                        ${link}
+                    </div>
+                </div>`;
+        }).join('');
+        section.style.display = 'block';
+    } catch(e) { console.log('Universities load error', e); }
+}
 
 // ── News & Ticker ──────────────────────────────────────────────────────────
 
@@ -913,7 +811,7 @@ function newsCardHtml(n) {
     const expires = n.expires_at
         ? `<span class="nc-expires">⏰ Until ${new Date(n.expires_at).toLocaleDateString()}</span>`
         : '';
-    const date = new Date(n.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+    const date = new Date(n.created_at).toLocaleDateString('en-US', { day:'numeric', month:'short', year:'numeric' });
     const linkEl = n.link_url
         ? `<a class="nc-link" href="${escH(n.link_url)}" target="_blank">${escH(n.link_text || 'Learn More →')}</a>`
         : '';
@@ -939,9 +837,9 @@ function newsCardHtml(n) {
 function escH(str) {
     if (!str) return '';
     return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
 }

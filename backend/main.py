@@ -283,7 +283,247 @@ async def delete_news(nid: int, _=Depends(verify_token)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# ── DB setup ──────────────────────────────────────────────────────────────────
+# ── Countries ─────────────────────────────────────────────────────────────────
+
+class CountryCreate(BaseModel):
+    name: str
+    flag_emoji: str
+    university_count: str
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    modal_key: Optional[str] = None
+    programs: Optional[str] = None          # comma-separated
+    cost_of_living: Optional[str] = None    # e.g. $400-600/month
+    language: Optional[str] = None
+    visa_requirements: Optional[str] = None
+    sort_order: int = 0
+    is_active: bool = True
+
+class CountryUpdate(CountryCreate):
+    pass
+
+@app.get("/api/countries")
+async def get_countries():
+    try:
+        conn = get_conn(); cur = conn.cursor()
+        cur.execute("SELECT * FROM countries WHERE is_active=TRUE ORDER BY sort_order, id")
+        rows = cur.fetchall(); cur.close(); conn.close()
+        return rows
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/admin/countries")
+async def admin_get_countries(_=Depends(verify_token)):
+    try:
+        conn = get_conn(); cur = conn.cursor()
+        cur.execute("SELECT * FROM countries ORDER BY sort_order, id")
+        rows = cur.fetchall(); cur.close(); conn.close()
+        return rows
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/admin/countries")
+async def create_country(c: CountryCreate, _=Depends(verify_token)):
+    try:
+        conn = get_conn(); cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO countries (name, flag_emoji, university_count, description,
+                                   image_url, modal_key, programs, cost_of_living,
+                                   language, visa_requirements, sort_order, is_active)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id
+        """, (c.name, c.flag_emoji, c.university_count, c.description,
+              c.image_url, c.modal_key, c.programs, c.cost_of_living,
+              c.language, c.visa_requirements, c.sort_order, c.is_active))
+        new_id = cur.fetchone()["id"]
+        conn.commit(); cur.close(); conn.close()
+        return {"message": "Country created", "id": new_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.put("/api/admin/countries/{cid}")
+async def update_country(cid: int, c: CountryUpdate, _=Depends(verify_token)):
+    try:
+        conn = get_conn(); cur = conn.cursor()
+        cur.execute("""
+            UPDATE countries SET name=%s, flag_emoji=%s, university_count=%s,
+                description=%s, image_url=%s, modal_key=%s, programs=%s,
+                cost_of_living=%s, language=%s, visa_requirements=%s,
+                sort_order=%s, is_active=%s
+            WHERE id=%s
+        """, (c.name, c.flag_emoji, c.university_count, c.description,
+              c.image_url, c.modal_key, c.programs, c.cost_of_living,
+              c.language, c.visa_requirements, c.sort_order, c.is_active, cid))
+        conn.commit(); cur.close(); conn.close()
+        return {"message": "Updated"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/admin/countries/{cid}")
+async def delete_country(cid: int, _=Depends(verify_token)):
+    try:
+        conn = get_conn(); cur = conn.cursor()
+        cur.execute("DELETE FROM countries WHERE id=%s", (cid,))
+        conn.commit(); cur.close(); conn.close()
+        return {"message": "Deleted"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ── Services ──────────────────────────────────────────────────────────────────
+
+class ServiceCreate(BaseModel):
+    title: str
+    icon_emoji: str
+    description: str
+    details: Optional[str] = None    # newline-separated bullet points
+    benefits: Optional[str] = None
+    is_featured: bool = False
+    modal_key: Optional[str] = None
+    sort_order: int = 0
+    is_active: bool = True
+
+class ServiceUpdate(ServiceCreate):
+    pass
+
+@app.get("/api/services")
+async def get_services():
+    try:
+        conn = get_conn(); cur = conn.cursor()
+        cur.execute("SELECT * FROM services WHERE is_active=TRUE ORDER BY sort_order, id")
+        rows = cur.fetchall(); cur.close(); conn.close()
+        return rows
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/admin/services")
+async def admin_get_services(_=Depends(verify_token)):
+    try:
+        conn = get_conn(); cur = conn.cursor()
+        cur.execute("SELECT * FROM services ORDER BY sort_order, id")
+        rows = cur.fetchall(); cur.close(); conn.close()
+        return rows
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/admin/services")
+async def create_service(s: ServiceCreate, _=Depends(verify_token)):
+    try:
+        conn = get_conn(); cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO services (title, icon_emoji, description, details, benefits,
+                                  is_featured, modal_key, sort_order, is_active)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id
+        """, (s.title, s.icon_emoji, s.description, s.details, s.benefits,
+              s.is_featured, s.modal_key, s.sort_order, s.is_active))
+        new_id = cur.fetchone()["id"]
+        conn.commit(); cur.close(); conn.close()
+        return {"message": "Service created", "id": new_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.put("/api/admin/services/{sid}")
+async def update_service(sid: int, s: ServiceUpdate, _=Depends(verify_token)):
+    try:
+        conn = get_conn(); cur = conn.cursor()
+        cur.execute("""
+            UPDATE services SET title=%s, icon_emoji=%s, description=%s,
+                details=%s, benefits=%s, is_featured=%s, modal_key=%s,
+                sort_order=%s, is_active=%s
+            WHERE id=%s
+        """, (s.title, s.icon_emoji, s.description, s.details, s.benefits,
+              s.is_featured, s.modal_key, s.sort_order, s.is_active, sid))
+        conn.commit(); cur.close(); conn.close()
+        return {"message": "Updated"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/admin/services/{sid}")
+async def delete_service(sid: int, _=Depends(verify_token)):
+    try:
+        conn = get_conn(); cur = conn.cursor()
+        cur.execute("DELETE FROM services WHERE id=%s", (sid,))
+        conn.commit(); cur.close(); conn.close()
+        return {"message": "Deleted"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ── Universities ──────────────────────────────────────────────────────────────
+
+class UniversityCreate(BaseModel):
+    name: str
+    country: str
+    image_url: Optional[str] = None
+    description: Optional[str] = None
+    programs: Optional[str] = None    # comma-separated list
+    ranking: Optional[str] = None     # e.g. "QS Top 500"
+    link_url: Optional[str] = None
+    sort_order: int = 0
+    is_active: bool = True
+
+class UniversityUpdate(UniversityCreate):
+    pass
+
+@app.get("/api/universities")
+async def get_universities():
+    try:
+        conn = get_conn(); cur = conn.cursor()
+        cur.execute("SELECT * FROM universities WHERE is_active=TRUE ORDER BY sort_order, id")
+        rows = cur.fetchall(); cur.close(); conn.close()
+        return rows
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/admin/universities")
+async def admin_get_universities(_=Depends(verify_token)):
+    try:
+        conn = get_conn(); cur = conn.cursor()
+        cur.execute("SELECT * FROM universities ORDER BY sort_order, id")
+        rows = cur.fetchall(); cur.close(); conn.close()
+        return rows
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/admin/universities")
+async def create_university(u: UniversityCreate, _=Depends(verify_token)):
+    try:
+        conn = get_conn(); cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO universities (name, country, image_url, description,
+                                      programs, ranking, link_url, sort_order, is_active)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id
+        """, (u.name, u.country, u.image_url, u.description,
+              u.programs, u.ranking, u.link_url, u.sort_order, u.is_active))
+        new_id = cur.fetchone()["id"]
+        conn.commit(); cur.close(); conn.close()
+        return {"message": "University created", "id": new_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.put("/api/admin/universities/{uid}")
+async def update_university(uid: int, u: UniversityUpdate, _=Depends(verify_token)):
+    try:
+        conn = get_conn(); cur = conn.cursor()
+        cur.execute("""
+            UPDATE universities SET name=%s, country=%s, image_url=%s, description=%s,
+                programs=%s, ranking=%s, link_url=%s, sort_order=%s, is_active=%s
+            WHERE id=%s
+        """, (u.name, u.country, u.image_url, u.description,
+              u.programs, u.ranking, u.link_url, u.sort_order, u.is_active, uid))
+        conn.commit(); cur.close(); conn.close()
+        return {"message": "Updated"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/admin/universities/{uid}")
+async def delete_university(uid: int, _=Depends(verify_token)):
+    try:
+        conn = get_conn(); cur = conn.cursor()
+        cur.execute("DELETE FROM universities WHERE id=%s", (uid,))
+        conn.commit(); cur.close(); conn.close()
+        return {"message": "Deleted"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 
 @app.get("/setup-db")
 def setup_db():
@@ -315,8 +555,80 @@ def setup_db():
                 created_at  TIMESTAMP DEFAULT NOW()
             )
         """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS countries (
+                id                SERIAL PRIMARY KEY,
+                name              VARCHAR(100) NOT NULL,
+                flag_emoji        VARCHAR(10),
+                university_count  VARCHAR(50),
+                description       TEXT,
+                image_url         VARCHAR(500),
+                modal_key         VARCHAR(50),
+                programs          TEXT,          -- comma-separated
+                cost_of_living    VARCHAR(100),  -- e.g. $400-600/month
+                language          TEXT,
+                visa_requirements TEXT,
+                sort_order        INT DEFAULT 0,
+                is_active         BOOLEAN DEFAULT TRUE,
+                created_at        TIMESTAMP DEFAULT NOW()
+            )
+        """)
+        # Add new columns to existing countries table if they don't exist yet
+        for col, typedef in [
+            ("programs", "TEXT"),
+            ("cost_of_living", "VARCHAR(100)"),
+            ("language", "TEXT"),
+            ("visa_requirements", "TEXT"),
+        ]:
+            cur.execute(f"""
+                DO $$ BEGIN
+                    ALTER TABLE countries ADD COLUMN {col} {typedef};
+                EXCEPTION WHEN duplicate_column THEN NULL;
+                END $$;
+            """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS services (
+                id            SERIAL PRIMARY KEY,
+                title         VARCHAR(200) NOT NULL,
+                icon_emoji    VARCHAR(10),
+                description   TEXT,
+                details       TEXT,   -- newline-separated bullet points
+                benefits      TEXT,
+                is_featured   BOOLEAN DEFAULT FALSE,
+                modal_key     VARCHAR(50),
+                sort_order    INT DEFAULT 0,
+                is_active     BOOLEAN DEFAULT TRUE,
+                created_at    TIMESTAMP DEFAULT NOW()
+            )
+        """)
+        # Add new columns to existing services table if they don't exist yet
+        for col, typedef in [
+            ("details", "TEXT"),
+            ("benefits", "TEXT"),
+        ]:
+            cur.execute(f"""
+                DO $$ BEGIN
+                    ALTER TABLE services ADD COLUMN {col} {typedef};
+                EXCEPTION WHEN duplicate_column THEN NULL;
+                END $$;
+            """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS universities (
+                id           SERIAL PRIMARY KEY,
+                name         VARCHAR(200) NOT NULL,
+                country      VARCHAR(100),
+                image_url    VARCHAR(500),
+                description  TEXT,
+                programs     TEXT,
+                ranking      VARCHAR(100),
+                link_url     VARCHAR(500),
+                sort_order   INT DEFAULT 0,
+                is_active    BOOLEAN DEFAULT TRUE,
+                created_at   TIMESTAMP DEFAULT NOW()
+            )
+        """)
         conn.commit(); cur.close(); conn.close()
-        return {"message": "Tables created successfully"}
+        return {"message": "All tables created successfully"}
     except Exception as e:
         return {"error": str(e)}
 

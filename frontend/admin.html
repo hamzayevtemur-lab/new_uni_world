@@ -832,6 +832,15 @@
                 <button class="tab-btn" onclick="switchTab('news', this)">
                     📢 News &amp; Announcements
                 </button>
+                <button class="tab-btn" onclick="switchTab('countries', this)">
+                    🌍 Countries
+                </button>
+                <button class="tab-btn" onclick="switchTab('services', this)">
+                    ⚙️ Services
+                </button>
+                <button class="tab-btn" onclick="switchTab('universities', this)">
+                    🎓 Universities
+                </button>
             </div>
 
             <!-- Pending Comments -->
@@ -930,6 +939,138 @@
                 </div>
             </div>
 
+            <!-- Countries Tab -->
+            <div id="countriesTab" class="tab-content">
+                <div class="panel">
+                    <h2 id="countryFormTitle">🌍 Add Country</h2>
+                    <div class="news-form-grid">
+                        <div class="form-group"><label>Country Name *</label><input type="text" id="cName"
+                                placeholder="e.g. China"></div>
+                        <div class="form-group"><label>Flag Emoji *</label><input type="text" id="cFlag"
+                                placeholder="e.g. 🇨🇳" maxlength="4"></div>
+                        <div class="form-group"><label>University Count Text</label><input type="text" id="cUniCount"
+                                placeholder="e.g. 10+ Partner Universities"></div>
+                        <div class="form-group"><label>Modal Key</label><input type="text" id="cModalKey"
+                                placeholder="e.g. china (for popup)"></div>
+                        <div class="form-group full-width"><label>Description</label><textarea id="cDesc"
+                                placeholder="Brief description of studying in this country..."></textarea></div>
+                        <div class="form-group full-width"><label>Programs <small style="color:#94a3b8">(comma
+                                    separated, e.g. Engineering, Business, Medicine)</small></label><input type="text"
+                                id="cPrograms" placeholder="Engineering, Business, Medicine, Computer Science"></div>
+                        <div class="form-group"><label>Cost of Living</label><input type="text" id="cCost"
+                                placeholder="e.g. $400-600/month"></div>
+                        <div class="form-group"><label>Language</label><input type="text" id="cLanguage"
+                                placeholder="e.g. English programs available"></div>
+                        <div class="form-group full-width"><label>Visa Requirements</label><textarea id="cVisa"
+                                placeholder="e.g. Student visa required, processing time: 2-3 months"
+                                style="min-height:70px"></textarea></div>
+                        <div class="form-group"><label>Image URL (optional)</label><input type="url" id="cImage"
+                                placeholder="https://..."></div>
+                        <div class="form-group"><label>Sort Order</label><input type="number" id="cSort" value="0">
+                        </div>
+                        <div class="form-group">
+                            <div class="toggle-row"><label class="toggle-label"><input type="checkbox" id="cActive"
+                                        checked> Active (visible on site)</label></div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="submit-btn" onclick="saveCountry()">💾 Save Country</button>
+                        <button class="cancel-btn" id="cancelCountryBtn" onclick="cancelCountryEdit()"
+                            style="display:none">Cancel</button>
+                    </div>
+                </div>
+                <div class="panel">
+                    <h2>All Countries <span class="badge badge-green" id="countriesListCount">0</span></h2>
+                    <div id="countriesList" class="news-grid"></div>
+                </div>
+            </div>
+
+            <!-- Services Tab -->
+            <div id="servicesTab" class="tab-content">
+                <div class="panel">
+                    <h2 id="serviceFormTitle">⚙️ Add Service</h2>
+                    <div class="news-form-grid">
+                        <div class="form-group"><label>Service Title *</label><input type="text" id="sTitle"
+                                placeholder="e.g. Visa Support"></div>
+                        <div class="form-group"><label>Icon Emoji</label><input type="text" id="sIcon"
+                                placeholder="e.g. 💼" maxlength="4"></div>
+                        <div class="form-group full-width"><label>Short Description *</label><textarea id="sDesc"
+                                placeholder="One sentence overview of the service..."
+                                style="min-height:70px"></textarea></div>
+                        <div class="form-group full-width"><label>What We Offer <small style="color:#94a3b8">(one item
+                                    per line — these become bullet points in the popup)</small></label>
+                            <textarea id="sDetails"
+                                placeholder="Visa requirement consultation&#10;Document checklist and preparation&#10;Application form assistance&#10;Interview preparation and coaching"
+                                style="min-height:130px"></textarea>
+                        </div>
+                        <div class="form-group full-width"><label>Why Choose This Service?</label><textarea
+                                id="sBenefits" placeholder="Explain the main benefit to students..."
+                                style="min-height:80px"></textarea></div>
+                        <div class="form-group"><label>Modal Key</label><input type="text" id="sModalKey"
+                                placeholder="e.g. visa"></div>
+                        <div class="form-group"><label>Sort Order</label><input type="number" id="sSort" value="0">
+                        </div>
+                        <div class="form-group">
+                            <div class="toggle-row">
+                                <label class="toggle-label"><input type="checkbox" id="sActive" checked> Active</label>
+                                <label class="toggle-label"><input type="checkbox" id="sFeatured"> Featured (highlighted
+                                    card)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="submit-btn" onclick="saveService()">💾 Save Service</button>
+                        <button class="cancel-btn" id="cancelServiceBtn" onclick="cancelServiceEdit()"
+                            style="display:none">Cancel</button>
+                    </div>
+                </div>
+                <div class="panel">
+                    <h2>All Services <span class="badge badge-green" id="servicesListCount">0</span></h2>
+                    <div id="servicesList" class="news-grid"></div>
+                </div>
+            </div>
+
+            <!-- Universities Tab -->
+            <div id="universitiesTab" class="tab-content">
+                <div class="panel">
+                    <h2 id="uniFormTitle">🎓 Add University</h2>
+                    <div class="news-form-grid">
+                        <div class="form-group"><label>University Name *</label><input type="text" id="uName"
+                                placeholder="e.g. Beijing University"></div>
+                        <div class="form-group"><label>Country *</label>
+                            <select id="uCountry">
+                                <option value="">-- Select a country --</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width"><label>Description</label><textarea id="uDesc"
+                                placeholder="Brief description of the university..."></textarea></div>
+                        <div class="form-group"><label>Image URL</label><input type="url" id="uImage"
+                                placeholder="https://..."></div>
+                        <div class="form-group"><label>Ranking</label><input type="text" id="uRanking"
+                                placeholder="e.g. QS Top 500, #1 in China"></div>
+                        <div class="form-group"><label>Programs (comma separated)</label><input type="text"
+                                id="uPrograms" placeholder="e.g. Engineering, Medicine, Business"></div>
+                        <div class="form-group"><label>Website URL</label><input type="url" id="uLink"
+                                placeholder="https://university.edu"></div>
+                        <div class="form-group"><label>Sort Order</label><input type="number" id="uSort" value="0">
+                        </div>
+                        <div class="form-group">
+                            <div class="toggle-row"><label class="toggle-label"><input type="checkbox" id="uActive"
+                                        checked> Active (visible on site)</label></div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="submit-btn" onclick="saveUniversity()">💾 Save University</button>
+                        <button class="cancel-btn" id="cancelUniBtn" onclick="cancelUniEdit()"
+                            style="display:none">Cancel</button>
+                    </div>
+                </div>
+                <div class="panel">
+                    <h2>All Universities <span class="badge badge-green" id="uniListCount">0</span></h2>
+                    <div id="universitiesList" class="news-grid"></div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -1007,6 +1148,9 @@
             btn.classList.add('active');
             document.getElementById(tab + 'Tab').classList.add('active');
             if (tab === 'news') loadNews();
+            if (tab === 'countries') loadCountries();
+            if (tab === 'services') loadServices();
+            if (tab === 'universities') { loadUniversities(); populateCountryDropdown(); }
         }
 
         // ── Load all data ──
@@ -1379,4 +1523,274 @@
         _origCancelEdit();
         removeImage();
     };
+
+    // ── Countries ─────────────────────────────────────────────────────────────
+
+    let editingCountryId = null;
+
+    async function loadCountries() {
+        try {
+            const items = await apiGet('/api/admin/countries');
+            document.getElementById('countriesListCount').textContent = items.length;
+            const container = document.getElementById('countriesList');
+            if (!items.length) { container.innerHTML = emptyState('🌍', 'No countries yet', 'Add your first country above'); return; }
+            container.innerHTML = items.map(c => `
+                <div class="news-card ${c.is_active ? '' : 'inactive'}">
+                    <div class="news-card-img-placeholder" style="font-size:3rem">${escHtml(c.flag_emoji || '🌍')}</div>
+                    <div class="news-card-body">
+                        <div class="news-card-title">${escHtml(c.name)}</div>
+                        <div class="news-card-body-text">${escHtml(c.university_count || '')} ${c.description ? '· ' + escHtml(c.description.substring(0, 60)) + '...' : ''}</div>
+                        <div class="news-card-meta"><span>${c.is_active ? '🟢 Active' : '🔴 Inactive'}</span><span>Order: ${c.sort_order}</span></div>
+                    </div>
+                    <div class="news-card-actions">
+                        <button class="edit-btn" onclick="editCountry(${c.id})">✏️ Edit</button>
+                        <button class="delete-btn" onclick="deleteCountry(${c.id})">🗑️ Delete</button>
+                    </div>
+                </div>`).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    async function saveCountry() {
+        const name = document.getElementById('cName').value.trim();
+        if (!name) { showToast('Country name is required', 'error'); return; }
+        const payload = {
+            name, flag_emoji: document.getElementById('cFlag').value.trim(),
+            university_count: document.getElementById('cUniCount').value.trim(),
+            modal_key: document.getElementById('cModalKey').value.trim() || null,
+            description: document.getElementById('cDesc').value.trim() || null,
+            programs: document.getElementById('cPrograms').value.trim() || null,
+            cost_of_living: document.getElementById('cCost').value.trim() || null,
+            language: document.getElementById('cLanguage').value.trim() || null,
+            visa_requirements: document.getElementById('cVisa').value.trim() || null,
+            image_url: document.getElementById('cImage').value.trim() || null,
+            sort_order: parseInt(document.getElementById('cSort').value) || 0,
+            is_active: document.getElementById('cActive').checked,
+        };
+        try {
+            const url = editingCountryId ? `/api/admin/countries/${editingCountryId}` : '/api/admin/countries';
+            const method = editingCountryId ? 'PUT' : 'POST';
+            const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(payload) });
+            if (res.ok) { showToast(editingCountryId ? 'Country updated! 🌍' : 'Country added! 🌍'); cancelCountryEdit(); loadCountries(); }
+        } catch (e) { showToast('Error saving', 'error'); }
+    }
+
+    async function editCountry(id) {
+        const items = await apiGet('/api/admin/countries');
+        const c = items.find(x => x.id === id); if (!c) return;
+        editingCountryId = id;
+        document.getElementById('countryFormTitle').textContent = '✏️ Edit Country';
+        document.getElementById('cName').value = c.name;
+        document.getElementById('cFlag').value = c.flag_emoji || '';
+        document.getElementById('cUniCount').value = c.university_count || '';
+        document.getElementById('cModalKey').value = c.modal_key || '';
+        document.getElementById('cDesc').value = c.description || '';
+        document.getElementById('cPrograms').value = c.programs || '';
+        document.getElementById('cCost').value = c.cost_of_living || '';
+        document.getElementById('cLanguage').value = c.language || '';
+        document.getElementById('cVisa').value = c.visa_requirements || '';
+        document.getElementById('cImage').value = c.image_url || '';
+        document.getElementById('cSort').value = c.sort_order;
+        document.getElementById('cActive').checked = c.is_active;
+        document.getElementById('cancelCountryBtn').style.display = 'inline-block';
+        document.getElementById('countryFormTitle').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function cancelCountryEdit() {
+        editingCountryId = null;
+        document.getElementById('countryFormTitle').textContent = '🌍 Add Country';
+        ['cName', 'cFlag', 'cUniCount', 'cModalKey', 'cDesc', 'cPrograms', 'cCost', 'cLanguage', 'cVisa', 'cImage'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('cSort').value = 0;
+        document.getElementById('cActive').checked = true;
+        document.getElementById('cancelCountryBtn').style.display = 'none';
+    }
+
+    async function deleteCountry(id) {
+        if (!confirm('Delete this country?')) return;
+        const res = await fetch(`/api/admin/countries/${id}`, { method: 'DELETE', headers: authHeaders() });
+        if (res.ok) { showToast('Deleted 🗑️'); loadCountries(); }
+    }
+
+    // ── Services ──────────────────────────────────────────────────────────────
+
+    let editingServiceId = null;
+
+    async function loadServices() {
+        try {
+            const items = await apiGet('/api/admin/services');
+            document.getElementById('servicesListCount').textContent = items.length;
+            const container = document.getElementById('servicesList');
+            if (!items.length) { container.innerHTML = emptyState('⚙️', 'No services yet', 'Add your first service above'); return; }
+            container.innerHTML = items.map(s => `
+                <div class="news-card ${s.is_active ? '' : 'inactive'}">
+                    <div class="news-card-img-placeholder" style="font-size:3rem">${escHtml(s.icon_emoji || '⭐')}</div>
+                    <div class="news-card-body">
+                        ${s.is_featured ? '<span class="news-badge">⭐ Featured</span><br>' : ''}
+                        <div class="news-card-title">${escHtml(s.title)}</div>
+                        <div class="news-card-body-text">${escHtml((s.description || '').substring(0, 80))}...</div>
+                        <div class="news-card-meta"><span>${s.is_active ? '🟢 Active' : '🔴 Inactive'}</span><span>Order: ${s.sort_order}</span></div>
+                    </div>
+                    <div class="news-card-actions">
+                        <button class="edit-btn" onclick="editService(${s.id})">✏️ Edit</button>
+                        <button class="delete-btn" onclick="deleteService(${s.id})">🗑️ Delete</button>
+                    </div>
+                </div>`).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    async function saveService() {
+        const title = document.getElementById('sTitle').value.trim();
+        const desc = document.getElementById('sDesc').value.trim();
+        if (!title || !desc) { showToast('Title and description are required', 'error'); return; }
+        const payload = {
+            title, description: desc,
+            icon_emoji: document.getElementById('sIcon').value.trim(),
+            details: document.getElementById('sDetails').value.trim() || null,
+            benefits: document.getElementById('sBenefits').value.trim() || null,
+            modal_key: document.getElementById('sModalKey').value.trim() || null,
+            sort_order: parseInt(document.getElementById('sSort').value) || 0,
+            is_active: document.getElementById('sActive').checked,
+            is_featured: document.getElementById('sFeatured').checked,
+        };
+        try {
+            const url = editingServiceId ? `/api/admin/services/${editingServiceId}` : '/api/admin/services';
+            const method = editingServiceId ? 'PUT' : 'POST';
+            const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(payload) });
+            if (res.ok) { showToast(editingServiceId ? 'Service updated! ⚙️' : 'Service added! ⚙️'); cancelServiceEdit(); loadServices(); }
+        } catch (e) { showToast('Error saving', 'error'); }
+    }
+
+    async function editService(id) {
+        const items = await apiGet('/api/admin/services');
+        const s = items.find(x => x.id === id); if (!s) return;
+        editingServiceId = id;
+        document.getElementById('serviceFormTitle').textContent = '✏️ Edit Service';
+        document.getElementById('sTitle').value = s.title;
+        document.getElementById('sIcon').value = s.icon_emoji || '';
+        document.getElementById('sDesc').value = s.description || '';
+        document.getElementById('sDetails').value = s.details || '';
+        document.getElementById('sBenefits').value = s.benefits || '';
+        document.getElementById('sModalKey').value = s.modal_key || '';
+        document.getElementById('sSort').value = s.sort_order;
+        document.getElementById('sActive').checked = s.is_active;
+        document.getElementById('sFeatured').checked = s.is_featured;
+        document.getElementById('cancelServiceBtn').style.display = 'inline-block';
+        document.getElementById('serviceFormTitle').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function cancelServiceEdit() {
+        editingServiceId = null;
+        document.getElementById('serviceFormTitle').textContent = '⚙️ Add Service';
+        ['sTitle', 'sIcon', 'sDesc', 'sDetails', 'sBenefits', 'sModalKey'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('sSort').value = 0;
+        document.getElementById('sActive').checked = true;
+        document.getElementById('sFeatured').checked = false;
+        document.getElementById('cancelServiceBtn').style.display = 'none';
+    }
+
+    async function deleteService(id) {
+        if (!confirm('Delete this service?')) return;
+        const res = await fetch(`/api/admin/services/${id}`, { method: 'DELETE', headers: authHeaders() });
+        if (res.ok) { showToast('Deleted 🗑️'); loadServices(); }
+    }
+
+    // ── Universities ──────────────────────────────────────────────────────────
+
+    let editingUniId = null;
+
+    async function loadUniversities() {
+        try {
+            const items = await apiGet('/api/admin/universities');
+            document.getElementById('uniListCount').textContent = items.length;
+            const container = document.getElementById('universitiesList');
+            if (!items.length) { container.innerHTML = emptyState('🎓', 'No universities yet', 'Add your first university above'); return; }
+            container.innerHTML = items.map(u => `
+                <div class="news-card ${u.is_active ? '' : 'inactive'}">
+                    ${u.image_url ? `<img class="news-card-img" src="${escHtml(u.image_url)}" onerror="this.style.display='none'">` : '<div class="news-card-img-placeholder">🎓</div>'}
+                    <div class="news-card-body">
+                        <div class="news-badge">${escHtml(u.country || '')}</div><br>
+                        <div class="news-card-title">${escHtml(u.name)}</div>
+                        <div class="news-card-body-text">${escHtml((u.description || '').substring(0, 80))}${u.description && u.description.length > 80 ? '...' : ''}</div>
+                        <div class="news-card-meta"><span>${u.is_active ? '🟢 Active' : '🔴 Inactive'}</span>${u.ranking ? `<span>⭐ ${escHtml(u.ranking)}</span>` : ''}</div>
+                    </div>
+                    <div class="news-card-actions">
+                        <button class="edit-btn" onclick="editUniversity(${u.id})">✏️ Edit</button>
+                        <button class="delete-btn" onclick="deleteUniversity(${u.id})">🗑️ Delete</button>
+                    </div>
+                </div>`).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    async function populateCountryDropdown() {
+        try {
+            const countries = await apiGet('/api/admin/countries');
+            const select = document.getElementById('uCountry');
+            const currentVal = select.value; // preserve value if editing
+            select.innerHTML = '<option value="">-- Select a country --</option>';
+            countries
+                .filter(c => c.is_active)
+                .forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.name;
+                    opt.textContent = `${c.flag_emoji || ''} ${c.name}`;
+                    select.appendChild(opt);
+                });
+            if (currentVal) select.value = currentVal; // restore if editing
+        } catch (e) { console.error('Could not load countries for dropdown', e); }
+    }
+
+    async function saveUniversity() {
+        const name = document.getElementById('uName').value.trim();
+        const country = document.getElementById('uCountry').value.trim();
+        if (!name || !country) { showToast('Name and country are required', 'error'); return; }
+        const payload = {
+            name, country,
+            description: document.getElementById('uDesc').value.trim() || null,
+            image_url: document.getElementById('uImage').value.trim() || null,
+            ranking: document.getElementById('uRanking').value.trim() || null,
+            programs: document.getElementById('uPrograms').value.trim() || null,
+            link_url: document.getElementById('uLink').value.trim() || null,
+            sort_order: parseInt(document.getElementById('uSort').value) || 0,
+            is_active: document.getElementById('uActive').checked,
+        };
+        try {
+            const url = editingUniId ? `/api/admin/universities/${editingUniId}` : '/api/admin/universities';
+            const method = editingUniId ? 'PUT' : 'POST';
+            const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(payload) });
+            if (res.ok) { showToast(editingUniId ? 'University updated! 🎓' : 'University added! 🎓'); cancelUniEdit(); loadUniversities(); }
+        } catch (e) { showToast('Error saving', 'error'); }
+    }
+
+    async function editUniversity(id) {
+        const items = await apiGet('/api/admin/universities');
+        const u = items.find(x => x.id === id); if (!u) return;
+        editingUniId = id;
+        document.getElementById('uniFormTitle').textContent = '✏️ Edit University';
+        document.getElementById('uName').value = u.name;
+        document.getElementById('uCountry').value = u.country || '';
+        document.getElementById('uDesc').value = u.description || '';
+        document.getElementById('uImage').value = u.image_url || '';
+        document.getElementById('uRanking').value = u.ranking || '';
+        document.getElementById('uPrograms').value = u.programs || '';
+        document.getElementById('uLink').value = u.link_url || '';
+        document.getElementById('uSort').value = u.sort_order;
+        document.getElementById('uActive').checked = u.is_active;
+        document.getElementById('cancelUniBtn').style.display = 'inline-block';
+        document.getElementById('uniFormTitle').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function cancelUniEdit() {
+        editingUniId = null;
+        document.getElementById('uniFormTitle').textContent = '🎓 Add University';
+        ['uName', 'uCountry', 'uDesc', 'uImage', 'uRanking', 'uPrograms', 'uLink'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('uSort').value = 0;
+        document.getElementById('uActive').checked = true;
+        document.getElementById('cancelUniBtn').style.display = 'none';
+    }
+
+    async function deleteUniversity(id) {
+        if (!confirm('Delete this university?')) return;
+        const res = await fetch(`/api/admin/universities/${id}`, { method: 'DELETE', headers: authHeaders() });
+        if (res.ok) { showToast('Deleted 🗑️'); loadUniversities(); }
+    }
+
 </script>
