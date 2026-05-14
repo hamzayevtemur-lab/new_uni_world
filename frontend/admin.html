@@ -947,22 +947,26 @@
                         <div class="form-group"><label>Country Name *</label><input type="text" id="cName"
                                 placeholder="e.g. China"></div>
                         <div class="form-group">
-                            <label>Country Image / Flag</label>
-                            <div class="upload-area" id="cUploadArea"
-                                onclick="document.getElementById('cFileInput').click()">
-                                <div class="upload-placeholder" id="cUploadPlaceholder">
-                                    <div style="font-size:2rem">🖼️</div>
-                                    <p>Click to upload image</p>
-                                    <small>or paste URL below</small>
+                            <label>Country Image</label>
+                            <div class="image-upload-area" id="cUploadArea">
+                                <input type="file" id="cFileInput" accept="image/*" onchange="uploadCountryImage(this)">
+                                <div id="cUploadPlaceholder">
+                                    <div class="upload-icon">🖼️</div>
+                                    <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop</div>
+                                    <div class="upload-text" style="font-size:0.78rem;margin-top:0.3rem">JPG, PNG, WEBP
+                                        up to 10MB</div>
                                 </div>
-                                <img id="cImagePreview"
-                                    style="display:none;width:100%;height:140px;object-fit:cover;border-radius:8px;">
+                                <div id="cImagePreviewWrap" class="image-preview-wrap" style="display:none">
+                                    <img id="cImagePreview" class="image-preview" src="" alt="Preview">
+                                    <button type="button" class="remove-image-btn"
+                                        onclick="resetCountryUpload()">✕</button>
+                                </div>
                             </div>
-                            <input type="file" id="cFileInput" accept="image/*" style="display:none"
-                                onchange="uploadCountryImage(this)">
-                            <input type="url" id="cImage" placeholder="Or paste image URL here"
-                                style="margin-top:0.5rem" oninput="previewCountryUrl(this.value)">
-                            <div id="cUploadStatus" style="font-size:0.8rem;margin-top:0.3rem;color:#64748b;"></div>
+                            <div class="upload-progress" id="cUploadProgress">
+                                <div class="upload-progress-bar" id="cUploadProgressBar"></div>
+                            </div>
+                            <div class="upload-status" id="cUploadStatus"></div>
+                            <input type="hidden" id="cImage">
                         </div>
                         <div class="form-group"><label>University Count Text</label><input type="text" id="cUniCount"
                                 placeholder="e.g. 10+ Partner Universities"></div>
@@ -1008,21 +1012,25 @@
                                 placeholder="e.g. Visa Support"></div>
                         <div class="form-group">
                             <label>Service Image</label>
-                            <div class="upload-area" id="sUploadArea"
-                                onclick="document.getElementById('sFileInput').click()">
-                                <div class="upload-placeholder" id="sUploadPlaceholder">
-                                    <div style="font-size:2rem">🖼️</div>
-                                    <p>Click to upload image</p>
-                                    <small>or paste URL below</small>
+                            <div class="image-upload-area" id="sUploadArea">
+                                <input type="file" id="sFileInput" accept="image/*" onchange="uploadServiceImage(this)">
+                                <div id="sUploadPlaceholder">
+                                    <div class="upload-icon">🖼️</div>
+                                    <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop</div>
+                                    <div class="upload-text" style="font-size:0.78rem;margin-top:0.3rem">JPG, PNG, WEBP
+                                        up to 10MB</div>
                                 </div>
-                                <img id="sImagePreview"
-                                    style="display:none;width:100%;height:140px;object-fit:cover;border-radius:8px;">
+                                <div id="sImagePreviewWrap" class="image-preview-wrap" style="display:none">
+                                    <img id="sImagePreview" class="image-preview" src="" alt="Preview">
+                                    <button type="button" class="remove-image-btn"
+                                        onclick="resetServiceUpload()">✕</button>
+                                </div>
                             </div>
-                            <input type="file" id="sFileInput" accept="image/*" style="display:none"
-                                onchange="uploadServiceImage(this)">
-                            <input type="url" id="sImage" placeholder="Or paste image URL here"
-                                style="margin-top:0.5rem" oninput="previewServiceUrl(this.value)">
-                            <div id="sUploadStatus" style="font-size:0.8rem;margin-top:0.3rem;color:#64748b;"></div>
+                            <div class="upload-progress" id="sUploadProgress">
+                                <div class="upload-progress-bar" id="sUploadProgressBar"></div>
+                            </div>
+                            <div class="upload-status" id="sUploadStatus"></div>
+                            <input type="hidden" id="sImage">
                         </div>
                         <div class="form-group full-width"><label>Short Description *</label><textarea id="sDesc"
                                 placeholder="One sentence overview of the service..."
@@ -1464,6 +1472,40 @@
         if (fileInput.files[0]) handleImageFile(fileInput.files[0]);
     });
 
+    // Drag and drop for Country upload
+    const cUploadArea = document.getElementById('cUploadArea');
+    if (cUploadArea) {
+        cUploadArea.addEventListener('dragover', e => { e.preventDefault(); cUploadArea.classList.add('dragover'); });
+        cUploadArea.addEventListener('dragleave', () => cUploadArea.classList.remove('dragover'));
+        cUploadArea.addEventListener('drop', e => {
+            e.preventDefault();
+            cUploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const dt = new DataTransfer(); dt.items.add(file);
+                document.getElementById('cFileInput').files = dt.files;
+                uploadCountryImage(document.getElementById('cFileInput'));
+            }
+        });
+    }
+
+    // Drag and drop for Service upload
+    const sUploadArea = document.getElementById('sUploadArea');
+    if (sUploadArea) {
+        sUploadArea.addEventListener('dragover', e => { e.preventDefault(); sUploadArea.classList.add('dragover'); });
+        sUploadArea.addEventListener('dragleave', () => sUploadArea.classList.remove('dragover'));
+        sUploadArea.addEventListener('drop', e => {
+            e.preventDefault();
+            sUploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const dt = new DataTransfer(); dt.items.add(file);
+                document.getElementById('sFileInput').files = dt.files;
+                uploadServiceImage(document.getElementById('sFileInput'));
+            }
+        });
+    }
+
     function handleImageFile(file) {
         if (!file.type.startsWith('image/')) {
             showToast('Please select an image file', 'error'); return;
@@ -1584,73 +1626,95 @@
 
     async function uploadCountryImage(input) {
         const file = input.files[0]; if (!file) return;
-        document.getElementById('cUploadStatus').textContent = '⏳ Uploading...';
+        const status = document.getElementById('cUploadStatus');
+        const progress = document.getElementById('cUploadProgress');
+        const bar = document.getElementById('cUploadProgressBar');
+        status.textContent = ''; status.className = 'upload-status';
+        progress.style.display = 'block'; bar.style.width = '30%';
         try {
             const formData = new FormData();
             formData.append('file', file);
             formData.append('upload_preset', CLOUDINARY_PRESET);
             formData.append('folder', 'uni_world/countries');
+            bar.style.width = '60%';
             const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
             const data = await res.json();
-            const url = data.secure_url.replace('/upload/', '/upload/f_auto,q_auto,w_400,h_300,c_fill/');
+            bar.style.width = '100%';
+            const url = data.secure_url.replace('/upload/', '/upload/f_auto,q_auto,w_600,h_400,c_fill/');
             document.getElementById('cImage').value = url;
             document.getElementById('cImagePreview').src = url;
-            document.getElementById('cImagePreview').style.display = 'block';
+            document.getElementById('cImagePreviewWrap').style.display = 'block';
             document.getElementById('cUploadPlaceholder').style.display = 'none';
-            document.getElementById('cUploadStatus').textContent = '✅ Uploaded!';
-        } catch (e) { document.getElementById('cUploadStatus').textContent = '❌ Upload failed'; }
+            status.textContent = '✅ Image uploaded successfully!';
+            status.style.color = '#10b981';
+            setTimeout(() => { progress.style.display = 'none'; bar.style.width = '0%'; }, 800);
+        } catch (e) {
+            progress.style.display = 'none';
+            status.textContent = '❌ Upload failed. Try again.';
+            status.style.color = '#ef4444';
+        }
     }
 
     function previewCountryUrl(url) {
         if (!url) return;
         document.getElementById('cImagePreview').src = url;
-        document.getElementById('cImagePreview').style.display = 'block';
+        document.getElementById('cImagePreviewWrap').style.display = 'block';
         document.getElementById('cUploadPlaceholder').style.display = 'none';
     }
 
     function resetCountryUpload() {
         document.getElementById('cImage').value = '';
-        document.getElementById('cImagePreview').style.display = 'none';
+        document.getElementById('cImagePreviewWrap').style.display = 'none';
         document.getElementById('cImagePreview').src = '';
         document.getElementById('cUploadPlaceholder').style.display = 'block';
         document.getElementById('cUploadStatus').textContent = '';
+        document.getElementById('cUploadProgress').style.display = 'none';
         document.getElementById('cFileInput').value = '';
     }
-
-    // ── Service image upload ───────────────────────────────────────────────────
-
-    async function uploadServiceImage(input) {
-        const file = input.files[0]; if (!file) return;
-        document.getElementById('sUploadStatus').textContent = '⏳ Uploading...';
-        try {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', CLOUDINARY_PRESET);
-            formData.append('folder', 'uni_world/services');
-            const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
-            const data = await res.json();
-            const url = data.secure_url.replace('/upload/', '/upload/f_auto,q_auto,w_400,h_300,c_fill/');
-            document.getElementById('sImage').value = url;
-            document.getElementById('sImagePreview').src = url;
-            document.getElementById('sImagePreview').style.display = 'block';
-            document.getElementById('sUploadPlaceholder').style.display = 'none';
-            document.getElementById('sUploadStatus').textContent = '✅ Uploaded!';
-        } catch (e) { document.getElementById('sUploadStatus').textContent = '❌ Upload failed'; }
+    const file = input.files[0]; if (!file) return;
+    const status = document.getElementById('sUploadStatus');
+    const progress = document.getElementById('sUploadProgress');
+    const bar = document.getElementById('sUploadProgressBar');
+    status.textContent = ''; status.className = 'upload-status';
+    progress.style.display = 'block'; bar.style.width = '30%';
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_PRESET);
+        formData.append('folder', 'uni_world/services');
+        bar.style.width = '60%';
+        const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+        const data = await res.json();
+        bar.style.width = '100%';
+        const url = data.secure_url.replace('/upload/', '/upload/f_auto,q_auto,w_600,h_400,c_fill/');
+        document.getElementById('sImage').value = url;
+        document.getElementById('sImagePreview').src = url;
+        document.getElementById('sImagePreviewWrap').style.display = 'block';
+        document.getElementById('sUploadPlaceholder').style.display = 'none';
+        status.textContent = '✅ Image uploaded successfully!';
+        status.style.color = '#10b981';
+        setTimeout(() => { progress.style.display = 'none'; bar.style.width = '0%'; }, 800);
+    } catch (e) {
+        progress.style.display = 'none';
+        status.textContent = '❌ Upload failed. Try again.';
+        status.style.color = '#ef4444';
+    }
     }
 
     function previewServiceUrl(url) {
         if (!url) return;
         document.getElementById('sImagePreview').src = url;
-        document.getElementById('sImagePreview').style.display = 'block';
+        document.getElementById('sImagePreviewWrap').style.display = 'block';
         document.getElementById('sUploadPlaceholder').style.display = 'none';
     }
 
     function resetServiceUpload() {
         document.getElementById('sImage').value = '';
-        document.getElementById('sImagePreview').style.display = 'none';
+        document.getElementById('sImagePreviewWrap').style.display = 'none';
         document.getElementById('sImagePreview').src = '';
         document.getElementById('sUploadPlaceholder').style.display = 'block';
         document.getElementById('sUploadStatus').textContent = '';
+        document.getElementById('sUploadProgress').style.display = 'none';
         document.getElementById('sFileInput').value = '';
     }
 
@@ -1694,7 +1758,7 @@
         document.getElementById('cImage').value = c.image_url || '';
         if (c.image_url) {
             document.getElementById('cImagePreview').src = c.image_url;
-            document.getElementById('cImagePreview').style.display = 'block';
+            document.getElementById('cImagePreviewWrap').style.display = 'block';
             document.getElementById('cUploadPlaceholder').style.display = 'none';
         }
         document.getElementById('cSort').value = c.sort_order;
@@ -1782,7 +1846,7 @@
         document.getElementById('sImage').value = s.image_url || '';
         if (s.image_url) {
             document.getElementById('sImagePreview').src = s.image_url;
-            document.getElementById('sImagePreview').style.display = 'block';
+            document.getElementById('sImagePreviewWrap').style.display = 'block';
             document.getElementById('sUploadPlaceholder').style.display = 'none';
         }
         document.getElementById('sSort').value = s.sort_order;
