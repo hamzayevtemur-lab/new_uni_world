@@ -23,7 +23,7 @@ async function openCountryModal(modalKey) {
         const countryUnis = unis.filter(u => u.country && u.country.toLowerCase() === data.name.toLowerCase() && u.is_active);
 
         const uniList = countryUnis.length
-            ? countryUnis.map(u => `<li>${escH(u.name)}${u.ranking ? ' <span style="color:#f59e0b;font-size:0.8em">⭐ '+escH(u.ranking)+'</span>' : ''}</li>`).join('')
+            ? countryUnis.map(u => `<li>${escH(u.name)}${u.ranking ? ' <span style="color:#f59e0b;font-size:0.8em">⭐ ' + escH(u.ranking) + '</span>' : ''}</li>`).join('')
             : '<li>Contact us for partner universities</li>';
 
         const programList = data.programs
@@ -48,7 +48,7 @@ async function openCountryModal(modalKey) {
                     <a href="#contact">Contact Us Today</a>
                 </div>
             </div>`;
-    } catch(e) {
+    } catch (e) {
         content.innerHTML = '<p style="text-align:center;padding:2rem;color:#ef4444;">Failed to load. Please try again.</p>';
     }
 }
@@ -62,7 +62,7 @@ async function openServiceModal(modalKey) {
     try {
         if (!_serviceCache._all) {
             const items = await fetch('/api/services').then(r => r.json());
-            items.forEach(s => { _serviceCache[s.modal_key || s.title.toLowerCase().replace(/\s+/g,'-')] = s; });
+            items.forEach(s => { _serviceCache[s.modal_key || s.title.toLowerCase().replace(/\s+/g, '-')] = s; });
             _serviceCache._all = true;
         }
         const data = _serviceCache[modalKey] || _serviceCache[modalKey.toLowerCase()];
@@ -86,7 +86,7 @@ async function openServiceModal(modalKey) {
                     <a href="#contact">Schedule a Consultation</a>
                 </div>
             </div>`;
-    } catch(e) {
+    } catch (e) {
         content.innerHTML = '<p style="text-align:center;padding:2rem;color:#ef4444;">Failed to load. Please try again.</p>';
     }
 }
@@ -695,14 +695,19 @@ async function loadCountries() {
             grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:#94a3b8;">No countries added yet.</div>';
             return;
         }
-        grid.innerHTML = items.map(c => `
+        grid.innerHTML = items.map(c => {
+            const imgEl = c.image_url
+                ? `<div class="country-img-wrap"><img src="${escH(c.image_url)}" alt="${escH(c.name)}" class="country-card-img" onerror="this.parentElement.innerHTML='<div class=country-flag>🌍</div>'"></div>`
+                : `<div class="country-flag">🌍</div>`;
+            return `
             <div class="country-card">
-                <div class="country-flag">${escH(c.flag_emoji || '🌍')}</div>
+                ${imgEl}
                 <h3>${escH(c.name)}</h3>
                 <p>${escH(c.university_count || '')}</p>
                 <button class="country-btn" onclick="openCountryModal('${escH(c.modal_key || c.name.toLowerCase())}')">Learn More</button>
-            </div>`).join('');
-    } catch(e) { console.log('Countries load error', e); }
+            </div>`;
+        }).join('');
+    } catch (e) { console.log('Countries load error', e); }
 }
 
 // ── Services ──────────────────────────────────────────────────────────────────
@@ -716,14 +721,19 @@ async function loadServices() {
             grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:#94a3b8;">No services added yet.</div>';
             return;
         }
-        grid.innerHTML = items.map(s => `
+        grid.innerHTML = items.map(s => {
+            const imgEl = s.image_url
+                ? `<div class="service-img-wrap"><img src="${escH(s.image_url)}" alt="${escH(s.title)}" class="service-card-img" onerror="this.parentElement.innerHTML='<div class=service-icon>⭐</div>'"></div>`
+                : `<div class="service-icon">⭐</div>`;
+            return `
             <div class="service-card ${s.is_featured ? 'featured' : ''}">
-                <div class="service-icon">${escH(s.icon_emoji || '⭐')}</div>
+                ${imgEl}
                 <h3>${escH(s.title)}</h3>
                 <p>${escH(s.description || '')}</p>
                 <button class="service-link" onclick="openServiceModal('${escH(s.modal_key || '')}')">Read More →</button>
-            </div>`).join('');
-    } catch(e) { console.log('Services load error', e); }
+            </div>`;
+        }).join('');
+    } catch (e) { console.log('Services load error', e); }
 }
 
 // ── Universities ──────────────────────────────────────────────────────────────
@@ -753,7 +763,7 @@ async function loadUniversities() {
                 </div>`;
         }).join('');
         section.style.display = 'block';
-    } catch(e) { console.log('Universities load error', e); }
+    } catch (e) { console.log('Universities load error', e); }
 }
 
 // ── News & Ticker ──────────────────────────────────────────────────────────
@@ -811,7 +821,7 @@ function newsCardHtml(n) {
     const expires = n.expires_at
         ? `<span class="nc-expires">⏰ Until ${new Date(n.expires_at).toLocaleDateString()}</span>`
         : '';
-    const date = new Date(n.created_at).toLocaleDateString('en-US', { day:'numeric', month:'short', year:'numeric' });
+    const date = new Date(n.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
     const linkEl = n.link_url
         ? `<a class="nc-link" href="${escH(n.link_url)}" target="_blank">${escH(n.link_text || 'Learn More →')}</a>`
         : '';
@@ -837,9 +847,9 @@ function newsCardHtml(n) {
 function escH(str) {
     if (!str) return '';
     return String(str)
-        .replace(/&/g,'&amp;')
-        .replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;')
-        .replace(/"/g,'&quot;')
-        .replace(/'/g,'&#39;');
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }

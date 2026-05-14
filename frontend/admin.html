@@ -946,8 +946,24 @@
                     <div class="news-form-grid">
                         <div class="form-group"><label>Country Name *</label><input type="text" id="cName"
                                 placeholder="e.g. China"></div>
-                        <div class="form-group"><label>Flag Emoji *</label><input type="text" id="cFlag"
-                                placeholder="e.g. 🇨🇳" maxlength="4"></div>
+                        <div class="form-group">
+                            <label>Country Image / Flag</label>
+                            <div class="upload-area" id="cUploadArea"
+                                onclick="document.getElementById('cFileInput').click()">
+                                <div class="upload-placeholder" id="cUploadPlaceholder">
+                                    <div style="font-size:2rem">🖼️</div>
+                                    <p>Click to upload image</p>
+                                    <small>or paste URL below</small>
+                                </div>
+                                <img id="cImagePreview"
+                                    style="display:none;width:100%;height:140px;object-fit:cover;border-radius:8px;">
+                            </div>
+                            <input type="file" id="cFileInput" accept="image/*" style="display:none"
+                                onchange="uploadCountryImage(this)">
+                            <input type="url" id="cImage" placeholder="Or paste image URL here"
+                                style="margin-top:0.5rem" oninput="previewCountryUrl(this.value)">
+                            <div id="cUploadStatus" style="font-size:0.8rem;margin-top:0.3rem;color:#64748b;"></div>
+                        </div>
                         <div class="form-group"><label>University Count Text</label><input type="text" id="cUniCount"
                                 placeholder="e.g. 10+ Partner Universities"></div>
                         <div class="form-group"><label>Modal Key</label><input type="text" id="cModalKey"
@@ -964,8 +980,6 @@
                         <div class="form-group full-width"><label>Visa Requirements</label><textarea id="cVisa"
                                 placeholder="e.g. Student visa required, processing time: 2-3 months"
                                 style="min-height:70px"></textarea></div>
-                        <div class="form-group"><label>Image URL (optional)</label><input type="url" id="cImage"
-                                placeholder="https://..."></div>
                         <div class="form-group"><label>Sort Order</label><input type="number" id="cSort" value="0">
                         </div>
                         <div class="form-group">
@@ -992,8 +1006,24 @@
                     <div class="news-form-grid">
                         <div class="form-group"><label>Service Title *</label><input type="text" id="sTitle"
                                 placeholder="e.g. Visa Support"></div>
-                        <div class="form-group"><label>Icon Emoji</label><input type="text" id="sIcon"
-                                placeholder="e.g. 💼" maxlength="4"></div>
+                        <div class="form-group">
+                            <label>Service Image</label>
+                            <div class="upload-area" id="sUploadArea"
+                                onclick="document.getElementById('sFileInput').click()">
+                                <div class="upload-placeholder" id="sUploadPlaceholder">
+                                    <div style="font-size:2rem">🖼️</div>
+                                    <p>Click to upload image</p>
+                                    <small>or paste URL below</small>
+                                </div>
+                                <img id="sImagePreview"
+                                    style="display:none;width:100%;height:140px;object-fit:cover;border-radius:8px;">
+                            </div>
+                            <input type="file" id="sFileInput" accept="image/*" style="display:none"
+                                onchange="uploadServiceImage(this)">
+                            <input type="url" id="sImage" placeholder="Or paste image URL here"
+                                style="margin-top:0.5rem" oninput="previewServiceUrl(this.value)">
+                            <div id="sUploadStatus" style="font-size:0.8rem;margin-top:0.3rem;color:#64748b;"></div>
+                        </div>
                         <div class="form-group full-width"><label>Short Description *</label><textarea id="sDesc"
                                 placeholder="One sentence overview of the service..."
                                 style="min-height:70px"></textarea></div>
@@ -1550,11 +1580,85 @@
         } catch (e) { console.error(e); }
     }
 
+    // ── Country image upload ───────────────────────────────────────────────────
+
+    async function uploadCountryImage(input) {
+        const file = input.files[0]; if (!file) return;
+        document.getElementById('cUploadStatus').textContent = '⏳ Uploading...';
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_PRESET);
+            formData.append('folder', 'uni_world/countries');
+            const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+            const data = await res.json();
+            const url = data.secure_url.replace('/upload/', '/upload/f_auto,q_auto,w_400,h_300,c_fill/');
+            document.getElementById('cImage').value = url;
+            document.getElementById('cImagePreview').src = url;
+            document.getElementById('cImagePreview').style.display = 'block';
+            document.getElementById('cUploadPlaceholder').style.display = 'none';
+            document.getElementById('cUploadStatus').textContent = '✅ Uploaded!';
+        } catch (e) { document.getElementById('cUploadStatus').textContent = '❌ Upload failed'; }
+    }
+
+    function previewCountryUrl(url) {
+        if (!url) return;
+        document.getElementById('cImagePreview').src = url;
+        document.getElementById('cImagePreview').style.display = 'block';
+        document.getElementById('cUploadPlaceholder').style.display = 'none';
+    }
+
+    function resetCountryUpload() {
+        document.getElementById('cImage').value = '';
+        document.getElementById('cImagePreview').style.display = 'none';
+        document.getElementById('cImagePreview').src = '';
+        document.getElementById('cUploadPlaceholder').style.display = 'block';
+        document.getElementById('cUploadStatus').textContent = '';
+        document.getElementById('cFileInput').value = '';
+    }
+
+    // ── Service image upload ───────────────────────────────────────────────────
+
+    async function uploadServiceImage(input) {
+        const file = input.files[0]; if (!file) return;
+        document.getElementById('sUploadStatus').textContent = '⏳ Uploading...';
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_PRESET);
+            formData.append('folder', 'uni_world/services');
+            const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+            const data = await res.json();
+            const url = data.secure_url.replace('/upload/', '/upload/f_auto,q_auto,w_400,h_300,c_fill/');
+            document.getElementById('sImage').value = url;
+            document.getElementById('sImagePreview').src = url;
+            document.getElementById('sImagePreview').style.display = 'block';
+            document.getElementById('sUploadPlaceholder').style.display = 'none';
+            document.getElementById('sUploadStatus').textContent = '✅ Uploaded!';
+        } catch (e) { document.getElementById('sUploadStatus').textContent = '❌ Upload failed'; }
+    }
+
+    function previewServiceUrl(url) {
+        if (!url) return;
+        document.getElementById('sImagePreview').src = url;
+        document.getElementById('sImagePreview').style.display = 'block';
+        document.getElementById('sUploadPlaceholder').style.display = 'none';
+    }
+
+    function resetServiceUpload() {
+        document.getElementById('sImage').value = '';
+        document.getElementById('sImagePreview').style.display = 'none';
+        document.getElementById('sImagePreview').src = '';
+        document.getElementById('sUploadPlaceholder').style.display = 'block';
+        document.getElementById('sUploadStatus').textContent = '';
+        document.getElementById('sFileInput').value = '';
+    }
+
     async function saveCountry() {
         const name = document.getElementById('cName').value.trim();
         if (!name) { showToast('Country name is required', 'error'); return; }
         const payload = {
-            name, flag_emoji: document.getElementById('cFlag').value.trim(),
+            name, flag_emoji: '',
             university_count: document.getElementById('cUniCount').value.trim(),
             modal_key: document.getElementById('cModalKey').value.trim() || null,
             description: document.getElementById('cDesc').value.trim() || null,
@@ -1580,7 +1684,6 @@
         editingCountryId = id;
         document.getElementById('countryFormTitle').textContent = '✏️ Edit Country';
         document.getElementById('cName').value = c.name;
-        document.getElementById('cFlag').value = c.flag_emoji || '';
         document.getElementById('cUniCount').value = c.university_count || '';
         document.getElementById('cModalKey').value = c.modal_key || '';
         document.getElementById('cDesc').value = c.description || '';
@@ -1589,6 +1692,11 @@
         document.getElementById('cLanguage').value = c.language || '';
         document.getElementById('cVisa').value = c.visa_requirements || '';
         document.getElementById('cImage').value = c.image_url || '';
+        if (c.image_url) {
+            document.getElementById('cImagePreview').src = c.image_url;
+            document.getElementById('cImagePreview').style.display = 'block';
+            document.getElementById('cUploadPlaceholder').style.display = 'none';
+        }
         document.getElementById('cSort').value = c.sort_order;
         document.getElementById('cActive').checked = c.is_active;
         document.getElementById('cancelCountryBtn').style.display = 'inline-block';
@@ -1598,10 +1706,11 @@
     function cancelCountryEdit() {
         editingCountryId = null;
         document.getElementById('countryFormTitle').textContent = '🌍 Add Country';
-        ['cName', 'cFlag', 'cUniCount', 'cModalKey', 'cDesc', 'cPrograms', 'cCost', 'cLanguage', 'cVisa', 'cImage'].forEach(id => document.getElementById(id).value = '');
+        ['cName', 'cUniCount', 'cModalKey', 'cDesc', 'cPrograms', 'cCost', 'cLanguage', 'cVisa'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('cSort').value = 0;
         document.getElementById('cActive').checked = true;
         document.getElementById('cancelCountryBtn').style.display = 'none';
+        resetCountryUpload();
     }
 
     async function deleteCountry(id) {
@@ -1643,7 +1752,8 @@
         if (!title || !desc) { showToast('Title and description are required', 'error'); return; }
         const payload = {
             title, description: desc,
-            icon_emoji: document.getElementById('sIcon').value.trim(),
+            icon_emoji: null,
+            image_url: document.getElementById('sImage').value.trim() || null,
             details: document.getElementById('sDetails').value.trim() || null,
             benefits: document.getElementById('sBenefits').value.trim() || null,
             modal_key: document.getElementById('sModalKey').value.trim() || null,
@@ -1665,11 +1775,16 @@
         editingServiceId = id;
         document.getElementById('serviceFormTitle').textContent = '✏️ Edit Service';
         document.getElementById('sTitle').value = s.title;
-        document.getElementById('sIcon').value = s.icon_emoji || '';
         document.getElementById('sDesc').value = s.description || '';
         document.getElementById('sDetails').value = s.details || '';
         document.getElementById('sBenefits').value = s.benefits || '';
         document.getElementById('sModalKey').value = s.modal_key || '';
+        document.getElementById('sImage').value = s.image_url || '';
+        if (s.image_url) {
+            document.getElementById('sImagePreview').src = s.image_url;
+            document.getElementById('sImagePreview').style.display = 'block';
+            document.getElementById('sUploadPlaceholder').style.display = 'none';
+        }
         document.getElementById('sSort').value = s.sort_order;
         document.getElementById('sActive').checked = s.is_active;
         document.getElementById('sFeatured').checked = s.is_featured;
@@ -1680,11 +1795,12 @@
     function cancelServiceEdit() {
         editingServiceId = null;
         document.getElementById('serviceFormTitle').textContent = '⚙️ Add Service';
-        ['sTitle', 'sIcon', 'sDesc', 'sDetails', 'sBenefits', 'sModalKey'].forEach(id => document.getElementById(id).value = '');
+        ['sTitle', 'sDesc', 'sDetails', 'sBenefits', 'sModalKey'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('sSort').value = 0;
         document.getElementById('sActive').checked = true;
         document.getElementById('sFeatured').checked = false;
         document.getElementById('cancelServiceBtn').style.display = 'none';
+        resetServiceUpload();
     }
 
     async function deleteService(id) {

@@ -843,6 +843,48 @@
         .uni-card-link:hover {
             text-decoration: underline;
         }
+
+        /* Country card image */
+        .country-img-wrap {
+            width: 100%;
+            height: 140px;
+            overflow: hidden;
+            border-radius: 12px 12px 0 0;
+            margin-bottom: 0.8rem;
+        }
+
+        .country-card-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s;
+        }
+
+        .country-card:hover .country-card-img {
+            transform: scale(1.05);
+        }
+
+        /* Service card image */
+        .service-img-wrap {
+            width: 100%;
+            height: 160px;
+            overflow: hidden;
+            border-radius: 12px 12px 0 0;
+            margin-bottom: 0;
+        }
+
+        .service-card-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s;
+        }
+
+        .service-card:hover .service-card-img {
+            transform: scale(1.05);
+        }
     </style>
 
     <script src="/static/homepage.js"></script>

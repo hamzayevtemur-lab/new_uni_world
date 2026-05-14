@@ -372,9 +372,10 @@ async def delete_country(cid: int, _=Depends(verify_token)):
 
 class ServiceCreate(BaseModel):
     title: str
-    icon_emoji: str
+    icon_emoji: Optional[str] = None
+    image_url: Optional[str] = None
     description: str
-    details: Optional[str] = None    # newline-separated bullet points
+    details: Optional[str] = None
     benefits: Optional[str] = None
     is_featured: bool = False
     modal_key: Optional[str] = None
@@ -409,10 +410,10 @@ async def create_service(s: ServiceCreate, _=Depends(verify_token)):
     try:
         conn = get_conn(); cur = conn.cursor()
         cur.execute("""
-            INSERT INTO services (title, icon_emoji, description, details, benefits,
+            INSERT INTO services (title, icon_emoji, image_url, description, details, benefits,
                                   is_featured, modal_key, sort_order, is_active)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id
-        """, (s.title, s.icon_emoji, s.description, s.details, s.benefits,
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id
+        """, (s.title, s.icon_emoji, s.image_url, s.description, s.details, s.benefits,
               s.is_featured, s.modal_key, s.sort_order, s.is_active))
         new_id = cur.fetchone()["id"]
         conn.commit(); cur.close(); conn.close()
@@ -425,11 +426,11 @@ async def update_service(sid: int, s: ServiceUpdate, _=Depends(verify_token)):
     try:
         conn = get_conn(); cur = conn.cursor()
         cur.execute("""
-            UPDATE services SET title=%s, icon_emoji=%s, description=%s,
+            UPDATE services SET title=%s, icon_emoji=%s, image_url=%s, description=%s,
                 details=%s, benefits=%s, is_featured=%s, modal_key=%s,
                 sort_order=%s, is_active=%s
             WHERE id=%s
-        """, (s.title, s.icon_emoji, s.description, s.details, s.benefits,
+        """, (s.title, s.icon_emoji, s.image_url, s.description, s.details, s.benefits,
               s.is_featured, s.modal_key, s.sort_order, s.is_active, sid))
         conn.commit(); cur.close(); conn.close()
         return {"message": "Updated"}
@@ -591,6 +592,7 @@ def setup_db():
                 id            SERIAL PRIMARY KEY,
                 title         VARCHAR(200) NOT NULL,
                 icon_emoji    VARCHAR(10),
+                image_url     VARCHAR(500),
                 description   TEXT,
                 details       TEXT,   -- newline-separated bullet points
                 benefits      TEXT,
@@ -605,6 +607,7 @@ def setup_db():
         for col, typedef in [
             ("details", "TEXT"),
             ("benefits", "TEXT"),
+            ("image_url", "VARCHAR(500)"),
         ]:
             cur.execute(f"""
                 DO $$ BEGIN
