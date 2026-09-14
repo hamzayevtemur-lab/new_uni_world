@@ -5,18 +5,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Uni World</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #60a5fa;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-muted: #64748b;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             min-height: 100vh;
-            padding: 2rem;
+            color: var(--text);
+            padding: 1.5rem;
         }
 
         /* ── Login Screen ── */
@@ -24,16 +43,16 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: calc(100vh - 4rem);
+            min-height: 90vh;
         }
 
         .login-card {
             background: white;
             padding: 3rem;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: 24px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
         }
 
         .login-logo {
@@ -42,20 +61,15 @@
         }
 
         .login-logo h1 {
-            color: #1e3a5f;
-            font-size: 2rem;
+            color: #0f172a;
+            font-size: 1.9rem;
+            font-weight: 800;
         }
 
         .login-logo p {
-            color: #64748b;
+            color: var(--text-muted);
             font-size: 0.9rem;
             margin-top: 0.3rem;
-        }
-
-        .login-card h2 {
-            color: #1e3a5f;
-            margin-bottom: 1.5rem;
-            font-size: 1.4rem;
         }
 
         .form-field {
@@ -64,42 +78,50 @@
 
         .form-field label {
             display: block;
-            color: #374151;
+            color: #334155;
             font-weight: 600;
-            margin-bottom: 0.4rem;
-            font-size: 0.9rem;
+            margin-bottom: 0.45rem;
+            font-size: 0.88rem;
         }
 
-        .form-field input {
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
             width: 100%;
-            padding: 0.9rem 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 1rem;
+            padding: 0.85rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.95rem;
             transition: border-color 0.2s;
+            background: white;
+            color: var(--text);
         }
 
-        .form-field input:focus {
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
             outline: none;
-            border-color: #3d6fa6;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
         }
 
         .login-btn {
             width: 100%;
             padding: 1rem;
-            background: linear-gradient(135deg, #3d6fa6, #2c5282);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
         }
 
         .login-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(61, 111, 166, 0.4);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.4);
         }
 
         .login-error {
@@ -107,49 +129,41 @@
             border: 1px solid #fecaca;
             color: #dc2626;
             padding: 0.8rem 1rem;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 1rem;
             font-size: 0.9rem;
             display: none;
         }
 
-        .login-hint {
-            margin-top: 1rem;
-            padding: 0.8rem 1rem;
-            background: #f0f9ff;
-            border-radius: 8px;
-            color: #0369a1;
-            font-size: 0.82rem;
-        }
-
-        /* ── Dashboard ── */
+        /* ── Dashboard Container ── */
         #adminDashboard {
             display: none;
         }
 
         .admin-container {
-            max-width: 1400px;
+            max-width: 1450px;
             margin: 0 auto;
         }
 
         .admin-header {
             background: white;
             padding: 1.5rem 2rem;
-            border-radius: 15px;
-            margin-bottom: 2rem;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .admin-header h1 {
-            color: #1e3a5f;
+            color: #0f172a;
             font-size: 1.8rem;
+            font-weight: 800;
         }
 
         .admin-header p {
-            color: #64748b;
+            color: var(--text-muted);
             font-size: 0.9rem;
         }
 
@@ -160,53 +174,101 @@
         }
 
         .session-info {
-            color: #64748b;
-            font-size: 0.85rem;
-        }
-
-        .logout-btn {
-            background: #ef4444;
-            color: white;
-            padding: 0.7rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 0.88rem;
             font-weight: 600;
         }
 
-        .logout-btn:hover {
-            background: #dc2626;
+        .logout-btn {
+            background: #f1f5f9;
+            color: #ef4444;
+            padding: 0.65rem 1.3rem;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.2s;
         }
 
-        /* ── Tabs ── */
+        .logout-btn:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* ── Stats Grid ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.4rem;
+            border-radius: 18px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .stat-card h3 {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+
+        .stat-card .number {
+            color: #0f172a;
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0.2rem 0;
+        }
+
+        .stat-card .icon {
+            font-size: 2.5rem;
+            position: absolute;
+            right: 1.2rem;
+            top: 1.2rem;
+            opacity: 0.15;
+        }
+
+        /* ── Navigation Tabs ── */
         .tabs {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
+            gap: 0.6rem;
+            margin-bottom: 1.5rem;
             flex-wrap: wrap;
         }
 
         .tab-btn {
-            background: white;
-            padding: 0.9rem 1.8rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 0.85rem 1.4rem;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            font-weight: 600;
-            color: #64748b;
-            transition: all 0.3s;
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: #475569;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        .tab-btn.active {
-            background: #3d6fa6;
-            color: white;
+        .tab-btn:hover {
+            background: white;
+            color: var(--primary);
+            transform: translateY(-1px);
         }
 
-        .tab-btn:hover {
-            transform: translateY(-2px);
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
         }
 
         .tab-content {
@@ -217,61 +279,23 @@
             display: block;
         }
 
-        /* ── Stat cards ── */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card h3 {
-            color: #64748b;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .stat-card .number {
-            color: #1e3a5f;
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin: 0.3rem 0;
-        }
-
-        .stat-card .icon {
-            font-size: 3rem;
-            position: absolute;
-            right: 1rem;
-            top: 1rem;
-            opacity: 0.15;
-        }
-
-        /* ── Sections ── */
+        /* ── Panels ── */
         .panel {
             background: white;
             padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             margin-bottom: 1.5rem;
         }
 
         .panel h2 {
-            color: #1e3a5f;
+            color: #0f172a;
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
-            gap: 0.7rem;
-            font-size: 1.3rem;
+            justify-content: space-between;
+            font-size: 1.35rem;
+            font-weight: 800;
         }
 
         .badge {
@@ -280,363 +304,292 @@
             padding: 0.25rem 0.7rem;
             border-radius: 20px;
             font-size: 0.8rem;
-            font-weight: 700;
+            font-weight: 800;
         }
 
         .badge-green {
             background: #10b981;
         }
 
-        /* ── Comment items ── */
-        .comment-item {
-            border: 2px solid #e2e8f0;
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            transition: all 0.3s;
+        .badge-blue {
+            background: #2563eb;
         }
 
-        .comment-item:hover {
-            border-color: #3d6fa6;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+        /* ── Table Styling ── */
+        .table-responsive {
+            overflow-x: auto;
         }
 
-        .comment-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
+        .crm-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.92rem;
         }
 
-        .comment-author-info {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .author-circle {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #3d6fa6, #2c5282);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.1rem;
-            flex-shrink: 0;
-        }
-
-        .author-details h4 {
-            color: #1e3a5f;
-            margin-bottom: 0.2rem;
-        }
-
-        .author-details p {
-            color: #64748b;
-            font-size: 0.85rem;
-        }
-
-        .comment-rating {
-            font-size: 1.2rem;
-        }
-
-        .comment-text {
-            color: #475569;
-            line-height: 1.8;
-            margin-bottom: 1rem;
-            font-style: italic;
-            padding: 1rem;
+        .crm-table th {
             background: #f8fafc;
-            border-radius: 8px;
+            color: #475569;
+            font-weight: 700;
+            padding: 1rem 1.2rem;
+            border-bottom: 2px solid var(--border);
+            text-transform: uppercase;
+            font-size: 0.78rem;
+            letter-spacing: 0.05em;
         }
 
-        .comment-actions {
+        .crm-table td {
+            padding: 1.1rem 1.2rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .crm-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .status-badge-table {
+            padding: 0.35rem 0.8rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .action-btn-group {
             display: flex;
-            gap: 0.8rem;
+            gap: 0.5rem;
             flex-wrap: wrap;
         }
 
-        .approve-btn,
-        .delete-btn,
-        .edit-btn {
-            padding: 0.55rem 1.3rem;
-            border: none;
+        .btn-action {
+            padding: 0.45rem 0.9rem;
             border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            border: none;
             cursor: pointer;
-            font-weight: 600;
             transition: all 0.2s;
-            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
         }
 
-        .approve-btn {
-            background: #10b981;
-            color: white;
+        .btn-view {
+            background: #dbeafe;
+            color: #1e40af;
         }
 
-        .approve-btn:hover {
-            background: #059669;
+        .btn-view:hover {
+            background: #bfdbfe;
         }
 
-        .delete-btn {
-            background: #ef4444;
-            color: white;
+        .btn-autofill {
+            background: #fef3c7;
+            color: #92400e;
         }
 
-        .delete-btn:hover {
-            background: #dc2626;
+        .btn-autofill:hover {
+            background: #fde68a;
         }
 
-        .edit-btn {
-            background: #f59e0b;
-            color: white;
+        /* ── Modal ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 1.5rem;
         }
 
-        .edit-btn:hover {
-            background: #d97706;
+        .modal-overlay.active {
+            display: flex;
         }
 
-        .approved-tag {
-            background: #d1fae5;
-            color: #065f46;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
+        .modal-box {
+            background: white;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2.2rem;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.3s ease;
         }
 
-        /* ── News form ── */
-        .news-form-grid {
+        .modal-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header-row h3 {
+            font-size: 1.4rem;
+            color: #0f172a;
+            font-weight: 800;
+        }
+
+        .close-modal-btn {
+            background: #f1f5f9;
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .close-modal-btn:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        /* ── Dossier Layout ── */
+        .dossier-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .dossier-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.2rem;
+        }
+
+        .dossier-card h4 {
+            font-size: 0.95rem;
+            color: #334155;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.4rem;
+        }
+
+        .dossier-item {
+            font-size: 0.88rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .dossier-item span.label {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .dossier-item span.val {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        /* ── Document Item in Modal ── */
+        .doc-review-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+        }
+
+        .doc-review-left {
+            display: flex;
+            align-items: center;
             gap: 1rem;
         }
 
-        .news-form-grid .full-width {
-            grid-column: 1 / -1;
+        .doc-review-icon {
+            font-size: 2rem;
         }
 
-        .form-group {
-            margin-bottom: 0;
+        /* ── Autofill Helper Section ── */
+        .autofill-box {
+            background: #f0fdf4;
+            border: 2px solid #86efac;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
-        .form-group label {
-            display: block;
-            color: #374151;
-            font-weight: 600;
-            margin-bottom: 0.4rem;
-            font-size: 0.85rem;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            transition: border-color 0.2s;
-            font-family: inherit;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #3d6fa6;
-        }
-
-        .form-group textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .toggle-row {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            padding: 1rem;
-            background: #f8fafc;
-            border-radius: 8px;
-            margin-bottom: 0;
-        }
-
-        .toggle-label {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-        }
-
-        .toggle-label input[type=checkbox] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .submit-btn {
-            background: linear-gradient(135deg, #3d6fa6, #2c5282);
+        .bookmarklet-btn {
+            display: inline-block;
+            background: #16a34a;
             color: white;
-            padding: 0.85rem 2rem;
+            padding: 0.8rem 1.6rem;
+            border-radius: 12px;
+            font-weight: 800;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
+            cursor: grab;
+            transition: all 0.2s;
+        }
+
+        .bookmarklet-btn:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+        }
+
+        .copy-field-btn {
+            background: #e2e8f0;
             border: none;
-            border-radius: 10px;
-            font-size: 1rem;
+            padding: 0.35rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.78rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(61, 111, 166, 0.4);
-        }
-
-        .cancel-btn {
-            background: #94a3b8;
+        .copy-field-btn:hover {
+            background: var(--primary);
             color: white;
-            padding: 0.85rem 1.5rem;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
         }
 
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        /* ── Image Upload ── */
-        .image-upload-area {
-            border: 2px dashed #cbd5e1;
-            border-radius: 12px;
-            padding: 1.5rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: #f8fafc;
-            position: relative;
-        }
-
-        .image-upload-area:hover,
-        .image-upload-area.dragover {
-            border-color: #3d6fa6;
-            background: #eff6ff;
-        }
-
-        .image-upload-area input[type=file] {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            cursor: pointer;
-            width: 100%;
-            height: 100%;
-        }
-
-        .upload-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .upload-text {
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-
-        .upload-text strong {
-            color: #3d6fa6;
-        }
-
-        .image-preview-wrap {
-            position: relative;
-            margin-top: 0.8rem;
-        }
-
-        .image-preview {
-            width: 100%;
-            max-height: 200px;
-            object-fit: cover;
-            border-radius: 8px;
-            display: block;
-        }
-
-        .remove-image-btn {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #ef4444;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 26px;
-            height: 26px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-
-        .upload-progress {
-            margin-top: 0.8rem;
-            background: #e2e8f0;
-            border-radius: 20px;
-            height: 6px;
-            overflow: hidden;
-            display: none;
-        }
-
-        .upload-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #3d6fa6, #10b981);
-            border-radius: 20px;
-            transition: width 0.3s;
-            width: 0%;
-        }
-
-        .upload-status {
-            font-size: 0.82rem;
-            color: #64748b;
-            margin-top: 0.4rem;
-        }
-
-        /* ── News cards in admin ── */
+        /* ── News / Country / Service Grid ── */
         .news-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
+            gap: 1.2rem;
         }
 
         .news-card {
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
             overflow: hidden;
-            transition: all 0.3s;
-        }
-
-        .news-card:hover {
-            border-color: #3d6fa6;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .news-card.inactive {
-            opacity: 0.55;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .news-card-img {
             width: 100%;
             height: 160px;
             object-fit: cover;
-            background: #e2e8f0;
         }
 
         .news-card-img-placeholder {
-            width: 100%;
-            height: 160px;
-            background: linear-gradient(135deg, #667eea22, #764ba222);
+            height: 120px;
+            background: #f1f5f9;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -647,66 +600,145 @@
             padding: 1.2rem;
         }
 
-        .news-badge {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            background: linear-gradient(135deg, #3d6fa6, #2c5282);
-            color: white;
-            border-radius: 20px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            margin-bottom: 0.6rem;
-        }
-
         .news-card-title {
-            color: #1e3a5f;
+            font-size: 1.05rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
+            color: #0f172a;
+            margin-bottom: 0.4rem;
         }
 
         .news-card-body-text {
             color: #64748b;
-            font-size: 0.85rem;
-            line-height: 1.6;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            font-size: 0.88rem;
+            line-height: 1.5;
+            margin-bottom: 0.8rem;
         }
 
         .news-card-meta {
-            margin-top: 0.8rem;
             font-size: 0.78rem;
             color: #94a3b8;
-        }
-
-        .news-card-meta span {
-            margin-right: 0.8rem;
+            display: flex;
+            justify-content: space-between;
         }
 
         .news-card-actions {
-            padding: 1rem 1.2rem;
-            border-top: 1px solid #f1f5f9;
+            padding: 0.8rem 1.2rem;
+            background: #f8fafc;
+            border-top: 1px solid var(--border);
             display: flex;
             gap: 0.6rem;
         }
 
-        /* ── Empty state ── */
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: #94a3b8;
+        .edit-btn,
+        .delete-btn,
+        .approve-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .empty-state-icon {
-            font-size: 3rem;
+        .edit-btn {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .edit-btn:hover {
+            background: #fde68a;
+        }
+
+        .delete-btn {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .delete-btn:hover {
+            background: #fecaca;
+        }
+
+        .approve-btn {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .approve-btn:hover {
+            background: #a7f3d0;
+        }
+
+        /* ── Comments ── */
+        .comment-item {
+            border: 1px solid var(--border);
+            padding: 1.2rem;
+            border-radius: 14px;
             margin-bottom: 1rem;
+            background: white;
         }
 
-        .empty-state h3 {
-            color: #64748b;
-            margin-bottom: 0.5rem;
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+        }
+
+        .comment-author-info {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .author-circle {
+            width: 42px;
+            height: 42px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+        }
+
+        .news-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-actions {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .submit-btn {
+            padding: 0.85rem 1.6rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .cancel-btn {
+            padding: 0.85rem 1.6rem;
+            background: #e2e8f0;
+            color: #475569;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
         }
 
         /* ── Toast ── */
@@ -714,12 +746,12 @@
             position: fixed;
             bottom: 2rem;
             right: 2rem;
-            background: #1e3a5f;
+            background: #0f172a;
             color: white;
             padding: 1rem 1.5rem;
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            z-index: 9999;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 99999;
             transform: translateY(100px);
             opacity: 0;
             transition: all 0.3s;
@@ -739,17 +771,15 @@
             background: #dc2626;
         }
 
-        @media (max-width: 700px) {
-            body {
-                padding: 1rem;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.96);
             }
 
-            .news-form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .tabs {
-                flex-direction: column;
+            to {
+                opacity: 1;
+                transform: scale(1);
             }
         }
     </style>
@@ -757,28 +787,24 @@
 
 <body>
 
-    <!-- ── LOGIN ── -->
+    <!-- ── LOGIN SCREEN ── -->
     <div id="loginScreen">
         <div class="login-card">
             <div class="login-logo">
                 <h1>🌍 UNI WORLD</h1>
-                <p>Admin Panel — Secure Access</p>
+                <p>Official Agency &amp; CRM Management</p>
             </div>
-            <h2>Sign In</h2>
             <div id="loginError" class="login-error">Invalid username or password.</div>
             <div class="form-field">
-                <label for="username">Username</label>
+                <label>Admin Username</label>
                 <input type="text" id="username" placeholder="Enter username" autocomplete="username">
             </div>
             <div class="form-field">
-                <label for="password">Password</label>
+                <label>Password</label>
                 <input type="password" id="password" placeholder="Enter password" autocomplete="current-password"
                     onkeydown="if(event.key==='Enter') login()">
             </div>
-            <button class="login-btn" onclick="login()">Sign In →</button>
-            <div class="login-hint">
-                🔒 Credentials are verified server-side. Session expires after 8 hours.
-            </div>
+            <button class="login-btn" onclick="login()">Access Agency CRM →</button>
         </div>
     </div>
 
@@ -788,49 +814,55 @@
 
             <div class="admin-header">
                 <div>
-                    <h1>🌍 Uni World Admin</h1>
-                    <p>Manage comments, news, and announcements</p>
+                    <h1>🌍 Uni World CRM &amp; Admin Panel</h1>
+                    <p>Student admissions, document verification &amp; university application tools</p>
                 </div>
                 <div class="header-right">
-                    <span class="session-info" id="sessionInfo"></span>
+                    <span class="session-info" id="sessionInfo">🔒 Admin Session Active</span>
                     <button class="logout-btn" onclick="logout()">Sign Out</button>
                 </div>
             </div>
 
-            <!-- Stats -->
+            <!-- Global Stats -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <h3>Total Comments</h3>
-                    <div class="number" id="totalComments">—</div>
-                    <div class="icon">💬</div>
+                    <h3>Total Registered Students</h3>
+                    <div class="number" id="statStudents">—</div>
+                    <div class="icon">👥</div>
                 </div>
                 <div class="stat-card">
-                    <h3>Pending Review</h3>
-                    <div class="number" id="pendingCount">—</div>
-                    <div class="icon">⏳</div>
+                    <h3>Document Review Needed</h3>
+                    <div class="number" id="statDocsPending">—</div>
+                    <div class="icon">📁</div>
                 </div>
                 <div class="stat-card">
-                    <h3>Avg Rating</h3>
-                    <div class="number" id="avgRating">—</div>
-                    <div class="icon">⭐</div>
+                    <h3>Active Applications</h3>
+                    <div class="number" id="statApplications">—</div>
+                    <div class="icon">🏛️</div>
                 </div>
                 <div class="stat-card">
-                    <h3>Active News</h3>
-                    <div class="number" id="activeNewsCount">—</div>
-                    <div class="icon">📢</div>
+                    <h3>Web Contact Leads</h3>
+                    <div class="number" id="statLeads">—</div>
+                    <div class="icon">📞</div>
                 </div>
             </div>
 
-            <!-- Tabs -->
+            <!-- Navigation Tabs -->
             <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('pending', this)">
-                    ⏳ Pending Comments <span class="badge" id="pendingBadge">0</span>
+                <button class="tab-btn active" onclick="switchTab('students', this)">
+                    👥 Student CRM Pipeline
                 </button>
-                <button class="tab-btn" onclick="switchTab('approved', this)">
-                    ✅ Approved Comments
+                <button class="tab-btn" onclick="switchTab('autofill', this)">
+                    ⚡ University Portal Auto-fill
+                </button>
+                <button class="tab-btn" onclick="switchTab('leads', this)">
+                    📞 Inquiries &amp; Leads <span class="badge badge-blue" id="leadsBadge">0</span>
+                </button>
+                <button class="tab-btn" onclick="switchTab('pending', this)">
+                    ⏳ Reviews <span class="badge" id="pendingBadge">0</span>
                 </button>
                 <button class="tab-btn" onclick="switchTab('news', this)">
-                    📢 News &amp; Announcements
+                    📢 Announcements
                 </button>
                 <button class="tab-btn" onclick="switchTab('countries', this)">
                     🌍 Countries
@@ -839,89 +871,185 @@
                     ⚙️ Services
                 </button>
                 <button class="tab-btn" onclick="switchTab('universities', this)">
-                    🎓 Universities
+                    🎓 Partner Universities
                 </button>
             </div>
 
-            <!-- Pending Comments -->
-            <div id="pendingTab" class="tab-content active">
+            <!-- ── TAB 1: STUDENT CRM ── -->
+            <div id="studentsTab" class="tab-content active">
                 <div class="panel">
-                    <h2>Pending Comments</h2>
-                    <div id="pendingComments"></div>
+                    <h2>
+                        <span>👥 Student Admission Pipeline</span>
+                        <div style="display:flex;gap:0.8rem;">
+                            <input type="text" id="crmSearch" placeholder="🔍 Search student, passport, phone..."
+                                oninput="filterStudents()"
+                                style="padding:0.6rem 1rem;border:2px solid var(--border);border-radius:10px;font-size:0.88rem;width:280px;">
+                            <select id="crmStatusFilter" onchange="filterStudents()"
+                                style="padding:0.6rem 1rem;border:2px solid var(--border);border-radius:10px;font-size:0.88rem;">
+                                <option value="">All Stages</option>
+                                <option value="Registered">Registered</option>
+                                <option value="Docs Submitted">Docs Submitted</option>
+                                <option value="Ready for Application">Ready for Application</option>
+                                <option value="Applied">Applied</option>
+                                <option value="Offer Received">Offer Received</option>
+                                <option value="Visa Stage">Visa Stage</option>
+                                <option value="Enrolled">Enrolled</option>
+                            </select>
+                        </div>
+                    </h2>
+
+                    <div class="table-responsive">
+                        <table class="crm-table">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Passport / Contact</th>
+                                    <th>Target Destination</th>
+                                    <th>Document Status</th>
+                                    <th>Admission Stage</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">
+                                        Loading students...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- Approved Comments -->
-            <div id="approvedTab" class="tab-content">
+            <!-- ── TAB 2: UNIVERSITY PORTAL AUTO-FILL ── -->
+            <div id="autofillTab" class="tab-content">
                 <div class="panel">
-                    <h2>Approved Comments</h2>
+                    <h2>⚡ 1-Click University Application Portal Auto-Filler</h2>
+                    <p style="color:var(--text-muted);font-size:0.95rem;margin-bottom:1.5rem;">
+                        Select a student to automatically generate pre-formatted application data, direct document links,
+                        and an instant browser auto-filler bookmarklet designed for university portals (e.g., Wuxi
+                        University, China Admissions, Polish Universities).
+                    </p>
+
+                    <div class="news-form-grid" style="margin-bottom:1.5rem;">
+                        <div class="form-group">
+                            <label>Select Student *</label>
+                            <select id="autofillStudentSelect" onchange="loadAutofillForSelectedStudent()">
+                                <option value="">-- Choose a student --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Target University *</label>
+                            <select id="autofillTargetUni">
+                                <option value="Wuxi University">🇨🇳 Wuxi University (China)</option>
+                                <option value="Beijing Institute of Technology">🇨🇳 Beijing Institute of Technology</option>
+                                <option value="Warsaw University of Technology">🇵🇱 Warsaw University of Technology (Poland)</option>
+                                <option value="Vistula University">🇵🇱 Vistula University (Poland)</option>
+                                <option value="IU International University">🇩🇪 IU International University (Germany)</option>
+                                <option value="General University Portal">🌍 General University Admission Portal</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="autofillResults" style="display:none;">
+                        <div class="autofill-box">
+                            <h3 style="color:#166534;margin-bottom:0.6rem;">⚡ Quick Browser Autofill Bookmarklet</h3>
+                            <p style="color:#15803d;font-size:0.9rem;margin-bottom:1rem;">
+                                <strong>How to use:</strong> Open the university's online application portal (e.g. Wuxi
+                                University portal) in a new tab, then click the button below or drag it to your browser bookmarks
+                                bar. It will instantly auto-fill the student's name, passport, DOB, email, and grades into the
+                                form!
+                            </p>
+                            <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
+                                <a href="javascript:void(0)" id="bookmarkletAnchor" class="bookmarklet-btn">⚡ Run Auto-Fill on
+                                    Current Page</a>
+                                <button class="btn-action btn-view" onclick="copyAutofillScript()">📋 Copy Auto-Fill Script</button>
+                            </div>
+                        </div>
+
+                        <!-- Data fields with 1-click copy -->
+                        <h3 style="margin-bottom:1rem;color:#0f172a;">📋 Fast-Copy Application Dossier Fields</h3>
+                        <div class="dossier-grid" id="autofillFieldsGrid">
+                            <!-- Populated dynamically -->
+                        </div>
+
+                        <h3 style="margin:1.5rem 0 1rem;color:#0f172a;">📁 Verified Student Document Links (Ready to Attach)</h3>
+                        <div id="autofillDocsList" style="display:flex;gap:0.8rem;flex-wrap:wrap;">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── TAB 3: LEADS & INQUIRIES ── -->
+            <div id="leadsTab" class="tab-content">
+                <div class="panel">
+                    <h2>📞 Web Inquiries &amp; Consultations</h2>
+                    <div class="table-responsive">
+                        <table class="crm-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Phone / Contact</th>
+                                    <th>Email</th>
+                                    <th>Target Destination</th>
+                                    <th>Message</th>
+                                    <th>Received At</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leadsTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">
+                                        Loading inquiries...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── TAB 4: REVIEWS & COMMENTS ── -->
+            <div id="pendingTab" class="tab-content">
+                <div class="panel">
+                    <h2>Pending Student Testimonials</h2>
+                    <div id="pendingComments"></div>
+                </div>
+                <div class="panel">
+                    <h2>Approved Testimonials</h2>
                     <div id="approvedComments"></div>
                 </div>
             </div>
 
-            <!-- News Tab -->
+            <!-- ── TAB 5: ANNOUNCEMENTS ── -->
             <div id="newsTab" class="tab-content">
-
-                <!-- Create / Edit Form -->
                 <div class="panel">
                     <h2 id="newsFormTitle">➕ Create News / Announcement</h2>
                     <div class="news-form-grid">
                         <div class="form-group full-width">
                             <label>Title *</label>
-                            <input type="text" id="newsTitle"
-                                placeholder="e.g. 100% Scholarship at Beijing University!">
+                            <input type="text" id="newsTitle" placeholder="e.g. 100% Scholarship at Wuxi University!">
                         </div>
                         <div class="form-group full-width">
                             <label>Body / Description *</label>
-                            <textarea id="newsBody" placeholder="Full details of the announcement..."></textarea>
+                            <textarea id="newsBody" placeholder="Full details of announcement..."></textarea>
                         </div>
                         <div class="form-group">
                             <label>Badge Label</label>
-                            <input type="text" id="newsBadge" placeholder="e.g. 🎓 Scholarship, 🔥 Hot Deal, ⏰ Limited">
+                            <input type="text" id="newsBadge" placeholder="e.g. 🎓 Scholarship, 🔥 Hot Deal">
+                        </div>
+                        <div class="form-group">
+                            <label>Image URL</label>
+                            <input type="url" id="newsImage" placeholder="https://...">
                         </div>
                         <div class="form-group">
                             <label>Expires At (optional)</label>
                             <input type="datetime-local" id="newsExpires">
                         </div>
-                        <div class="form-group full-width">
-                            <label>Image</label>
-                            <div class="image-upload-area" id="uploadArea">
-                                <input type="file" id="imageFileInput" accept="image/*">
-                                <div id="uploadPlaceholder">
-                                    <div class="upload-icon">🖼️</div>
-                                    <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop</div>
-                                    <div class="upload-text" style="font-size:0.78rem;margin-top:0.3rem">JPG, PNG, WEBP
-                                        up to 10MB</div>
-                                </div>
-                                <div id="imagePreviewWrap" class="image-preview-wrap" style="display:none">
-                                    <img id="imagePreview" class="image-preview" src="" alt="Preview">
-                                    <button type="button" class="remove-image-btn" onclick="removeImage()">✕</button>
-                                </div>
-                            </div>
-                            <div class="upload-progress" id="uploadProgress">
-                                <div class="upload-progress-bar" id="uploadProgressBar"></div>
-                            </div>
-                            <div class="upload-status" id="uploadStatus"></div>
-                            <input type="hidden" id="newsImage">
-                        </div>
                         <div class="form-group">
-                            <label>Link URL (optional)</label>
-                            <input type="url" id="newsLink" placeholder="https://...">
-                        </div>
-                        <div class="form-group">
-                            <label>Link Button Text</label>
-                            <input type="text" id="newsLinkText" placeholder="e.g. Apply Now, Learn More">
-                        </div>
-                        <div class="form-group">
-                            <div class="toggle-row">
-                                <label class="toggle-label">
-                                    <input type="checkbox" id="newsActive" checked>
-                                    Active (visible on site)
-                                </label>
-                                <label class="toggle-label">
-                                    <input type="checkbox" id="newsTicker">
-                                    Show in top ticker
-                                </label>
+                            <div class="toggle-row" style="margin-top:1.8rem;">
+                                <label><input type="checkbox" id="newsActive" checked> Active</label>
+                                <label style="margin-left:1.5rem;"><input type="checkbox" id="newsTicker"> Display on Top
+                                    Ticker</label>
                             </div>
                         </div>
                     </div>
@@ -931,64 +1059,35 @@
                             style="display:none">Cancel</button>
                     </div>
                 </div>
-
-                <!-- News List -->
                 <div class="panel">
                     <h2>All Announcements <span class="badge badge-green" id="newsListCount">0</span></h2>
                     <div id="newsList" class="news-grid"></div>
                 </div>
             </div>
 
-            <!-- Countries Tab -->
+            <!-- ── TAB 6: COUNTRIES ── -->
             <div id="countriesTab" class="tab-content">
                 <div class="panel">
-                    <h2 id="countryFormTitle">🌍 Add Country</h2>
+                    <h2 id="countryFormTitle">🌍 Add Study Destination</h2>
                     <div class="news-form-grid">
                         <div class="form-group"><label>Country Name *</label><input type="text" id="cName"
                                 placeholder="e.g. China"></div>
-                        <div class="form-group">
-                            <label>Country Image</label>
-                            <div class="image-upload-area" id="cUploadArea">
-                                <input type="file" id="cFileInput" accept="image/*" onchange="uploadCountryImage(this)">
-                                <div id="cUploadPlaceholder">
-                                    <div class="upload-icon">🖼️</div>
-                                    <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop</div>
-                                    <div class="upload-text" style="font-size:0.78rem;margin-top:0.3rem">JPG, PNG, WEBP
-                                        up to 10MB</div>
-                                </div>
-                                <div id="cImagePreviewWrap" class="image-preview-wrap" style="display:none">
-                                    <img id="cImagePreview" class="image-preview" src="" alt="Preview">
-                                    <button type="button" class="remove-image-btn"
-                                        onclick="resetCountryUpload()">✕</button>
-                                </div>
-                            </div>
-                            <div class="upload-progress" id="cUploadProgress">
-                                <div class="upload-progress-bar" id="cUploadProgressBar"></div>
-                            </div>
-                            <div class="upload-status" id="cUploadStatus"></div>
-                            <input type="hidden" id="cImage">
-                        </div>
-                        <div class="form-group"><label>University Count Text</label><input type="text" id="cUniCount"
-                                placeholder="e.g. 10+ Partner Universities"></div>
-                        <div class="form-group"><label>Modal Key</label><input type="text" id="cModalKey"
-                                placeholder="e.g. china (for popup)"></div>
+                        <div class="form-group"><label>Flag Emoji *</label><input type="text" id="cFlag"
+                                placeholder="e.g. 🇨🇳"></div>
+                        <div class="form-group"><label>University Count</label><input type="text" id="cCount"
+                                placeholder="e.g. 50+ Universities"></div>
+                        <div class="form-group"><label>Image URL</label><input type="url" id="cImage"
+                                placeholder="https://..."></div>
                         <div class="form-group full-width"><label>Description</label><textarea id="cDesc"
-                                placeholder="Brief description of studying in this country..."></textarea></div>
-                        <div class="form-group full-width"><label>Programs <small style="color:#94a3b8">(comma
-                                    separated, e.g. Engineering, Business, Medicine)</small></label><input type="text"
-                                id="cPrograms" placeholder="Engineering, Business, Medicine, Computer Science"></div>
-                        <div class="form-group"><label>Cost of Living</label><input type="text" id="cCost"
-                                placeholder="e.g. $400-600/month"></div>
-                        <div class="form-group"><label>Language</label><input type="text" id="cLanguage"
-                                placeholder="e.g. English programs available"></div>
-                        <div class="form-group full-width"><label>Visa Requirements</label><textarea id="cVisa"
-                                placeholder="e.g. Student visa required, processing time: 2-3 months"
-                                style="min-height:70px"></textarea></div>
+                                placeholder="Overview of studying in this country..."></textarea></div>
+                        <div class="form-group"><label>Popular Programs</label><input type="text" id="cPrograms"
+                                placeholder="Computer Science, Business, Medicine"></div>
+                        <div class="form-group"><label>Living Costs</label><input type="text" id="cCost"
+                                placeholder="$300 - $500 / month"></div>
                         <div class="form-group"><label>Sort Order</label><input type="number" id="cSort" value="0">
                         </div>
                         <div class="form-group">
-                            <div class="toggle-row"><label class="toggle-label"><input type="checkbox" id="cActive"
-                                        checked> Active (visible on site)</label></div>
+                            <label style="margin-top:1.8rem;"><input type="checkbox" id="cActive" checked> Active</label>
                         </div>
                     </div>
                     <div class="form-actions">
@@ -1003,63 +1102,23 @@
                 </div>
             </div>
 
-            <!-- Services Tab -->
+            <!-- ── TAB 7: SERVICES ── -->
             <div id="servicesTab" class="tab-content">
                 <div class="panel">
                     <h2 id="serviceFormTitle">⚙️ Add Service</h2>
                     <div class="news-form-grid">
                         <div class="form-group"><label>Service Title *</label><input type="text" id="sTitle"
                                 placeholder="e.g. Visa Support"></div>
-                        <div class="form-group">
-                            <label>Service Image</label>
-                            <div class="image-upload-area" id="sUploadArea">
-                                <input type="file" id="sFileInput" accept="image/*" onchange="uploadServiceImage(this)">
-                                <div id="sUploadPlaceholder">
-                                    <div class="upload-icon">🖼️</div>
-                                    <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop</div>
-                                    <div class="upload-text" style="font-size:0.78rem;margin-top:0.3rem">JPG, PNG, WEBP
-                                        up to 10MB</div>
-                                </div>
-                                <div id="sImagePreviewWrap" class="image-preview-wrap" style="display:none">
-                                    <img id="sImagePreview" class="image-preview" src="" alt="Preview">
-                                    <button type="button" class="remove-image-btn"
-                                        onclick="resetServiceUpload()">✕</button>
-                                </div>
-                            </div>
-                            <div class="upload-progress" id="sUploadProgress">
-                                <div class="upload-progress-bar" id="sUploadProgressBar"></div>
-                            </div>
-                            <div class="upload-status" id="sUploadStatus"></div>
-                            <input type="hidden" id="sImage">
-                        </div>
-                        <div class="form-group full-width"><label>Short Description *</label><textarea id="sDesc"
-                                placeholder="One sentence overview of the service..."
-                                style="min-height:70px"></textarea></div>
-                        <div class="form-group full-width"><label>What We Offer <small style="color:#94a3b8">(one item
-                                    per line — these become bullet points in the popup)</small></label>
-                            <textarea id="sDetails"
-                                placeholder="Visa requirement consultation&#10;Document checklist and preparation&#10;Application form assistance&#10;Interview preparation and coaching"
-                                style="min-height:130px"></textarea>
-                        </div>
-                        <div class="form-group full-width"><label>Why Choose This Service?</label><textarea
-                                id="sBenefits" placeholder="Explain the main benefit to students..."
-                                style="min-height:80px"></textarea></div>
-                        <div class="form-group"><label>Modal Key</label><input type="text" id="sModalKey"
-                                placeholder="e.g. visa"></div>
-                        <div class="form-group"><label>Sort Order</label><input type="number" id="sSort" value="0">
-                        </div>
-                        <div class="form-group">
-                            <div class="toggle-row">
-                                <label class="toggle-label"><input type="checkbox" id="sActive" checked> Active</label>
-                                <label class="toggle-label"><input type="checkbox" id="sFeatured"> Featured (highlighted
-                                    card)</label>
-                            </div>
+                        <div class="form-group"><label>Icon Emoji</label><input type="text" id="sIcon"
+                                placeholder="e.g. 🛂"></div>
+                        <div class="form-group full-width"><label>Description *</label><textarea id="sDesc"
+                                placeholder="Brief summary of service..."></textarea></div>
+                        <div class="form-group full-width"><label>Details (Bullet Points)</label><textarea id="sDetails"
+                                placeholder="Document checklist&#10;Application form assistance&#10;Interview coaching"></textarea>
                         </div>
                     </div>
                     <div class="form-actions">
                         <button class="submit-btn" onclick="saveService()">💾 Save Service</button>
-                        <button class="cancel-btn" id="cancelServiceBtn" onclick="cancelServiceEdit()"
-                            style="display:none">Cancel</button>
                     </div>
                 </div>
                 <div class="panel">
@@ -1068,39 +1127,24 @@
                 </div>
             </div>
 
-            <!-- Universities Tab -->
+            <!-- ── TAB 8: UNIVERSITIES ── -->
             <div id="universitiesTab" class="tab-content">
                 <div class="panel">
-                    <h2 id="uniFormTitle">🎓 Add University</h2>
+                    <h2 id="uniFormTitle">🎓 Add Partner University</h2>
                     <div class="news-form-grid">
                         <div class="form-group"><label>University Name *</label><input type="text" id="uName"
-                                placeholder="e.g. Beijing University"></div>
-                        <div class="form-group"><label>Country *</label>
-                            <select id="uCountry">
-                                <option value="">-- Select a country --</option>
-                            </select>
-                        </div>
-                        <div class="form-group full-width"><label>Description</label><textarea id="uDesc"
-                                placeholder="Brief description of the university..."></textarea></div>
-                        <div class="form-group"><label>Image URL</label><input type="url" id="uImage"
-                                placeholder="https://..."></div>
+                                placeholder="e.g. Wuxi University"></div>
+                        <div class="form-group"><label>Country *</label><input type="text" id="uCountry"
+                                placeholder="e.g. China"></div>
                         <div class="form-group"><label>Ranking</label><input type="text" id="uRanking"
-                                placeholder="e.g. QS Top 500, #1 in China"></div>
-                        <div class="form-group"><label>Programs (comma separated)</label><input type="text"
-                                id="uPrograms" placeholder="e.g. Engineering, Medicine, Business"></div>
+                                placeholder="e.g. Top Provincial University"></div>
+                        <div class="form-group"><label>Programs</label><input type="text" id="uPrograms"
+                                placeholder="Software Engineering, International Trade"></div>
                         <div class="form-group"><label>Website URL</label><input type="url" id="uLink"
-                                placeholder="https://university.edu"></div>
-                        <div class="form-group"><label>Sort Order</label><input type="number" id="uSort" value="0">
-                        </div>
-                        <div class="form-group">
-                            <div class="toggle-row"><label class="toggle-label"><input type="checkbox" id="uActive"
-                                        checked> Active (visible on site)</label></div>
-                        </div>
+                                placeholder="https://..."></div>
                     </div>
                     <div class="form-actions">
                         <button class="submit-btn" onclick="saveUniversity()">💾 Save University</button>
-                        <button class="cancel-btn" id="cancelUniBtn" onclick="cancelUniEdit()"
-                            style="display:none">Cancel</button>
                     </div>
                 </div>
                 <div class="panel">
@@ -1112,26 +1156,121 @@
         </div>
     </div>
 
+    <!-- ── STUDENT 360° DOSSIER MODAL ── -->
+    <div id="studentModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header-row">
+                <h3 id="modalStudentName">Student Dossier</h3>
+                <button class="close-modal-btn" onclick="closeStudentModal()">✕</button>
+            </div>
+
+            <div class="dossier-grid">
+                <div class="dossier-card">
+                    <h4>👤 Personal &amp; Passport Info</h4>
+                    <div class="dossier-item"><span class="label">Email:</span> <span class="val" id="mEmail">—</span>
+                    </div>
+                    <div class="dossier-item"><span class="label">Phone:</span> <span class="val" id="mPhone">—</span>
+                    </div>
+                    <div class="dossier-item"><span class="label">Passport Number:</span> <span class="val"
+                            id="mPassport">—</span></div>
+                    <div class="dossier-item"><span class="label">Date of Birth:</span> <span class="val" id="mDob">—</span>
+                    </div>
+                    <div class="dossier-item"><span class="label">Nationality:</span> <span class="val"
+                            id="mNationality">—</span></div>
+                    <div class="dossier-item"><span class="label">Address:</span> <span class="val" id="mAddress">—</span>
+                    </div>
+                </div>
+
+                <div class="dossier-card">
+                    <h4>🎓 Academic &amp; Target Destination</h4>
+                    <div class="dossier-item"><span class="label">High School:</span> <span class="val"
+                            id="mSchool">—</span></div>
+                    <div class="dossier-item"><span class="label">GPA:</span> <span class="val" id="mGpa">—</span></div>
+                    <div class="dossier-item"><span class="label">IELTS / TOEFL:</span> <span class="val"
+                            id="mIelts">—</span></div>
+                    <div class="dossier-item"><span class="label">Target Country:</span> <span class="val"
+                            id="mCountry">—</span></div>
+                    <div class="dossier-item"><span class="label">Target Degree:</span> <span class="val"
+                            id="mDegree">—</span></div>
+                    <div class="dossier-item"><span class="label">Major:</span> <span class="val" id="mMajor">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pipeline Status Changer -->
+            <div class="dossier-card" style="margin-bottom:1.5rem;">
+                <h4>🚦 Update Admission Stage</h4>
+                <div style="display:flex;gap:1rem;align-items:center;">
+                    <select id="mStatusSelect"
+                        style="padding:0.6rem 1rem;border:2px solid var(--border);border-radius:10px;font-weight:700;">
+                        <option value="Registered">Registered</option>
+                        <option value="Docs Submitted">Docs Submitted</option>
+                        <option value="Ready for Application">Ready for Application</option>
+                        <option value="Applied">Applied</option>
+                        <option value="Offer Received">Offer Received</option>
+                        <option value="Visa Stage">Visa Stage</option>
+                        <option value="Enrolled">Enrolled</option>
+                    </select>
+                    <button class="btn-action btn-view" onclick="updateModalStudentStatus()">Update Stage</button>
+                </div>
+            </div>
+
+            <!-- Uploaded Documents & Review -->
+            <div class="dossier-card" style="margin-bottom:1.5rem;">
+                <h4>📁 Uploaded Documents &amp; Verification</h4>
+                <div id="modalDocsList">
+                    <p style="color:var(--text-muted);">No documents uploaded yet.</p>
+                </div>
+            </div>
+
+            <!-- Assign Target Application -->
+            <div class="dossier-card">
+                <h4>🏛️ Assign Target University Application</h4>
+                <div class="news-form-grid" style="margin-top:0.8rem;">
+                    <div class="form-group">
+                        <label>University Name</label>
+                        <input type="text" id="appUniName" placeholder="e.g. Wuxi University">
+                    </div>
+                    <div class="form-group">
+                        <label>Program Name</label>
+                        <input type="text" id="appProgram" placeholder="e.g. Bachelor in Computer Science">
+                    </div>
+                    <div class="form-group">
+                        <label>Intake Semester</label>
+                        <input type="text" id="appIntake" placeholder="e.g. Fall 2026">
+                    </div>
+                    <div class="form-group">
+                        <label>Application Status</label>
+                        <select id="appStatus">
+                            <option value="Submitted to University">Submitted to University</option>
+                            <option value="Under Review">Under Review</option>
+                            <option value="Conditional Offer">Conditional Offer</option>
+                            <option value="Full Offer">Full Offer / Admitted</option>
+                            <option value="Visa Granted">Visa Granted</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-action btn-view" onclick="addStudentApplication()" style="margin-top:0.8rem;">➕ Assign
+                    University Application</button>
+            </div>
+        </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <script>
         const API_URL = '';
         let authToken = null;
-        let editingNewsId = null;
+        let allStudentsCache = [];
+        let currentModalStudentId = null;
+        let autofillCache = {};
 
         // ── Auth ──
-
         async function login() {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const errEl = document.getElementById('loginError');
             errEl.style.display = 'none';
-
-            if (!username || !password) {
-                errEl.textContent = 'Please enter username and password.';
-                errEl.style.display = 'block';
-                return;
-            }
 
             try {
                 const res = await fetch(`${API_URL}/api/admin/login`, {
@@ -1145,7 +1284,6 @@
                 sessionStorage.setItem('adminToken', authToken);
                 showDashboard();
             } catch (e) {
-                errEl.textContent = 'Invalid username or password.';
                 errEl.style.display = 'block';
             }
         }
@@ -1159,19 +1297,15 @@
         function showDashboard() {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('adminDashboard').style.display = 'block';
-            document.getElementById('sessionInfo').textContent = '🔒 Session active';
-            loadData();
+            loadCRMData();
         }
 
-        // Auto-restore session within same tab
         const saved = sessionStorage.getItem('adminToken');
         if (saved) { authToken = saved; showDashboard(); }
 
         function authHeaders() {
             return { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' };
         }
-
-        // ── Helpers ──
 
         function showToast(msg, type = 'success') {
             const t = document.getElementById('toast');
@@ -1185,16 +1319,15 @@
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             btn.classList.add('active');
             document.getElementById(tab + 'Tab').classList.add('active');
+
+            if (tab === 'students') loadStudents();
+            if (tab === 'autofill') populateAutofillStudentDropdown();
+            if (tab === 'leads') loadLeads();
+            if (tab === 'pending') { loadPendingComments(); loadApprovedComments(); }
             if (tab === 'news') loadNews();
             if (tab === 'countries') loadCountries();
             if (tab === 'services') loadServices();
-            if (tab === 'universities') { loadUniversities(); populateCountryDropdown(); }
-        }
-
-        // ── Load all data ──
-
-        async function loadData() {
-            await Promise.all([loadPendingComments(), loadApprovedComments(), loadStats(), loadNews()]);
+            if (tab === 'universities') loadUniversities();
         }
 
         async function apiGet(path) {
@@ -1203,241 +1336,554 @@
             return res.json();
         }
 
-        // ── Comments ──
+        async function loadCRMData() {
+            loadStudents();
+            loadLeads();
+            loadPendingComments();
+            loadNews();
+        }
 
+        // ── Student CRM ──
+        async function loadStudents() {
+            try {
+                const students = await apiGet('/api/admin/students');
+                allStudentsCache = students;
+                document.getElementById('statStudents').textContent = students.length;
+
+                const pendingDocs = students.reduce((sum, s) => sum + (s.document_count - s.verified_doc_count), 0);
+                document.getElementById('statDocsPending').textContent = pendingDocs;
+
+                const apps = students.reduce((sum, s) => sum + parseInt(s.application_count || 0), 0);
+                document.getElementById('statApplications').textContent = apps;
+
+                renderStudentsTable(students);
+                populateAutofillStudentDropdown();
+            } catch (e) { console.error(e); }
+        }
+
+        function renderStudentsTable(students) {
+            const tbody = document.getElementById('studentsTableBody');
+            if (!students.length) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No students registered yet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = students.map(s => {
+                let badgeColor = '#dbeafe';
+                let textColor = '#1e40af';
+                if (s.status === 'Docs Submitted') { badgeColor = '#fef3c7'; textColor = '#b45309'; }
+                if (s.status === 'Ready for Application') { badgeColor = '#e0e7ff'; textColor = '#4338ca'; }
+                if (s.status === 'Applied') { badgeColor = '#ede9fe'; textColor = '#6d28d9'; }
+                if (s.status === 'Offer Received' || s.status === 'Visa Stage') { badgeColor = '#d1fae5'; textColor = '#065f46'; }
+
+                return `
+                <tr>
+                    <td>
+                        <strong>${escHtml(s.full_name)}</strong><br>
+                        <span style="font-size:0.8rem;color:#64748b;">${escHtml(s.email)}</span>
+                    </td>
+                    <td>
+                        <strong>${s.passport_number ? escHtml(s.passport_number) : '<em>No Passport</em>'}</strong><br>
+                        <span style="font-size:0.8rem;color:#64748b;">${escHtml(s.phone || '—')}</span>
+                    </td>
+                    <td>
+                        ${escHtml(s.target_country || 'Not set')}<br>
+                        <span style="font-size:0.8rem;color:#64748b;">${escHtml(s.target_degree || '')} (${escHtml(s.target_major || 'Major open')})</span>
+                    </td>
+                    <td>
+                        <span style="font-weight:700;color:${s.verified_doc_count > 0 ? '#10b981' : '#f59e0b'}">
+                            📁 ${s.verified_doc_count}/${s.document_count} Verified
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge-table" style="background:${badgeColor};color:${textColor}">
+                            ${escHtml(s.status || 'Registered')}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-btn-group">
+                            <button class="btn-action btn-view" onclick="openStudentModal(${s.id})">👁️ Dossier &amp; Docs</button>
+                            <button class="btn-action btn-autofill" onclick="selectStudentForAutofill(${s.id})">⚡ Auto-fill</button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function filterStudents() {
+            const query = document.getElementById('crmSearch').value.toLowerCase();
+            const status = document.getElementById('crmStatusFilter').value;
+
+            const filtered = allStudentsCache.filter(s => {
+                const matchQ = (s.full_name || '').toLowerCase().includes(query) ||
+                    (s.email || '').toLowerCase().includes(query) ||
+                    (s.passport_number || '').toLowerCase().includes(query) ||
+                    (s.phone || '').toLowerCase().includes(query);
+                const matchStatus = !status || s.status === status;
+                return matchQ && matchStatus;
+            });
+            renderStudentsTable(filtered);
+        }
+
+        // ── Student Dossier Modal & Document Verification ──
+        async function openStudentModal(sid) {
+            currentModalStudentId = sid;
+            try {
+                const data = await apiGet(`/api/admin/students/${sid}`);
+                const s = data.student;
+                const docs = data.documents || [];
+
+                document.getElementById('modalStudentName').textContent = `🎓 ${s.full_name} — Admission Dossier`;
+                document.getElementById('mEmail').textContent = s.email || '—';
+                document.getElementById('mPhone').textContent = s.phone || '—';
+                document.getElementById('mPassport').textContent = s.passport_number || '—';
+                document.getElementById('mDob').textContent = s.date_of_birth || '—';
+                document.getElementById('mNationality').textContent = s.nationality || 'Uzbekistan';
+                document.getElementById('mAddress').textContent = s.address || '—';
+                document.getElementById('mSchool').textContent = s.high_school_name || '—';
+                document.getElementById('mGpa').textContent = s.gpa || '—';
+                document.getElementById('mIelts').textContent = s.ielts_score || '—';
+                document.getElementById('mCountry').textContent = s.target_country || '—';
+                document.getElementById('mDegree').textContent = s.target_degree || '—';
+                document.getElementById('mMajor').textContent = s.target_major || '—';
+                document.getElementById('mStatusSelect').value = s.status || 'Registered';
+
+                renderModalDocuments(docs);
+                document.getElementById('studentModal').classList.add('active');
+            } catch (e) { console.error(e); }
+        }
+
+        function closeStudentModal() {
+            document.getElementById('studentModal').classList.remove('active');
+            currentModalStudentId = null;
+        }
+
+        function renderModalDocuments(docs) {
+            const list = document.getElementById('modalDocsList');
+            if (!docs.length) {
+                list.innerHTML = `<p style="color:var(--text-muted);font-size:0.9rem;">No documents uploaded by student yet.</p>`;
+                return;
+            }
+
+            list.innerHTML = docs.map(d => {
+                let badge = `<span style="color:#f59e0b;font-weight:700;">⏳ Pending</span>`;
+                if (d.status === 'verified') badge = `<span style="color:#10b981;font-weight:700;">✅ Approved</span>`;
+                if (d.status === 'rejected') badge = `<span style="color:#ef4444;font-weight:700;">❌ Rejected</span>`;
+
+                return `
+                <div class="doc-review-card">
+                    <div class="doc-review-left">
+                        <div class="doc-review-icon">📄</div>
+                        <div>
+                            <strong>${escHtml(d.title)}</strong> (${badge})<br>
+                            <a href="${escHtml(d.file_url)}" target="_blank" style="color:var(--primary);font-size:0.85rem;font-weight:600;">👁️ View File (${escHtml(d.file_size || 'Link')})</a>
+                            ${d.admin_feedback ? `<div style="font-size:0.8rem;color:#ef4444;margin-top:0.2rem;">Note: ${escHtml(d.admin_feedback)}</div>` : ''}
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:0.5rem;">
+                        <button class="btn-action btn-view" onclick="reviewDocument(${d.id}, 'verified')">✅ Approve</button>
+                        <button class="btn-action btn-autofill" onclick="reviewDocument(${d.id}, 'rejected')">❌ Reject / Feedback</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        async function reviewDocument(docId, status) {
+            let feedback = '';
+            if (status === 'rejected') {
+                feedback = prompt('Enter reason / feedback for student (e.g. "Passport image is blurry, please re-upload in high resolution"):');
+                if (feedback === null) return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/api/admin/documents/${docId}/review`, {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ status, admin_feedback: feedback })
+                });
+                if (res.ok) {
+                    showToast('Document review updated! ✨');
+                    openStudentModal(currentModalStudentId);
+                    loadStudents();
+                }
+            } catch (e) { showToast('Error', 'error'); }
+        }
+
+        async function updateModalStudentStatus() {
+            const status = document.getElementById('mStatusSelect').value;
+            try {
+                const res = await fetch(`${API_URL}/api/admin/students/${currentModalStudentId}/status`, {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ status })
+                });
+                if (res.ok) {
+                    showToast('Status updated! 🚦');
+                    loadStudents();
+                }
+            } catch (e) { showToast('Error', 'error'); }
+        }
+
+        async function addStudentApplication() {
+            const university_name = document.getElementById('appUniName').value.trim();
+            if (!university_name) { showToast('Enter university name', 'error'); return; }
+
+            const payload = {
+                university_name,
+                program_name: document.getElementById('appProgram').value.trim(),
+                intake_semester: document.getElementById('appIntake').value.trim(),
+                status: document.getElementById('appStatus').value
+            };
+
+            try {
+                const res = await fetch(`${API_URL}/api/admin/students/${currentModalStudentId}/applications`, {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    showToast('University application created! 🎓');
+                    document.getElementById('appUniName').value = '';
+                    loadStudents();
+                }
+            } catch (e) { showToast('Error', 'error'); }
+        }
+
+        // ── University Portal Autofill Package ──
+        function populateAutofillStudentDropdown() {
+            const select = document.getElementById('autofillStudentSelect');
+            if (!select) return;
+            select.innerHTML = '<option value="">-- Choose a student --</option>' +
+                allStudentsCache.map(s => `<option value="${s.id}">${s.full_name} (${s.passport_number || s.email})</option>`).join('');
+        }
+
+        function selectStudentForAutofill(sid) {
+            switchTab('autofill', document.querySelectorAll('.tab-btn')[1]);
+            document.getElementById('autofillStudentSelect').value = sid;
+            loadAutofillForSelectedStudent();
+        }
+
+        async function loadAutofillForSelectedStudent() {
+            const sid = document.getElementById('autofillStudentSelect').value;
+            if (!sid) {
+                document.getElementById('autofillResults').style.display = 'none';
+                return;
+            }
+
+            const targetUni = document.getElementById('autofillTargetUni').value;
+            try {
+                const data = await apiGet(`/api/admin/students/${sid}/autofill-payload?target_uni=${encodeURIComponent(targetUni)}`);
+                autofillCache = data;
+
+                document.getElementById('autofillResults').style.display = 'block';
+
+                // Setup Bookmarklet anchor
+                const bookmarkletAnchor = document.getElementById('bookmarkletAnchor');
+                bookmarkletAnchor.setAttribute('href', `javascript:${encodeURIComponent(data.bookmarklet_code)}`);
+
+                // Render field boxes with 1-click copy buttons
+                const f = data.package.fields;
+                const grid = document.getElementById('autofillFieldsGrid');
+                const fieldList = [
+                    { label: 'Full Legal Name', val: f.fullName },
+                    { label: 'First / Given Name', val: f.firstName },
+                    { label: 'Last Name / Surname', val: f.lastName },
+                    { label: 'Passport Number', val: f.passportNumber },
+                    { label: 'Date of Birth (YYYY-MM-DD)', val: f.dateOfBirth },
+                    { label: 'Nationality', val: f.nationality },
+                    { label: 'Email Address', val: f.email },
+                    { label: 'Phone Number', val: f.phone },
+                    { label: 'High School / Institution', val: f.highSchool },
+                    { label: 'GPA / Grade Average', val: f.gpa },
+                    { label: 'IELTS / English Score', val: f.ielts },
+                    { label: 'Target Major', val: f.major },
+                    { label: 'Degree Level', val: f.degreeLevel },
+                    { label: 'Residential Address', val: f.address }
+                ];
+
+                grid.innerHTML = fieldList.map(item => `
+                    <div class="dossier-card" style="display:flex;justify-content:space-between;align-items:center;">
+                        <div>
+                            <div style="font-size:0.78rem;color:#64748b;font-weight:600;">${item.label}</div>
+                            <div style="font-size:0.95rem;font-weight:700;color:#0f172a;margin-top:0.2rem;">${item.val || '—'}</div>
+                        </div>
+                        <button class="copy-field-btn" onclick="copyText('${escHtml(item.val || '')}', this)">📋 Copy</button>
+                    </div>
+                `).join('');
+
+                // Render docs
+                const docsDiv = document.getElementById('autofillDocsList');
+                const docs = data.package.documents;
+                if (!Object.keys(docs).length) {
+                    docsDiv.innerHTML = `<p style="color:var(--text-muted);font-size:0.9rem;">No documents uploaded yet.</p>`;
+                } else {
+                    docsDiv.innerHTML = Object.keys(docs).map(k => `
+                        <a href="${docs[k]}" target="_blank" class="btn-action btn-view" style="font-size:0.88rem;padding:0.6rem 1rem;">
+                            👁️ Open ${k.replace('_', ' ').toUpperCase()} Scan
+                        </a>
+                    `).join('');
+                }
+
+            } catch (e) { console.error(e); }
+        }
+
+        function copyText(str, btn) {
+            navigator.clipboard.writeText(str);
+            const orig = btn.textContent;
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => { btn.textContent = orig; }, 1500);
+        }
+
+        function copyAutofillScript() {
+            if (autofillCache && autofillCache.bookmarklet_code) {
+                navigator.clipboard.writeText(autofillCache.bookmarklet_code);
+                showToast('Auto-fill JavaScript snippet copied to clipboard! 📋');
+            }
+        }
+
+        // ── Leads ──
+        async function loadLeads() {
+            try {
+                const leads = await apiGet('/api/admin/leads');
+                document.getElementById('statLeads').textContent = leads.length;
+                document.getElementById('leadsBadge').textContent = leads.length;
+                const tbody = document.getElementById('leadsTableBody');
+                if (!leads.length) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No inquiries yet.</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = leads.map(l => `
+                    <tr>
+                        <td><strong>${escHtml(l.name)}</strong></td>
+                        <td><a href="tel:${escHtml(l.phone)}" style="color:var(--primary);font-weight:700;">${escHtml(l.phone)}</a></td>
+                        <td>${escHtml(l.email || '—')}</td>
+                        <td>${escHtml(l.country || 'General')}</td>
+                        <td style="max-width:250px;line-height:1.4;">${escHtml(l.message || '—')}</td>
+                        <td style="color:#64748b;font-size:0.82rem;">${new Date(l.created_at).toLocaleString()}</td>
+                    </tr>
+                `).join('');
+            } catch (e) { }
+        }
+
+        // ── Reviews & Comments ──
         async function loadPendingComments() {
             try {
                 const comments = await apiGet('/api/comments/pending');
                 document.getElementById('pendingBadge').textContent = comments.length;
-                document.getElementById('pendingCount').textContent = comments.length;
                 const container = document.getElementById('pendingComments');
                 if (!comments.length) {
-                    container.innerHTML = emptyState('📭', 'No pending comments', 'All comments have been reviewed');
+                    container.innerHTML = `<p style="color:var(--text-muted);padding:1rem;">No pending testimonials.</p>`;
                     return;
                 }
-                container.innerHTML = comments.map(c => commentHtml(c, true)).join('');
-            } catch (e) { console.error(e); }
+                container.innerHTML = comments.map(c => `
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <div class="comment-author-info">
+                                <div class="author-circle">${c.name[0]}</div>
+                                <div><strong>${escHtml(c.name)}</strong> (${escHtml(c.country)})</div>
+                            </div>
+                            <div>${'⭐'.repeat(c.rating)}</div>
+                        </div>
+                        <p style="margin-bottom:0.8rem;color:#475569;">"${escHtml(c.comment_text)}"</p>
+                        <div>
+                            <button class="approve-btn" onclick="approveComment(${c.id})">✅ Approve</button>
+                            <button class="delete-btn" onclick="deleteComment(${c.id})">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) { }
         }
 
         async function loadApprovedComments() {
             try {
-                const comments = await apiGet('/api/comments');
-                document.getElementById('approvedCount') && (document.getElementById('approvedCount').textContent = comments.length);
+                const comments = await fetch(`${API_URL}/api/comments`).then(r => r.json());
                 const container = document.getElementById('approvedComments');
-                if (!comments.length) {
-                    container.innerHTML = emptyState('📭', 'No approved comments yet', '');
-                    return;
-                }
-                container.innerHTML = comments.map(c => commentHtml(c, false)).join('');
-            } catch (e) { console.error(e); }
-        }
-
-        async function loadStats() {
-            try {
-                const [pending, approved] = await Promise.all([
-                    apiGet('/api/comments/pending'),
-                    fetch(`${API_URL}/api/comments`).then(r => r.json())
-                ]);
-                const total = pending.length + approved.length;
-                const avg = approved.length
-                    ? (approved.reduce((s, c) => s + c.rating, 0) / approved.length).toFixed(1)
-                    : '—';
-                document.getElementById('totalComments').textContent = total;
-                document.getElementById('avgRating').textContent = avg;
+                if (!comments.length) { container.innerHTML = `<p style="color:var(--text-muted);padding:1rem;">No approved testimonials yet.</p>`; return; }
+                container.innerHTML = comments.map(c => `
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <div><strong>${escHtml(c.name)}</strong> (${escHtml(c.country)})</div>
+                            <div>${'⭐'.repeat(c.rating)}</div>
+                        </div>
+                        <p style="margin-bottom:0.8rem;color:#475569;">"${escHtml(c.comment_text)}"</p>
+                        <button class="delete-btn" onclick="deleteComment(${c.id})">🗑️ Delete</button>
+                    </div>
+                `).join('');
             } catch (e) { }
         }
 
-        function commentHtml(c, isPending) {
-            const initials = c.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-            const stars = '⭐'.repeat(c.rating);
-            const date = new Date(c.created_at).toLocaleString();
-            const actions = isPending
-                ? `<button class="approve-btn" onclick="approveComment(${c.id})">✅ Approve</button>
-               <button class="delete-btn" onclick="deleteComment(${c.id})">🗑️ Delete</button>`
-                : `<span class="approved-tag">✅ Approved</span>
-               <button class="delete-btn" onclick="deleteComment(${c.id})">🗑️ Delete</button>`;
-            return `
-            <div class="comment-item">
-                <div class="comment-header">
-                    <div class="comment-author-info">
-                        <div class="author-circle">${initials}</div>
-                        <div class="author-details">
-                            <h4>${escHtml(c.name)}</h4>
-                            <p>${escHtml(c.country)} · ${date}</p>
-                        </div>
-                    </div>
-                    <div class="comment-rating">${stars}</div>
-                </div>
-                <div class="comment-text">"${escHtml(c.comment_text)}"</div>
-                <div class="comment-actions">${actions}</div>
-            </div>`;
-        }
-
         async function approveComment(id) {
-            if (!confirm('Approve this comment?')) return;
-            try {
-                const res = await fetch(`${API_URL}/api/comments/${id}/approve`, {
-                    method: 'PUT', headers: authHeaders()
-                });
-                if (res.ok) { showToast('Comment approved! ✅'); loadData(); }
-            } catch (e) { showToast('Error', 'error'); }
+            const res = await fetch(`${API_URL}/api/comments/${id}/approve`, { method: 'PUT', headers: authHeaders() });
+            if (res.ok) { showToast('Comment approved! ✅'); loadPendingComments(); loadApprovedComments(); }
         }
 
         async function deleteComment(id) {
-            if (!confirm('Delete this comment? This cannot be undone.')) return;
-            try {
-                const res = await fetch(`${API_URL}/api/comments/${id}`, {
-                    method: 'DELETE', headers: authHeaders()
-                });
-                if (res.ok) { showToast('Comment deleted 🗑️'); loadData(); }
-            } catch (e) { showToast('Error', 'error'); }
+            if (!confirm('Delete comment?')) return;
+            const res = await fetch(`${API_URL}/api/comments/${id}`, { method: 'DELETE', headers: authHeaders() });
+            if (res.ok) { showToast('Deleted 🗑️'); loadPendingComments(); loadApprovedComments(); }
         }
 
-        // ── News ──
-
+        // ── News, Countries, Services, Universities ──
         async function loadNews() {
             try {
                 const items = await apiGet('/api/admin/news');
                 document.getElementById('newsListCount').textContent = items.length;
-                const active = items.filter(n => n.is_active).length;
-                document.getElementById('activeNewsCount').textContent = active;
-                const container = document.getElementById('newsList');
-                if (!items.length) {
-                    container.innerHTML = emptyState('📢', 'No announcements yet', 'Create your first one above');
-                    return;
-                }
-                container.innerHTML = items.map(newsCardHtml).join('');
-            } catch (e) { console.error(e); }
-        }
-
-        function newsCardHtml(n) {
-            const imgEl = n.image_url
-                ? `<img class="news-card-img" src="${escHtml(n.image_url)}" alt="" onerror="this.style.display='none'">`
-                : `<div class="news-card-img-placeholder">📢</div>`;
-            const badge = n.badge_text ? `<span class="news-badge">${escHtml(n.badge_text)}</span><br>` : '';
-            const expires = n.expires_at ? `⏰ Expires ${new Date(n.expires_at).toLocaleDateString()}` : '∞ No expiry';
-            const ticker = n.is_ticker ? ' · 📡 Ticker' : '';
-            const status = n.is_active ? '🟢 Active' : '🔴 Inactive';
-            return `
-            <div class="news-card ${n.is_active ? '' : 'inactive'}">
-                ${imgEl}
-                <div class="news-card-body">
-                    ${badge}
-                    <div class="news-card-title">${escHtml(n.title)}</div>
-                    <div class="news-card-body-text">${escHtml(n.body)}</div>
-                    <div class="news-card-meta">
-                        <span>${status}${ticker}</span>
-                        <span>${expires}</span>
+                document.getElementById('newsList').innerHTML = items.map(n => `
+                    <div class="news-card">
+                        <div class="news-card-body">
+                            <span class="badge badge-blue">${escHtml(n.badge_text || 'News')}</span>
+                            <div class="news-card-title" style="margin-top:0.4rem;">${escHtml(n.title)}</div>
+                            <div class="news-card-body-text">${escHtml(n.body)}</div>
+                        </div>
+                        <div class="news-card-actions">
+                            <button class="delete-btn" onclick="deleteNews(${n.id})">🗑️ Delete</button>
+                        </div>
                     </div>
-                </div>
-                <div class="news-card-actions">
-                    <button class="edit-btn" onclick="editNews(${n.id})">✏️ Edit</button>
-                    <button class="delete-btn" onclick="deleteNews(${n.id})">🗑️ Delete</button>
-                </div>
-            </div>`;
+                `).join('');
+            } catch (e) { }
         }
 
         async function saveNews() {
             const title = document.getElementById('newsTitle').value.trim();
             const body = document.getElementById('newsBody').value.trim();
-            if (!title || !body) { showToast('Title and body are required', 'error'); return; }
-
+            if (!title || !body) { showToast('Title and body required', 'error'); return; }
             const payload = {
-                title,
-                body,
+                title, body,
                 badge_text: document.getElementById('newsBadge').value.trim() || null,
                 image_url: document.getElementById('newsImage').value.trim() || null,
-                link_url: document.getElementById('newsLink').value.trim() || null,
-                link_text: document.getElementById('newsLinkText').value.trim() || null,
                 expires_at: document.getElementById('newsExpires').value || null,
                 is_active: document.getElementById('newsActive').checked,
-                is_ticker: document.getElementById('newsTicker').checked,
+                is_ticker: document.getElementById('newsTicker').checked
             };
-
-            try {
-                const url = editingNewsId
-                    ? `${API_URL}/api/admin/news/${editingNewsId}`
-                    : `${API_URL}/api/admin/news`;
-                const method = editingNewsId ? 'PUT' : 'POST';
-                const res = await fetch(url, {
-                    method, headers: authHeaders(), body: JSON.stringify(payload)
-                });
-                if (res.ok) {
-                    showToast(editingNewsId ? 'Announcement updated! 🎉' : 'Announcement created! 🎉');
-                    cancelEdit();
-                    loadNews();
-                    loadStats();
-                } else {
-                    showToast('Save failed', 'error');
-                }
-            } catch (e) { showToast('Network error', 'error'); }
-        }
-
-        let allNewsCache = [];
-
-        async function editNews(id) {
-            try {
-                const items = await apiGet('/api/admin/news');
-                allNewsCache = items;
-                const n = items.find(x => x.id === id);
-                if (!n) return;
-
-                editingNewsId = id;
-                document.getElementById('newsFormTitle').textContent = '✏️ Edit Announcement';
-                document.getElementById('newsTitle').value = n.title;
-                document.getElementById('newsBody').value = n.body;
-                document.getElementById('newsBadge').value = n.badge_text || '';
-                document.getElementById('newsImage').value = n.image_url || '';
-                document.getElementById('newsLink').value = n.link_url || '';
-                document.getElementById('newsLinkText').value = n.link_text || '';
-                document.getElementById('newsActive').checked = n.is_active;
-                document.getElementById('newsTicker').checked = n.is_ticker;
-                if (n.expires_at) {
-                    const d = new Date(n.expires_at);
-                    document.getElementById('newsExpires').value = d.toISOString().slice(0, 16);
-                } else {
-                    document.getElementById('newsExpires').value = '';
-                }
-                document.getElementById('cancelEditBtn').style.display = 'inline-block';
-
-                // Scroll to form
-                document.getElementById('newsFormTitle').scrollIntoView({ behavior: 'smooth' });
-            } catch (e) { showToast('Error loading news', 'error'); }
-        }
-
-        function cancelEdit() {
-            editingNewsId = null;
-            document.getElementById('newsFormTitle').textContent = '➕ Create News / Announcement';
-            document.getElementById('newsTitle').value = '';
-            document.getElementById('newsBody').value = '';
-            document.getElementById('newsBadge').value = '';
-            document.getElementById('newsImage').value = '';
-            document.getElementById('newsLink').value = '';
-            document.getElementById('newsLinkText').value = '';
-            document.getElementById('newsExpires').value = '';
-            document.getElementById('newsActive').checked = true;
-            document.getElementById('newsTicker').checked = false;
-            document.getElementById('cancelEditBtn').style.display = 'none';
+            const res = await fetch(`${API_URL}/api/admin/news`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
+            if (res.ok) { showToast('Announcement created! 🎉'); loadNews(); }
         }
 
         async function deleteNews(id) {
-            if (!confirm('Delete this announcement? This cannot be undone.')) return;
-            try {
-                const res = await fetch(`${API_URL}/api/admin/news/${id}`, {
-                    method: 'DELETE', headers: authHeaders()
-                });
-                if (res.ok) { showToast('Announcement deleted 🗑️'); loadNews(); loadStats(); }
-            } catch (e) { showToast('Error', 'error'); }
+            if (!confirm('Delete announcement?')) return;
+            const res = await fetch(`${API_URL}/api/admin/news/${id}`, { method: 'DELETE', headers: authHeaders() });
+            if (res.ok) { showToast('Deleted 🗑️'); loadNews(); }
         }
 
-        // ── Utilities ──
+        async function loadCountries() {
+            try {
+                const items = await apiGet('/api/admin/countries');
+                document.getElementById('countriesListCount').textContent = items.length;
+                document.getElementById('countriesList').innerHTML = items.map(c => `
+                    <div class="news-card">
+                        <div class="news-card-body">
+                            <h3>${c.flag_emoji} ${escHtml(c.name)}</h3>
+                            <p style="color:var(--text-muted);font-size:0.85rem;">${escHtml(c.university_count || '')}</p>
+                            <p style="margin-top:0.4rem;font-size:0.88rem;">${escHtml(c.description || '')}</p>
+                        </div>
+                        <div class="news-card-actions">
+                            <button class="delete-btn" onclick="deleteCountry(${c.id})">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) { }
+        }
 
-        function emptyState(icon, title, sub) {
-            return `<div class="empty-state">
-            <div class="empty-state-icon">${icon}</div>
-            <h3>${title}</h3>
-            ${sub ? `<p>${sub}</p>` : ''}
-        </div>`;
+        async function saveCountry() {
+            const name = document.getElementById('cName').value.trim();
+            const flag_emoji = document.getElementById('cFlag').value.trim();
+            if (!name || !flag_emoji) { showToast('Name and flag required', 'error'); return; }
+            const payload = {
+                name, flag_emoji,
+                university_count: document.getElementById('cCount').value.trim() || null,
+                image_url: document.getElementById('cImage').value.trim() || null,
+                description: document.getElementById('cDesc').value.trim() || null,
+                programs: document.getElementById('cPrograms').value.trim() || null,
+                cost_of_living: document.getElementById('cCost').value.trim() || null,
+                sort_order: parseInt(document.getElementById('cSort').value) || 0,
+                is_active: document.getElementById('cActive').checked
+            };
+            const res = await fetch(`${API_URL}/api/admin/countries`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
+            if (res.ok) { showToast('Country created! 🌍'); loadCountries(); }
+        }
+
+        async function deleteCountry(id) {
+            if (!confirm('Delete country?')) return;
+            const res = await fetch(`${API_URL}/api/admin/countries/${id}`, { method: 'DELETE', headers: authHeaders() });
+            if (res.ok) { showToast('Deleted 🗑️'); loadCountries(); }
+        }
+
+        async function loadServices() {
+            try {
+                const items = await apiGet('/api/admin/services');
+                document.getElementById('servicesListCount').textContent = items.length;
+                document.getElementById('servicesList').innerHTML = items.map(s => `
+                    <div class="news-card">
+                        <div class="news-card-body">
+                            <h3>${s.icon_emoji || '⚙️'} ${escHtml(s.title)}</h3>
+                            <p style="margin-top:0.4rem;font-size:0.88rem;">${escHtml(s.description || '')}</p>
+                        </div>
+                        <div class="news-card-actions">
+                            <button class="delete-btn" onclick="deleteService(${s.id})">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) { }
+        }
+
+        async function saveService() {
+            const title = document.getElementById('sTitle').value.trim();
+            const description = document.getElementById('sDesc').value.trim();
+            if (!title || !description) { showToast('Title and description required', 'error'); return; }
+            const payload = {
+                title, description,
+                icon_emoji: document.getElementById('sIcon').value.trim() || '⚙️',
+                details: document.getElementById('sDetails').value.trim() || null,
+                is_active: true
+            };
+            const res = await fetch(`${API_URL}/api/admin/services`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
+            if (res.ok) { showToast('Service created! ⚙️'); loadServices(); }
+        }
+
+        async function deleteService(id) {
+            if (!confirm('Delete service?')) return;
+            const res = await fetch(`${API_URL}/api/admin/services/${id}`, { method: 'DELETE', headers: authHeaders() });
+            if (res.ok) { showToast('Deleted 🗑️'); loadServices(); }
+        }
+
+        async function loadUniversities() {
+            try {
+                const items = await apiGet('/api/admin/universities');
+                document.getElementById('uniListCount').textContent = items.length;
+                document.getElementById('universitiesList').innerHTML = items.map(u => `
+                    <div class="news-card">
+                        <div class="news-card-body">
+                            <h3>🏛️ ${escHtml(u.name)}</h3>
+                            <p style="color:var(--text-muted);font-size:0.85rem;">${escHtml(u.country)} · ${escHtml(u.ranking || '')}</p>
+                            <p style="margin-top:0.4rem;font-size:0.88rem;">${escHtml(u.programs || '')}</p>
+                        </div>
+                        <div class="news-card-actions">
+                            <button class="delete-btn" onclick="deleteUniversity(${u.id})">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) { }
+        }
+
+        async function saveUniversity() {
+            const name = document.getElementById('uName').value.trim();
+            const country = document.getElementById('uCountry').value.trim();
+            if (!name || !country) { showToast('Name and country required', 'error'); return; }
+            const payload = {
+                name, country,
+                ranking: document.getElementById('uRanking').value.trim() || null,
+                programs: document.getElementById('uPrograms').value.trim() || null,
+                link_url: document.getElementById('uLink').value.trim() || null,
+                is_active: true
+            };
+            const res = await fetch(`${API_URL}/api/admin/universities`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
+            if (res.ok) { showToast('University saved! 🎓'); loadUniversities(); }
+        }
+
+        async function deleteUniversity(id) {
+            if (!confirm('Delete university?')) return;
+            const res = await fetch(`${API_URL}/api/admin/universities/${id}`, { method: 'DELETE', headers: authHeaders() });
+            if (res.ok) { showToast('Deleted 🗑️'); loadUniversities(); }
         }
 
         function escHtml(str) {
@@ -1448,529 +1894,3 @@
 </body>
 
 </html>
-
-<script>
-    // ── Cloudinary Image Upload ──────────────────────────────────────────────
-
-    const CLOUDINARY_CLOUD = 'dalsairse';
-    const CLOUDINARY_PRESET = 'uni_world_uploads';
-    const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`;
-
-    const fileInput = document.getElementById('imageFileInput');
-    const uploadArea = document.getElementById('uploadArea');
-
-    // Click or drag-drop on upload area
-    uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
-    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
-    uploadArea.addEventListener('drop', e => {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
-        const file = e.dataTransfer.files[0];
-        if (file) handleImageFile(file);
-    });
-    fileInput.addEventListener('change', () => {
-        if (fileInput.files[0]) handleImageFile(fileInput.files[0]);
-    });
-
-    // Drag and drop for Country upload
-    const cUploadArea = document.getElementById('cUploadArea');
-    if (cUploadArea) {
-        cUploadArea.addEventListener('dragover', e => { e.preventDefault(); cUploadArea.classList.add('dragover'); });
-        cUploadArea.addEventListener('dragleave', () => cUploadArea.classList.remove('dragover'));
-        cUploadArea.addEventListener('drop', e => {
-            e.preventDefault();
-            cUploadArea.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('image/')) {
-                const dt = new DataTransfer(); dt.items.add(file);
-                document.getElementById('cFileInput').files = dt.files;
-                uploadCountryImage(document.getElementById('cFileInput'));
-            }
-        });
-    }
-
-    // Drag and drop for Service upload
-    const sUploadArea = document.getElementById('sUploadArea');
-    if (sUploadArea) {
-        sUploadArea.addEventListener('dragover', e => { e.preventDefault(); sUploadArea.classList.add('dragover'); });
-        sUploadArea.addEventListener('dragleave', () => sUploadArea.classList.remove('dragover'));
-        sUploadArea.addEventListener('drop', e => {
-            e.preventDefault();
-            sUploadArea.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('image/')) {
-                const dt = new DataTransfer(); dt.items.add(file);
-                document.getElementById('sFileInput').files = dt.files;
-                uploadServiceImage(document.getElementById('sFileInput'));
-            }
-        });
-    }
-
-    function handleImageFile(file) {
-        if (!file.type.startsWith('image/')) {
-            showToast('Please select an image file', 'error'); return;
-        }
-        if (file.size > 10 * 1024 * 1024) {
-            showToast('Image must be under 10MB', 'error'); return;
-        }
-        uploadToCloudinary(file);
-    }
-
-    async function uploadToCloudinary(file) {
-        const progress = document.getElementById('uploadProgress');
-        const progressBar = document.getElementById('uploadProgressBar');
-        const status = document.getElementById('uploadStatus');
-
-        progress.style.display = 'block';
-        progressBar.style.width = '0%';
-        status.textContent = 'Uploading...';
-
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', CLOUDINARY_PRESET);
-        formData.append('folder', 'uni_world');
-
-        try {
-            // Simulate progress while uploading
-            let fakeProgress = 0;
-            const ticker = setInterval(() => {
-                fakeProgress = Math.min(fakeProgress + 10, 85);
-                progressBar.style.width = fakeProgress + '%';
-            }, 150);
-
-            const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
-            clearInterval(ticker);
-
-            if (!res.ok) throw new Error('Upload failed');
-            const data = await res.json();
-
-            // Use f_auto,q_auto for automatic format & quality optimization
-            const optimizedUrl = data.secure_url.replace('/upload/', '/upload/f_auto,q_auto,w_800/');
-
-            progressBar.style.width = '100%';
-            status.textContent = '✅ Uploaded successfully!';
-
-            // Set hidden input value
-            document.getElementById('newsImage').value = optimizedUrl;
-
-            // Show preview
-            document.getElementById('uploadPlaceholder').style.display = 'none';
-            document.getElementById('imagePreviewWrap').style.display = 'block';
-            document.getElementById('imagePreview').src = optimizedUrl;
-
-            setTimeout(() => { progress.style.display = 'none'; status.textContent = ''; }, 2000);
-
-        } catch (e) {
-            status.textContent = '❌ Upload failed. Please try again.';
-            progressBar.style.width = '0%';
-            showToast('Image upload failed', 'error');
-        }
-    }
-
-    function removeImage() {
-        document.getElementById('newsImage').value = '';
-        document.getElementById('imagePreview').src = '';
-        document.getElementById('imagePreviewWrap').style.display = 'none';
-        document.getElementById('uploadPlaceholder').style.display = 'block';
-        document.getElementById('uploadProgress').style.display = 'none';
-        document.getElementById('uploadStatus').textContent = '';
-        fileInput.value = '';
-    }
-
-    // When editing an existing news item that already has an image — show it in preview
-    const _origEditNews = editNews;
-    editNews = async function (id) {
-        await _origEditNews(id);
-        const url = document.getElementById('newsImage').value;
-        if (url) {
-            document.getElementById('uploadPlaceholder').style.display = 'none';
-            document.getElementById('imagePreviewWrap').style.display = 'block';
-            document.getElementById('imagePreview').src = url;
-        }
-    };
-
-    // Also patch cancelEdit to reset image UI
-    const _origCancelEdit = cancelEdit;
-    cancelEdit = function () {
-        _origCancelEdit();
-        removeImage();
-    };
-
-    // ── Countries ─────────────────────────────────────────────────────────────
-
-    let editingCountryId = null;
-
-    async function loadCountries() {
-        try {
-            const items = await apiGet('/api/admin/countries');
-            document.getElementById('countriesListCount').textContent = items.length;
-            const container = document.getElementById('countriesList');
-            if (!items.length) { container.innerHTML = emptyState('🌍', 'No countries yet', 'Add your first country above'); return; }
-            container.innerHTML = items.map(c => `
-                <div class="news-card ${c.is_active ? '' : 'inactive'}">
-                    <div class="news-card-img-placeholder" style="font-size:3rem">${escHtml(c.flag_emoji || '🌍')}</div>
-                    <div class="news-card-body">
-                        <div class="news-card-title">${escHtml(c.name)}</div>
-                        <div class="news-card-body-text">${escHtml(c.university_count || '')} ${c.description ? '· ' + escHtml(c.description.substring(0, 60)) + '...' : ''}</div>
-                        <div class="news-card-meta"><span>${c.is_active ? '🟢 Active' : '🔴 Inactive'}</span><span>Order: ${c.sort_order}</span></div>
-                    </div>
-                    <div class="news-card-actions">
-                        <button class="edit-btn" onclick="editCountry(${c.id})">✏️ Edit</button>
-                        <button class="delete-btn" onclick="deleteCountry(${c.id})">🗑️ Delete</button>
-                    </div>
-                </div>`).join('');
-        } catch (e) { console.error(e); }
-    }
-
-    // ── Country image upload ───────────────────────────────────────────────────
-
-    async function uploadCountryImage(input) {
-        const file = input.files[0]; if (!file) return;
-        const status = document.getElementById('cUploadStatus');
-        const progress = document.getElementById('cUploadProgress');
-        const bar = document.getElementById('cUploadProgressBar');
-        status.textContent = ''; status.className = 'upload-status';
-        progress.style.display = 'block'; bar.style.width = '30%';
-        try {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', CLOUDINARY_PRESET);
-            formData.append('folder', 'uni_world/countries');
-            bar.style.width = '60%';
-            const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
-            const data = await res.json();
-            bar.style.width = '100%';
-            const url = data.secure_url.replace('/upload/', '/upload/f_auto,q_auto,w_600,h_400,c_fill/');
-            document.getElementById('cImage').value = url;
-            document.getElementById('cImagePreview').src = url;
-            document.getElementById('cImagePreviewWrap').style.display = 'block';
-            document.getElementById('cUploadPlaceholder').style.display = 'none';
-            status.textContent = '✅ Image uploaded successfully!';
-            status.style.color = '#10b981';
-            setTimeout(() => { progress.style.display = 'none'; bar.style.width = '0%'; }, 800);
-        } catch (e) {
-            progress.style.display = 'none';
-            status.textContent = '❌ Upload failed. Try again.';
-            status.style.color = '#ef4444';
-        }
-    }
-
-    function previewCountryUrl(url) {
-        if (!url) return;
-        document.getElementById('cImagePreview').src = url;
-        document.getElementById('cImagePreviewWrap').style.display = 'block';
-        document.getElementById('cUploadPlaceholder').style.display = 'none';
-    }
-
-    function resetCountryUpload() {
-        document.getElementById('cImage').value = '';
-        document.getElementById('cImagePreviewWrap').style.display = 'none';
-        document.getElementById('cImagePreview').src = '';
-        document.getElementById('cUploadPlaceholder').style.display = 'block';
-        document.getElementById('cUploadStatus').textContent = '';
-        document.getElementById('cUploadProgress').style.display = 'none';
-        document.getElementById('cFileInput').value = '';
-    }
-    const file = input.files[0]; if (!file) return;
-    const status = document.getElementById('sUploadStatus');
-    const progress = document.getElementById('sUploadProgress');
-    const bar = document.getElementById('sUploadProgressBar');
-    status.textContent = ''; status.className = 'upload-status';
-    progress.style.display = 'block'; bar.style.width = '30%';
-    try {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', CLOUDINARY_PRESET);
-        formData.append('folder', 'uni_world/services');
-        bar.style.width = '60%';
-        const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
-        const data = await res.json();
-        bar.style.width = '100%';
-        const url = data.secure_url.replace('/upload/', '/upload/f_auto,q_auto,w_600,h_400,c_fill/');
-        document.getElementById('sImage').value = url;
-        document.getElementById('sImagePreview').src = url;
-        document.getElementById('sImagePreviewWrap').style.display = 'block';
-        document.getElementById('sUploadPlaceholder').style.display = 'none';
-        status.textContent = '✅ Image uploaded successfully!';
-        status.style.color = '#10b981';
-        setTimeout(() => { progress.style.display = 'none'; bar.style.width = '0%'; }, 800);
-    } catch (e) {
-        progress.style.display = 'none';
-        status.textContent = '❌ Upload failed. Try again.';
-        status.style.color = '#ef4444';
-    }
-    }
-
-    function previewServiceUrl(url) {
-        if (!url) return;
-        document.getElementById('sImagePreview').src = url;
-        document.getElementById('sImagePreviewWrap').style.display = 'block';
-        document.getElementById('sUploadPlaceholder').style.display = 'none';
-    }
-
-    function resetServiceUpload() {
-        document.getElementById('sImage').value = '';
-        document.getElementById('sImagePreviewWrap').style.display = 'none';
-        document.getElementById('sImagePreview').src = '';
-        document.getElementById('sUploadPlaceholder').style.display = 'block';
-        document.getElementById('sUploadStatus').textContent = '';
-        document.getElementById('sUploadProgress').style.display = 'none';
-        document.getElementById('sFileInput').value = '';
-    }
-
-    async function saveCountry() {
-        const name = document.getElementById('cName').value.trim();
-        if (!name) { showToast('Country name is required', 'error'); return; }
-        const payload = {
-            name, flag_emoji: '',
-            university_count: document.getElementById('cUniCount').value.trim(),
-            modal_key: document.getElementById('cModalKey').value.trim() || null,
-            description: document.getElementById('cDesc').value.trim() || null,
-            programs: document.getElementById('cPrograms').value.trim() || null,
-            cost_of_living: document.getElementById('cCost').value.trim() || null,
-            language: document.getElementById('cLanguage').value.trim() || null,
-            visa_requirements: document.getElementById('cVisa').value.trim() || null,
-            image_url: document.getElementById('cImage').value.trim() || null,
-            sort_order: parseInt(document.getElementById('cSort').value) || 0,
-            is_active: document.getElementById('cActive').checked,
-        };
-        try {
-            const url = editingCountryId ? `/api/admin/countries/${editingCountryId}` : '/api/admin/countries';
-            const method = editingCountryId ? 'PUT' : 'POST';
-            const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(payload) });
-            if (res.ok) { showToast(editingCountryId ? 'Country updated! 🌍' : 'Country added! 🌍'); cancelCountryEdit(); loadCountries(); }
-        } catch (e) { showToast('Error saving', 'error'); }
-    }
-
-    async function editCountry(id) {
-        const items = await apiGet('/api/admin/countries');
-        const c = items.find(x => x.id === id); if (!c) return;
-        editingCountryId = id;
-        document.getElementById('countryFormTitle').textContent = '✏️ Edit Country';
-        document.getElementById('cName').value = c.name;
-        document.getElementById('cUniCount').value = c.university_count || '';
-        document.getElementById('cModalKey').value = c.modal_key || '';
-        document.getElementById('cDesc').value = c.description || '';
-        document.getElementById('cPrograms').value = c.programs || '';
-        document.getElementById('cCost').value = c.cost_of_living || '';
-        document.getElementById('cLanguage').value = c.language || '';
-        document.getElementById('cVisa').value = c.visa_requirements || '';
-        document.getElementById('cImage').value = c.image_url || '';
-        if (c.image_url) {
-            document.getElementById('cImagePreview').src = c.image_url;
-            document.getElementById('cImagePreviewWrap').style.display = 'block';
-            document.getElementById('cUploadPlaceholder').style.display = 'none';
-        }
-        document.getElementById('cSort').value = c.sort_order;
-        document.getElementById('cActive').checked = c.is_active;
-        document.getElementById('cancelCountryBtn').style.display = 'inline-block';
-        document.getElementById('countryFormTitle').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function cancelCountryEdit() {
-        editingCountryId = null;
-        document.getElementById('countryFormTitle').textContent = '🌍 Add Country';
-        ['cName', 'cUniCount', 'cModalKey', 'cDesc', 'cPrograms', 'cCost', 'cLanguage', 'cVisa'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('cSort').value = 0;
-        document.getElementById('cActive').checked = true;
-        document.getElementById('cancelCountryBtn').style.display = 'none';
-        resetCountryUpload();
-    }
-
-    async function deleteCountry(id) {
-        if (!confirm('Delete this country?')) return;
-        const res = await fetch(`/api/admin/countries/${id}`, { method: 'DELETE', headers: authHeaders() });
-        if (res.ok) { showToast('Deleted 🗑️'); loadCountries(); }
-    }
-
-    // ── Services ──────────────────────────────────────────────────────────────
-
-    let editingServiceId = null;
-
-    async function loadServices() {
-        try {
-            const items = await apiGet('/api/admin/services');
-            document.getElementById('servicesListCount').textContent = items.length;
-            const container = document.getElementById('servicesList');
-            if (!items.length) { container.innerHTML = emptyState('⚙️', 'No services yet', 'Add your first service above'); return; }
-            container.innerHTML = items.map(s => `
-                <div class="news-card ${s.is_active ? '' : 'inactive'}">
-                    <div class="news-card-img-placeholder" style="font-size:3rem">${escHtml(s.icon_emoji || '⭐')}</div>
-                    <div class="news-card-body">
-                        ${s.is_featured ? '<span class="news-badge">⭐ Featured</span><br>' : ''}
-                        <div class="news-card-title">${escHtml(s.title)}</div>
-                        <div class="news-card-body-text">${escHtml((s.description || '').substring(0, 80))}...</div>
-                        <div class="news-card-meta"><span>${s.is_active ? '🟢 Active' : '🔴 Inactive'}</span><span>Order: ${s.sort_order}</span></div>
-                    </div>
-                    <div class="news-card-actions">
-                        <button class="edit-btn" onclick="editService(${s.id})">✏️ Edit</button>
-                        <button class="delete-btn" onclick="deleteService(${s.id})">🗑️ Delete</button>
-                    </div>
-                </div>`).join('');
-        } catch (e) { console.error(e); }
-    }
-
-    async function saveService() {
-        const title = document.getElementById('sTitle').value.trim();
-        const desc = document.getElementById('sDesc').value.trim();
-        if (!title || !desc) { showToast('Title and description are required', 'error'); return; }
-        const payload = {
-            title, description: desc,
-            icon_emoji: null,
-            image_url: document.getElementById('sImage').value.trim() || null,
-            details: document.getElementById('sDetails').value.trim() || null,
-            benefits: document.getElementById('sBenefits').value.trim() || null,
-            modal_key: document.getElementById('sModalKey').value.trim() || null,
-            sort_order: parseInt(document.getElementById('sSort').value) || 0,
-            is_active: document.getElementById('sActive').checked,
-            is_featured: document.getElementById('sFeatured').checked,
-        };
-        try {
-            const url = editingServiceId ? `/api/admin/services/${editingServiceId}` : '/api/admin/services';
-            const method = editingServiceId ? 'PUT' : 'POST';
-            const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(payload) });
-            if (res.ok) { showToast(editingServiceId ? 'Service updated! ⚙️' : 'Service added! ⚙️'); cancelServiceEdit(); loadServices(); }
-        } catch (e) { showToast('Error saving', 'error'); }
-    }
-
-    async function editService(id) {
-        const items = await apiGet('/api/admin/services');
-        const s = items.find(x => x.id === id); if (!s) return;
-        editingServiceId = id;
-        document.getElementById('serviceFormTitle').textContent = '✏️ Edit Service';
-        document.getElementById('sTitle').value = s.title;
-        document.getElementById('sDesc').value = s.description || '';
-        document.getElementById('sDetails').value = s.details || '';
-        document.getElementById('sBenefits').value = s.benefits || '';
-        document.getElementById('sModalKey').value = s.modal_key || '';
-        document.getElementById('sImage').value = s.image_url || '';
-        if (s.image_url) {
-            document.getElementById('sImagePreview').src = s.image_url;
-            document.getElementById('sImagePreviewWrap').style.display = 'block';
-            document.getElementById('sUploadPlaceholder').style.display = 'none';
-        }
-        document.getElementById('sSort').value = s.sort_order;
-        document.getElementById('sActive').checked = s.is_active;
-        document.getElementById('sFeatured').checked = s.is_featured;
-        document.getElementById('cancelServiceBtn').style.display = 'inline-block';
-        document.getElementById('serviceFormTitle').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function cancelServiceEdit() {
-        editingServiceId = null;
-        document.getElementById('serviceFormTitle').textContent = '⚙️ Add Service';
-        ['sTitle', 'sDesc', 'sDetails', 'sBenefits', 'sModalKey'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('sSort').value = 0;
-        document.getElementById('sActive').checked = true;
-        document.getElementById('sFeatured').checked = false;
-        document.getElementById('cancelServiceBtn').style.display = 'none';
-        resetServiceUpload();
-    }
-
-    async function deleteService(id) {
-        if (!confirm('Delete this service?')) return;
-        const res = await fetch(`/api/admin/services/${id}`, { method: 'DELETE', headers: authHeaders() });
-        if (res.ok) { showToast('Deleted 🗑️'); loadServices(); }
-    }
-
-    // ── Universities ──────────────────────────────────────────────────────────
-
-    let editingUniId = null;
-
-    async function loadUniversities() {
-        try {
-            const items = await apiGet('/api/admin/universities');
-            document.getElementById('uniListCount').textContent = items.length;
-            const container = document.getElementById('universitiesList');
-            if (!items.length) { container.innerHTML = emptyState('🎓', 'No universities yet', 'Add your first university above'); return; }
-            container.innerHTML = items.map(u => `
-                <div class="news-card ${u.is_active ? '' : 'inactive'}">
-                    ${u.image_url ? `<img class="news-card-img" src="${escHtml(u.image_url)}" onerror="this.style.display='none'">` : '<div class="news-card-img-placeholder">🎓</div>'}
-                    <div class="news-card-body">
-                        <div class="news-badge">${escHtml(u.country || '')}</div><br>
-                        <div class="news-card-title">${escHtml(u.name)}</div>
-                        <div class="news-card-body-text">${escHtml((u.description || '').substring(0, 80))}${u.description && u.description.length > 80 ? '...' : ''}</div>
-                        <div class="news-card-meta"><span>${u.is_active ? '🟢 Active' : '🔴 Inactive'}</span>${u.ranking ? `<span>⭐ ${escHtml(u.ranking)}</span>` : ''}</div>
-                    </div>
-                    <div class="news-card-actions">
-                        <button class="edit-btn" onclick="editUniversity(${u.id})">✏️ Edit</button>
-                        <button class="delete-btn" onclick="deleteUniversity(${u.id})">🗑️ Delete</button>
-                    </div>
-                </div>`).join('');
-        } catch (e) { console.error(e); }
-    }
-
-    async function populateCountryDropdown() {
-        try {
-            const countries = await apiGet('/api/admin/countries');
-            const select = document.getElementById('uCountry');
-            const currentVal = select.value; // preserve value if editing
-            select.innerHTML = '<option value="">-- Select a country --</option>';
-            countries
-                .filter(c => c.is_active)
-                .forEach(c => {
-                    const opt = document.createElement('option');
-                    opt.value = c.name;
-                    opt.textContent = `${c.flag_emoji || ''} ${c.name}`;
-                    select.appendChild(opt);
-                });
-            if (currentVal) select.value = currentVal; // restore if editing
-        } catch (e) { console.error('Could not load countries for dropdown', e); }
-    }
-
-    async function saveUniversity() {
-        const name = document.getElementById('uName').value.trim();
-        const country = document.getElementById('uCountry').value.trim();
-        if (!name || !country) { showToast('Name and country are required', 'error'); return; }
-        const payload = {
-            name, country,
-            description: document.getElementById('uDesc').value.trim() || null,
-            image_url: document.getElementById('uImage').value.trim() || null,
-            ranking: document.getElementById('uRanking').value.trim() || null,
-            programs: document.getElementById('uPrograms').value.trim() || null,
-            link_url: document.getElementById('uLink').value.trim() || null,
-            sort_order: parseInt(document.getElementById('uSort').value) || 0,
-            is_active: document.getElementById('uActive').checked,
-        };
-        try {
-            const url = editingUniId ? `/api/admin/universities/${editingUniId}` : '/api/admin/universities';
-            const method = editingUniId ? 'PUT' : 'POST';
-            const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(payload) });
-            if (res.ok) { showToast(editingUniId ? 'University updated! 🎓' : 'University added! 🎓'); cancelUniEdit(); loadUniversities(); }
-        } catch (e) { showToast('Error saving', 'error'); }
-    }
-
-    async function editUniversity(id) {
-        const items = await apiGet('/api/admin/universities');
-        const u = items.find(x => x.id === id); if (!u) return;
-        editingUniId = id;
-        document.getElementById('uniFormTitle').textContent = '✏️ Edit University';
-        document.getElementById('uName').value = u.name;
-        document.getElementById('uCountry').value = u.country || '';
-        document.getElementById('uDesc').value = u.description || '';
-        document.getElementById('uImage').value = u.image_url || '';
-        document.getElementById('uRanking').value = u.ranking || '';
-        document.getElementById('uPrograms').value = u.programs || '';
-        document.getElementById('uLink').value = u.link_url || '';
-        document.getElementById('uSort').value = u.sort_order;
-        document.getElementById('uActive').checked = u.is_active;
-        document.getElementById('cancelUniBtn').style.display = 'inline-block';
-        document.getElementById('uniFormTitle').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function cancelUniEdit() {
-        editingUniId = null;
-        document.getElementById('uniFormTitle').textContent = '🎓 Add University';
-        ['uName', 'uCountry', 'uDesc', 'uImage', 'uRanking', 'uPrograms', 'uLink'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('uSort').value = 0;
-        document.getElementById('uActive').checked = true;
-        document.getElementById('cancelUniBtn').style.display = 'none';
-    }
-
-    async function deleteUniversity(id) {
-        if (!confirm('Delete this university?')) return;
-        const res = await fetch(`/api/admin/universities/${id}`, { method: 'DELETE', headers: authHeaders() });
-        if (res.ok) { showToast('Deleted 🗑️'); loadUniversities(); }
-    }
-
-</script>

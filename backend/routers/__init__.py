@@ -1,0 +1,9 @@
+from .auth import router as auth_router
+from .student import router as student_router
+from .crm import router as crm_router
+from .leads import router as leads_router
+from .comments import router as comments_router
+from .news import router as news_router
+from .countries import router as countries_router
+from .services import router as services_router
+from .universities import router as universities_router

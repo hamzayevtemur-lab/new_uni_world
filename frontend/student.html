@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal - Uni World</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #60a5fa;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0369a1 100%);
+            min-height: 100vh;
+            color: var(--text);
+            padding: 1.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ── Auth Screen ── */
+        #authScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 90vh;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-header .logo-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+            font-size: 1.8rem;
+            border-radius: 18px;
+            margin-bottom: 1rem;
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .brand-header h1 {
+            font-size: 1.8rem;
+            color: var(--dark);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 0.3rem;
+        }
+
+        .auth-tabs {
+            display: flex;
+            background: #f1f5f9;
+            padding: 0.35rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .auth-tab-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 0.45rem;
+            color: #334155;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            background: white;
+            color: var(--text);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.4);
+        }
+
+        .alert-box {
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.2rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+        }
+
+        .alert-success {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #059669;
+        }
+
+        /* ── Student Dashboard ── */
+        #dashboardScreen {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .dashboard-header {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(20px);
+        }
+
+        .student-meta {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .avatar-badge {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .student-meta h2 {
+            font-size: 1.3rem;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .student-meta p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-chip {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            background: #dbeafe;
+            color: #1e40af;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-outline {
+            padding: 0.65rem 1.2rem;
+            border: 2px solid var(--border);
+            background: white;
+            border-radius: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* ── Nav Tabs ── */
+        .dash-nav {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .dash-tab-btn {
+            background: rgba(255, 255, 255, 0.85);
+            border: none;
+            padding: 0.9rem 1.6rem;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .dash-tab-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* ── Content Panels ── */
+        .panel {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(20px);
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-header h3 {
+            font-size: 1.25rem;
+            color: var(--dark);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+        }
+
+        /* ── Document Vault Cards ── */
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .doc-card {
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 1.5rem;
+            background: #f8fafc;
+            transition: all 0.25s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .doc-card:hover {
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .doc-card.uploaded {
+            border-style: solid;
+            border-color: #cbd5e1;
+            background: white;
+        }
+
+        .doc-card.verified {
+            border-color: #a7f3d0;
+            background: #f0fdf4;
+        }
+
+        .doc-card.rejected {
+            border-color: #fecaca;
+            background: #fef2f2;
+        }
+
+        .doc-icon {
+            font-size: 2.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .doc-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .doc-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.2rem;
+            line-height: 1.4;
+        }
+
+        .doc-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.3rem 0.7rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .status-verified {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .upload-btn-wrap {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .upload-btn-wrap input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .btn-upload {
+            width: 100%;
+            padding: 0.75rem;
+            background: #e2e8f0;
+            color: #334155;
+            font-weight: 700;
+            font-size: 0.88rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            display: block;
+        }
+
+        .btn-upload:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .doc-preview-link {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .doc-feedback-note {
+            padding: 0.6rem 0.8rem;
+            border-radius: 8px;
+            background: #fef2f2;
+            border-left: 3px solid #ef4444;
+            color: #991b1b;
+            font-size: 0.82rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* ── Timeline ── */
+        .timeline {
+            position: relative;
+            padding: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #e2e8f0;
+            border-radius: 4px;
+        }
+
+        .timeline-step {
+            position: relative;
+            padding-left: 60px;
+            margin-bottom: 2rem;
+        }
+
+        .timeline-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 8px;
+            top: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .timeline-step.completed .timeline-dot {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+
+        .timeline-step.current .timeline-dot {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.2);
+        }
+
+        .timeline-content h4 {
+            font-size: 1.05rem;
+            color: var(--dark);
+            margin-bottom: 0.3rem;
+            font-weight: 700;
+        }
+
+        .timeline-content p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ── Application Cards ── */
+        .app-card {
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-card h4 {
+            font-size: 1.15rem;
+            color: var(--dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .app-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--dark);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            z-index: 99999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: #059669;
+        }
+
+        .toast.error {
+            background: #dc2626;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .app-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ── AUTHENTICATION SCREEN ── -->
+    <div id="authScreen">
+        <div class="auth-card">
+            <div class="brand-header">
+                <div class="logo-badge">🎓</div>
+                <h1>Uni World Portal</h1>
+                <p>Student Admission &amp; Document Hub</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthTab('login')">Sign In</button>
+                <button class="auth-tab-btn" id="tabRegisterBtn" onclick="switchAuthTab('register')">Create
+                    Account</button>
+            </div>
+
+            <div id="authAlert" class="alert-box alert-error"></div>
+
+            <!-- LOGIN FORM -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="student@example.com" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required
+                        autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-submit" id="loginSubmitBtn">
+                    Sign In to Portal →
+                </button>
+            </form>
+
+            <!-- REGISTER FORM -->
+            <form id="registerForm" style="display:none;" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Full Name (as in Passport) *</label>
+                    <input type="text" id="regFullName" placeholder="e.g. Alisher Navoiy" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" id="regEmail" placeholder="student@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone / Telegram *</label>
+                    <input type="tel" id="regPhone" placeholder="+998 90 123 45 67" required>
+                </div>
+                <div class="form-group">
+                    <label>Target Study Country</label>
+                    <select id="regCountry">
+                        <option value="China">🇨🇳 China (Wuxi, Beijing, etc.)</option>
+                        <option value="Poland">🇵🇱 Poland (Warsaw, Wroclaw)</option>
+                        <option value="Germany">🇩🇪 Germany</option>
+                        <option value="United Kingdom">🇬🇧 United Kingdom</option>
+                        <option value="USA">🇺🇸 United States</option>
+                        <option value="Malaysia">🇲🇾 Malaysia</option>
+                        <option value="South Korea">🇰🇷 South Korea</option>
+                        <option value="Other">🌍 Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Target Degree</label>
+                    <select id="regDegree">
+                        <option value="Bachelor">Bachelor Degree (Bakavr)</option>
+                        <option value="Master">Master Degree (Magistratura)</option>
+                        <option value="Language Course">1-Year Language Course (Til kursi)</option>
+                        <option value="PhD">PhD / Doctorate</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Create Password *</label>
+                    <input type="password" id="regPassword" placeholder="Minimum 6 characters" minlength="6" required>
+                </div>
+                <button type="submit" class="btn-submit" id="regSubmitBtn">
+                    Create Student Account →
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <a href="/"
+                    style="color: var(--text-muted); font-size: 0.88rem; text-decoration: none; font-weight: 600;">←
+                    Back to Uni World Homepage</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── STUDENT DASHBOARD SCREEN ── -->
+    <div id="dashboardScreen" class="container">
+
+        <!-- Top Header -->
+        <header class="dashboard-header">
+            <div class="student-meta">
+                <div class="avatar-badge" id="studentAvatar">U</div>
+                <div>
+                    <h2 id="studentDisplayName">Student Name</h2>
+                    <p id="studentDisplayEmail">student@uniworld.uz</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="status-chip" id="studentStatusChip">
+                    <span>🟢</span> <span id="statusText">Registered</span>
+                </div>
+                <button class="btn-outline" onclick="studentLogout()">Sign Out</button>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="dash-nav">
+            <button class="dash-tab-btn active" onclick="switchDashTab('profile', this)">
+                👤 My Profile &amp; Academic Info
+            </button>
+            <button class="dash-tab-btn" onclick="switchDashTab('documents', this)">
+                📁 Document Vault (<span id="verifiedDocBadge">0</span>/6 Verified)
+            </button>
+            <button class="dash-tab-btn" onclick="switchDashTab('applications', this)">
+                🎓 Applications &amp; Timeline
+            </button>
+        </nav>
+
+        <!-- TAB 1: PROFILE & ACADEMIC INFO -->
+        <div id="tabProfile" class="tab-pane active">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>👤 Personal &amp; Passport Details</h3>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">Please make sure passport details match
+                        your official documents</span>
+                </div>
+
+                <form id="profileForm" onsubmit="saveProfile(event)">
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>Full Legal Name (as in Passport)</label>
+                            <input type="text" id="pFullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number / Telegram</label>
+                            <input type="tel" id="pPhone" placeholder="+998 90 123 45 67">
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <input type="date" id="pDob">
+                        </div>
+                    </div>
+
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="pGender">
+                                <option value="">-- Select --</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nationality</label>
+                            <input type="text" id="pNationality" value="Uzbekistan">
+                        </div>
+                        <div class="form-group">
+                            <label>Passport Number (e.g. FA1234567)</label>
+                            <input type="text" id="pPassportNumber" placeholder="FA1234567" style="text-transform:uppercase;">
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Passport Expiry Date</label>
+                            <input type="date" id="pPassportExpiry">
+                        </div>
+                        <div class="form-group">
+                            <label>Emergency Contact (Parent Name &amp; Phone)</label>
+                            <input type="text" id="pEmergency" placeholder="Parent Name (+998 ...)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Residential Address</label>
+                        <input type="text" id="pAddress" placeholder="City, District, Street address">
+                    </div>
+
+                    <div class="panel-header" style="margin-top: 2rem;">
+                        <h3>🎓 Academic Background &amp; Study Preference</h3>
+                    </div>
+
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>High School / Lyceum / University</label>
+                            <input type="text" id="pHighSchool" placeholder="e.g. Academic Lyceum No. 1">
+                        </div>
+                        <div class="form-group">
+                            <label>GPA / Average Grade</label>
+                            <input type="text" id="pGpa" placeholder="e.g. 4.8 / 5.0 or 88%">
+                        </div>
+                        <div class="form-group">
+                            <label>IELTS / TOEFL Score</label>
+                            <input type="text" id="pIelts" placeholder="e.g. IELTS 6.5 (or None)">
+                        </div>
+                    </div>
+
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>Duolingo English Test (DET)</label>
+                            <input type="text" id="pDuolingo" placeholder="e.g. 115 (optional)">
+                        </div>
+                        <div class="form-group">
+                            <label>Target Country</label>
+                            <select id="pTargetCountry">
+                                <option value="China">🇨🇳 China (Wuxi, Beijing, Shanghai)</option>
+                                <option value="Poland">🇵🇱 Poland (Warsaw, Wroclaw)</option>
+                                <option value="Germany">🇩🇪 Germany</option>
+                                <option value="United Kingdom">🇬🇧 United Kingdom</option>
+                                <option value="USA">🇺🇸 United States</option>
+                                <option value="Malaysia">🇲🇾 Malaysia</option>
+                                <option value="South Korea">🇰🇷 South Korea</option>
+                                <option value="Other">🌍 Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Target Degree Level</label>
+                            <select id="pTargetDegree">
+                                <option value="Bachelor">Bachelor Degree (4 Years)</option>
+                                <option value="Master">Master Degree (2 Years)</option>
+                                <option value="Language Course">1-Year Language Course</option>
+                                <option value="PhD">PhD / Doctorate</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Target Major / Faculty of Study</label>
+                        <input type="text" id="pTargetMajor"
+                            placeholder="e.g. Computer Science, International Business, Medicine, Mechanical Engineering">
+                    </div>
+
+                    <button type="submit" class="btn-submit" style="max-width: 250px; margin-top: 1rem;">
+                        💾 Save Profile
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- TAB 2: DOCUMENT VAULT -->
+        <div id="tabDocuments" class="tab-pane">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>📁 Official Document Vault</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.3rem;">
+                            Upload clear scans in JPG, PNG, or PDF format. Counselors review each document before submitting
+                            to universities.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="doc-grid" id="documentGrid">
+                    <!-- Standard Doc Slots rendered dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: APPLICATIONS & TIMELINE -->
+        <div id="tabApplications" class="tab-pane">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>🚀 Your Admission Roadmap</h3>
+                </div>
+
+                <div class="timeline" id="admissionTimeline">
+                    <div class="timeline-step completed" id="step1">
+                        <div class="timeline-dot">✓</div>
+                        <div class="timeline-content">
+                            <h4>1. Account Registered</h4>
+                            <p>You have successfully registered on the Uni World admission portal.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-step" id="step2">
+                        <div class="timeline-dot">2</div>
+                        <div class="timeline-content">
+                            <h4>2. Document Verification</h4>
+                            <p>Upload passport, diploma, and test certificates in the Document Vault for counselor review.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-step" id="step3">
+                        <div class="timeline-dot">3</div>
+                        <div class="timeline-content">
+                            <h4>3. University Application Submitted</h4>
+                            <p>Our admission team submits your application dossier to chosen partner universities.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-step" id="step4">
+                        <div class="timeline-dot">4</div>
+                        <div class="timeline-content">
+                            <h4>4. Official Offer / Admission Letter</h4>
+                            <p>Acceptance letter and scholarship confirmation issued by the university.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-step" id="step5">
+                        <div class="timeline-dot">5</div>
+                        <div class="timeline-content">
+                            <h4>5. Visa Processing (JW202 / Visa Letter)</h4>
+                            <p>Document preparation and embassy interview appointment.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-step" id="step6">
+                        <div class="timeline-dot">6</div>
+                        <div class="timeline-content">
+                            <h4>6. Visa Granted &amp; Departure</h4>
+                            <p>Flight booking, dormitory allocation, and arrival briefing.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>🏛️ Target University Applications</h3>
+                </div>
+                <div id="myApplicationsList">
+                    <p style="color: var(--text-muted);">No university applications assigned yet. Complete your profile and
+                        upload documents to initiate applications.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // ── Cloudinary Direct Preset Config ──
+        const CLOUDINARY_CLOUD = 'dalsairse';
+        const CLOUDINARY_PRESET = 'uni_world_uploads';
+        const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`;
+
+        let currentStudent = null;
+        let currentDocs = [];
+
+        // Required standard document slots
+        const REQUIRED_DOCS = [
+            { key: 'passport', title: 'International Passport', icon: '🛂', desc: 'Main photo & personal details page (must be valid for at least 1.5 years)' },
+            { key: 'diploma_transcript', title: 'Diploma / Transcript', icon: '📜', desc: 'High school diploma, lyceum certificate, or bachelor transcript with marks' },
+            { key: 'language_cert', title: 'Language Certificate', icon: '🌐', desc: 'IELTS, TOEFL, Duolingo or Official English Medium of Instruction letter' },
+            { key: 'photo_id', title: 'Applicant Photo (3.5x4.5)', icon: '📸', desc: 'Clear passport-style photo with white background' },
+            { key: 'motivation_letter', title: 'Motivation Letter / SOP', icon: '📝', desc: 'Personal statement stating your study goals and reasons for choosing the university' },
+            { key: 'recommendation_letter', title: 'Recommendation Letter', icon: '🤝', desc: 'From school teacher, lyceum mentor, or university professor' },
+            { key: 'medical_check', title: 'Physical Examination Form', icon: '🏥', desc: 'Foreigner physical exam / Medical certificate 086-U' },
+            { key: 'bank_statement', title: 'Bank Statement / Sponsor Letter', icon: '🏦', desc: 'Proof of sufficient funds or sponsor financial guarantee' }
+        ];
+
+        // ── Init & Session Check ──
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('uni_student_token');
+            if (token) {
+                loadStudentDashboard();
+            } else {
+                showAuthScreen();
+            }
+        });
+
+        function showAuthScreen() {
+            document.getElementById('authScreen').style.display = 'flex';
+            document.getElementById('dashboardScreen').style.display = 'none';
+        }
+
+        function switchAuthTab(tab) {
+            document.getElementById('tabLoginBtn').classList.toggle('active', tab === 'login');
+            document.getElementById('tabRegisterBtn').classList.toggle('active', tab === 'register');
+            document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+            document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+            hideAlert();
+        }
+
+        function showAlert(msg, isError = true) {
+            const box = document.getElementById('authAlert');
+            box.textContent = msg;
+            box.className = `alert-box ${isError ? 'alert-error' : 'alert-success'}`;
+            box.style.display = 'block';
+        }
+
+        function hideAlert() {
+            document.getElementById('authAlert').style.display = 'none';
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => { toast.className = 'toast'; }, 3500);
+        }
+
+        // ── Auth Handlers ──
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('loginSubmitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Signing in...';
+            hideAlert();
+
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const res = await fetch('/api/student/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Login failed');
+
+                localStorage.setItem('uni_student_token', data.token);
+                loadStudentDashboard();
+            } catch (err) {
+                showAlert(err.message, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Sign In to Portal →';
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const btn = document.getElementById('regSubmitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Creating account...';
+            hideAlert();
+
+            const payload = {
+                full_name: document.getElementById('regFullName').value.trim(),
+                email: document.getElementById('regEmail').value.trim(),
+                phone: document.getElementById('regPhone').value.trim(),
+                target_country: document.getElementById('regCountry').value,
+                target_degree: document.getElementById('regDegree').value,
+                password: document.getElementById('regPassword').value
+            };
+
+            try {
+                const res = await fetch('/api/student/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Registration failed');
+
+                localStorage.setItem('uni_student_token', data.token);
+                loadStudentDashboard();
+            } catch (err) {
+                showAlert(err.message, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Create Student Account →';
+            }
+        }
+
+        function studentLogout() {
+            localStorage.removeItem('uni_student_token');
+            currentStudent = null;
+            currentDocs = [];
+            showAuthScreen();
+            showToast('Signed out successfully');
+        }
+
+        // ── Dashboard Data Loading ──
+        async function loadStudentDashboard() {
+            const token = localStorage.getItem('uni_student_token');
+            try {
+                const res = await fetch('/api/student/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) {
+                    studentLogout();
+                    return;
+                }
+                const data = await res.json();
+                currentStudent = data.student;
+                currentDocs = data.documents || [];
+
+                document.getElementById('authScreen').style.display = 'none';
+                document.getElementById('dashboardScreen').style.display = 'block';
+
+                renderHeader();
+                populateProfileForm();
+                renderDocumentVault();
+                renderApplications(data.applications || []);
+                updateTimelineStatus(currentStudent.status);
+            } catch (err) {
+                console.error(err);
+                studentLogout();
+            }
+        }
+
+        function renderHeader() {
+            const name = currentStudent.full_name || 'Student';
+            document.getElementById('studentDisplayName').textContent = name;
+            document.getElementById('studentDisplayEmail').textContent = currentStudent.email;
+            document.getElementById('studentAvatar').textContent = name.charAt(0).toUpperCase();
+
+            const status = currentStudent.status || 'Registered';
+            document.getElementById('statusText').textContent = status;
+        }
+
+        function switchDashTab(tab, btn) {
+            document.querySelectorAll('.dash-tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+
+            if (btn) btn.classList.add('active');
+            if (tab === 'profile') document.getElementById('tabProfile').classList.add('active');
+            if (tab === 'documents') document.getElementById('tabDocuments').classList.add('active');
+            if (tab === 'applications') document.getElementById('tabApplications').classList.add('active');
+        }
+
+        // ── Profile Form ──
+        function populateProfileForm() {
+            const s = currentStudent;
+            document.getElementById('pFullName').value = s.full_name || '';
+            document.getElementById('pPhone').value = s.phone || '';
+            document.getElementById('pDob').value = s.date_of_birth || '';
+            document.getElementById('pGender').value = s.gender || '';
+            document.getElementById('pNationality').value = s.nationality || 'Uzbekistan';
+            document.getElementById('pPassportNumber').value = s.passport_number || '';
+            document.getElementById('pPassportExpiry').value = s.passport_expiry || '';
+            document.getElementById('pEmergency').value = s.emergency_contact || '';
+            document.getElementById('pAddress').value = s.address || '';
+            document.getElementById('pHighSchool').value = s.high_school_name || '';
+            document.getElementById('pGpa').value = s.gpa || '';
+            document.getElementById('pIelts').value = s.ielts_score || '';
+            document.getElementById('pDuolingo').value = s.duolingo_score || '';
+            if (s.target_country) document.getElementById('pTargetCountry').value = s.target_country;
+            if (s.target_degree) document.getElementById('pTargetDegree').value = s.target_degree;
+            document.getElementById('pTargetMajor').value = s.target_major || '';
+        }
+
+        async function saveProfile(e) {
+            e.preventDefault();
+            const token = localStorage.getItem('uni_student_token');
+            const payload = {
+                full_name: document.getElementById('pFullName').value.trim(),
+                phone: document.getElementById('pPhone').value.trim(),
+                date_of_birth: document.getElementById('pDob').value,
+                gender: document.getElementById('pGender').value,
+                nationality: document.getElementById('pNationality').value.trim(),
+                passport_number: document.getElementById('pPassportNumber').value.trim(),
+                passport_expiry: document.getElementById('pPassportExpiry').value,
+                emergency_contact: document.getElementById('pEmergency').value.trim(),
+                address: document.getElementById('pAddress').value.trim(),
+                high_school_name: document.getElementById('pHighSchool').value.trim(),
+                gpa: document.getElementById('pGpa').value.trim(),
+                ielts_score: document.getElementById('pIelts').value.trim(),
+                duolingo_score: document.getElementById('pDuolingo').value.trim(),
+                target_country: document.getElementById('pTargetCountry').value,
+                target_degree: document.getElementById('pTargetDegree').value,
+                target_major: document.getElementById('pTargetMajor').value.trim()
+            };
+
+            try {
+                const res = await fetch('/api/student/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Could not update profile');
+
+                currentStudent = data.student;
+                renderHeader();
+                showToast('Profile saved successfully! ✨');
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        // ── Document Vault Rendering & Uploads ──
+        function renderDocumentVault() {
+            const grid = document.getElementById('documentGrid');
+            grid.innerHTML = '';
+
+            let verifiedCount = 0;
+
+            REQUIRED_DOCS.forEach(slot => {
+                const uploaded = currentDocs.find(d => d.doc_type === slot.key);
+                if (uploaded && uploaded.status === 'verified') verifiedCount++;
+
+                const card = document.createElement('div');
+                card.className = `doc-card ${uploaded ? 'uploaded' : ''} ${uploaded ? uploaded.status : ''}`;
+
+                let statusBadge = `<span class="doc-status-badge" style="background:#f1f5f9;color:#64748b;">⏳ Not Uploaded</span>`;
+                if (uploaded) {
+                    if (uploaded.status === 'verified') statusBadge = `<span class="doc-status-badge status-verified">✅ Verified &amp; Approved</span>`;
+                    else if (uploaded.status === 'rejected') statusBadge = `<span class="doc-status-badge status-rejected">❌ Re-upload Requested</span>`;
+                    else statusBadge = `<span class="doc-status-badge status-pending">⏳ Under Counselor Review</span>`;
+                }
+
+                let feedbackHtml = '';
+                if (uploaded && uploaded.admin_feedback) {
+                    feedbackHtml = `<div class="doc-feedback-note"><strong>Counselor Note:</strong> ${uploaded.admin_feedback}</div>`;
+                }
+
+                let linkHtml = '';
+                if (uploaded && uploaded.file_url) {
+                    linkHtml = `<a href="${uploaded.file_url}" target="_blank" class="doc-preview-link">👁️ View Uploaded File (${uploaded.file_name || 'View'})</a>`;
+                }
+
+                card.innerHTML = `
+                    <div>
+                        <div class="doc-icon">${slot.icon}</div>
+                        <div class="doc-title">${slot.title}</div>
+                        <div class="doc-desc">${slot.desc}</div>
+                        ${statusBadge}
+                        ${feedbackHtml}
+                        ${linkHtml}
+                    </div>
+                    <div class="upload-btn-wrap">
+                        <input type="file" accept="image/*,application/pdf" onchange="handleFileUpload(event, '${slot.key}', '${slot.title}')">
+                        <button type="button" class="btn-upload">
+                            ${uploaded ? '🔄 Replace / Upload New' : '📤 Upload Document'}
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.getElementById('verifiedDocBadge').textContent = verifiedCount;
+        }
+
+        async function handleFileUpload(event, docType, docTitle) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            showToast(`Uploading ${file.name}... ⏳`, 'info');
+
+            try {
+                // Upload directly to Cloudinary
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', CLOUDINARY_PRESET);
+
+                const cRes = await fetch(CLOUDINARY_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                const cData = await cRes.json();
+                if (!cRes.ok || !cData.secure_url) throw new Error(cData.error?.message || 'File upload failed');
+
+                const fileUrl = cData.secure_url;
+                const token = localStorage.getItem('uni_student_token');
+
+                // Save document metadata to backend
+                const docRes = await fetch('/api/student/documents', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        doc_type: docType,
+                        title: docTitle,
+                        file_url: fileUrl,
+                        file_name: file.name,
+                        file_size: (file.size / 1024).toFixed(1) + ' KB'
+                    })
+                });
+
+                if (!docRes.ok) throw new Error('Could not register document with server');
+
+                showToast(`✅ ${docTitle} uploaded successfully!`);
+                loadStudentDashboard();
+            } catch (err) {
+                console.error(err);
+                showToast(`Upload failed: ${err.message}`, 'error');
+            }
+        }
+
+        // ── Applications & Timeline ──
+        function renderApplications(apps) {
+            const list = document.getElementById('myApplicationsList');
+            if (!apps || apps.length === 0) {
+                list.innerHTML = `<p style="color: var(--text-muted); font-size:0.95rem;">No university applications added yet. Once our counselors prepare your admission package (e.g. for Wuxi University, Poland, etc.), your official status and offer letters will appear here.</p>`;
+                return;
+            }
+
+            list.innerHTML = apps.map(a => `
+                <div class="app-card">
+                    <div>
+                        <h4>🏛️ ${a.university_name} (${a.country || 'Target Country'})</h4>
+                        <p><strong>Program:</strong> ${a.program_name || 'General Admission'} | <strong>Intake:</strong> ${a.intake_semester || 'Upcoming'}</p>
+                        ${a.notes ? `<p style="margin-top:0.4rem;color:#2563eb;font-size:0.85rem;">📌 <em>${a.notes}</em></p>` : ''}
+                    </div>
+                    <div>
+                        <span class="status-chip" style="background:#dbeafe;color:#1e40af;">
+                            ${a.status || 'Under Review'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateTimelineStatus(status) {
+            const steps = ['step1', 'step2', 'step3', 'step4', 'step5', 'step6'];
+            let currentStepIdx = 1;
+
+            if (status === 'Registered') currentStepIdx = 1;
+            else if (status === 'Docs Submitted' || status === 'Docs Incomplete') currentStepIdx = 2;
+            else if (status === 'Ready for Application' || status === 'Applied') currentStepIdx = 3;
+            else if (status === 'Offer Received' || status === 'Conditional Offer') currentStepIdx = 4;
+            else if (status === 'Visa Stage') currentStepIdx = 5;
+            else if (status === 'Enrolled' || status === 'Visa Granted') currentStepIdx = 6;
+
+            steps.forEach((stepId, index) => {
+                const el = document.getElementById(stepId);
+                el.classList.remove('completed', 'current');
+                if (index + 1 < currentStepIdx) {
+                    el.classList.add('completed');
+                    el.querySelector('.timeline-dot').textContent = '✓';
+                } else if (index + 1 === currentStepIdx) {
+                    el.classList.add('current');
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

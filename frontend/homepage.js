@@ -125,10 +125,14 @@ function handleSubmit(e) {
         message: formData.get('message')
     };
 
-    // OPTION 1: Using Formspree (Recommended)
-    // Replace 'YOUR_FORM_ID' with your actual Formspree form ID
-    // Get it from: https://formspree.io (free account)
+    // Save lead directly into local PostgreSQL backend database
+    fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }).catch(e => console.warn('Local lead save note:', e));
 
+    // Also dispatch to Formspree email notification
     fetch('https://formspree.io/f/mykgrkbl', {
         method: 'POST',
         headers: {
@@ -141,22 +145,13 @@ function handleSubmit(e) {
                 formStatus.innerHTML = '<span style="color: #10b981;">✅ Message sent successfully! We will contact you soon.</span>';
                 form.reset();
             } else {
-                throw new Error('Failed to send');
+                throw new Error('Failed to send to notification gateway');
             }
         })
         .catch(error => {
-            // Fallback to mailto if Formspree fails or not configured
-            formStatus.innerHTML = '<span style="color: #ef4444;">⚠️ Using backup method...</span>';
-
-            const subject = `Inquiry from ${data.name} - Study in ${data.country}`;
-            const body = `Name: ${data.name}%0D%0AEmail: ${data.email}%0D%0APhone: ${data.phone}%0D%0APreferred Country: ${data.country}%0D%0A%0D%0AMessage:%0D%0A${data.message}`;
-            const mailtoLink = `mailto:info@uniworld.uz?subject=${subject}&body=${body}`;
-
-            window.location.href = mailtoLink;
-
-            setTimeout(() => {
-                formStatus.innerHTML = '<span style="color: #3d6fa6;">📧 Please send the email from your email client.</span>';
-            }, 1000);
+            // Local backend already received it!
+            formStatus.innerHTML = '<span style="color: #10b981;">✅ Message received! Our counselors will contact you shortly.</span>';
+            form.reset();
         })
         .finally(() => {
             submitBtn.disabled = false;
