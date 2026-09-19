@@ -14,7 +14,7 @@ JWT_EXPIRE_HOURS = 24
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "Otaboy")
 ADMIN_PASSWORD_HASH = os.getenv(
     "ADMIN_PASSWORD_HASH",
-    "$2b$12$WhPgWVdEKpBmfTSaNfpdme3EXQ/HDM23PaxRtSZQnoxTxIWe0/ZyO",
+    "$2b$12$mIbmynOzDKeXHWJa2DShWewN/PGo5eeKN/caw4opVm3cyUP0LK6ay",
 )
 
 DATABASE_URL = os.getenv("DATABASE_URL")
