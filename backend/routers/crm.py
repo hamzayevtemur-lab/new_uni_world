@@ -1,12 +1,101 @@
 import json
+import random
+import bcrypt
+import datetime
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends
 from database import get_conn
 from auth import verify_admin_token
-from schemas.student import StudentStatusUpdate, DocumentReview
+from schemas.student import StudentStatusUpdate, DocumentReview, ApproveStudentRequest
 from schemas.application import ApplicationCreate
+from services.email_service import send_student_credentials_email
 
 router = APIRouter(prefix="/api/admin", tags=["Agency Student CRM"])
+
+@router.get("/student-requests")
+async def admin_get_student_requests(_=Depends(verify_admin_token)):
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT id, email, full_name, phone, target_country, target_degree, target_major,
+                   status, email_verified, notes, created_at, updated_at
+            FROM students
+            WHERE status = 'pending'
+            ORDER BY created_at DESC
+        """)
+        rows = cur.fetchall()
+        cur.close()
+        conn.close()
+        return rows
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/student-requests/{sid}/approve")
+async def admin_approve_student_request(sid: int, body: Optional[ApproveStudentRequest] = None, _=Depends(verify_admin_token)):
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM students WHERE id = %s", (sid,))
+        student = cur.fetchone()
+        if not student:
+            cur.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="Student request not found")
+
+        # Determine password to assign
+        raw_password = (body.custom_password.strip() if body and body.custom_password else None)
+        if not raw_password:
+            raw_password = f"UniWorld#{random.randint(1000, 9999)}"
+
+        pwd_hash = bcrypt.hashpw(raw_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+        cur.execute("""
+            UPDATE students SET
+                status = 'active',
+                password_hash = %s,
+                approved_at = NOW(),
+                updated_at = NOW()
+            WHERE id = %s
+            RETURNING id, email, full_name, status, approved_at
+        """, (pwd_hash, sid))
+
+        updated = cur.fetchone()
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        # Dispatch credentials email
+        sent = send_student_credentials_email(student["email"], student["full_name"], raw_password)
+
+        return {
+            "message": f"Student {student['full_name']} approved! Login credentials emailed.",
+            "student_id": sid,
+            "email": student["email"],
+            "assigned_password": raw_password,
+            "email_sent": sent
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/student-requests/{sid}/reject")
+async def admin_reject_student_request(sid: int, _=Depends(verify_admin_token)):
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE students SET status = 'rejected', updated_at = NOW()
+            WHERE id = %s RETURNING id, status
+        """, (sid,))
+        updated = cur.fetchone()
+        conn.commit()
+        cur.close()
+        conn.close()
+        return {"message": "Access request declined", "student": updated}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/students")
 async def admin_get_all_students(_=Depends(verify_admin_token)):

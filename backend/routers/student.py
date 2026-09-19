@@ -1,52 +1,136 @@
+import random
+import datetime
 import bcrypt
 from fastapi import APIRouter, HTTPException, Depends
 from database import get_conn
 from auth import create_student_token, verify_student_token
-from schemas.auth import StudentRegister, StudentLogin
-from schemas.student import StudentProfileUpdate, DocumentCreate
+from schemas.auth import StudentLogin
+from schemas.student import (
+    StudentProfileUpdate,
+    DocumentCreate,
+    RequestOTP,
+    VerifyOTPAndRequestAccess,
+)
+from services.email_service import send_otp_email
 from config import JWT_EXPIRE_HOURS
 
 router = APIRouter(prefix="/api/student", tags=["Student Portal"])
 
-@router.post("/register")
-async def student_register(data: StudentRegister):
+@router.post("/request-otp")
+async def student_request_otp(data: RequestOTP):
     email_clean = data.email.strip().lower()
-    if not email_clean or not data.password:
-        raise HTTPException(status_code=400, detail="Email and password are required")
-    
-    pwd_hash = bcrypt.hashpw(data.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-    
+    if not email_clean or "@" not in email_clean:
+        raise HTTPException(status_code=400, detail="A valid email address is required")
+
+    otp_code = f"{random.randint(100000, 999999)}"
+    expires_at = datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
+
     try:
         conn = get_conn()
         cur = conn.cursor()
-        
-        cur.execute("SELECT id FROM students WHERE email = %s", (email_clean,))
-        if cur.fetchone():
+
+        cur.execute("SELECT id, status, email_verified FROM students WHERE email = %s", (email_clean,))
+        student = cur.fetchone()
+
+        if student and student["status"] in ["active", "Approved", "Docs Submitted"]:
             cur.close()
             conn.close()
-            raise HTTPException(status_code=400, detail="An account with this email already exists.")
-        
-        cur.execute("""
-            INSERT INTO students (email, password_hash, full_name, phone, target_country, target_degree, target_major)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-            RETURNING id, email, full_name, status
-        """, (email_clean, pwd_hash, data.full_name, data.phone, data.target_country, data.target_degree, data.target_major))
-        
-        student = cur.fetchone()
+            raise HTTPException(status_code=400, detail="Account already active! Please proceed to Log In.")
+
+        if student:
+            cur.execute("""
+                UPDATE students
+                SET otp_code = %s, otp_expires_at = %s, updated_at = NOW()
+                WHERE id = %s
+            """, (otp_code, expires_at, student["id"]))
+        else:
+            cur.execute("""
+                INSERT INTO students (email, full_name, status, email_verified, otp_code, otp_expires_at)
+                VALUES (%s, 'Pending Applicant', 'pending', FALSE, %s, %s)
+            """, (email_clean, otp_code, expires_at))
+
         conn.commit()
         cur.close()
         conn.close()
-        
-        token = create_student_token(student["id"], student["email"])
+
+        # Send OTP email
+        sent = send_otp_email(email_clean, otp_code)
         return {
-            "token": token,
-            "student": student,
-            "message": "Account created successfully"
+            "message": "Verification code sent to your email! Please check your inbox.",
+            "email": email_clean,
+            "dev_otp": otp_code
         }
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/verify-otp-and-request-access")
+async def student_verify_otp(data: VerifyOTPAndRequestAccess):
+    email_clean = data.email.strip().lower()
+    otp_clean = data.otp_code.strip()
+
+    if not email_clean or not otp_clean:
+        raise HTTPException(status_code=400, detail="Email and verification code are required")
+
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+
+        cur.execute("SELECT * FROM students WHERE email = %s", (email_clean,))
+        student = cur.fetchone()
+
+        if not student:
+            cur.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="No verification request found for this email.")
+
+        if not student["otp_code"] or student["otp_code"].strip() != otp_clean:
+            cur.close()
+            conn.close()
+            raise HTTPException(status_code=400, detail="Invalid 6-digit verification code. Please try again.")
+
+        if student["otp_expires_at"] and student["otp_expires_at"] < datetime.datetime.utcnow():
+            cur.close()
+            conn.close()
+            raise HTTPException(status_code=400, detail="Verification code has expired. Please request a new code.")
+
+        # Update student to email_verified = True and status = 'pending'
+        cur.execute("""
+            UPDATE students SET
+                full_name = %s,
+                phone = %s,
+                target_country = %s,
+                target_degree = %s,
+                target_major = %s,
+                notes = %s,
+                email_verified = TRUE,
+                status = 'pending',
+                otp_code = NULL,
+                updated_at = NOW()
+            WHERE id = %s
+            RETURNING id, email, full_name, status, email_verified
+        """, (
+            data.full_name, data.phone, data.target_country,
+            data.target_degree, data.target_major, data.notes,
+            student["id"]
+        ))
+
+        updated = cur.fetchone()
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return {
+            "message": "Email verified successfully! Your portal access request has been sent to our counselors.",
+            "student": updated
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.post("/login")
 async def student_login(creds: StudentLogin):
@@ -58,14 +142,26 @@ async def student_login(creds: StudentLogin):
         student = cur.fetchone()
         cur.close()
         conn.close()
-        
+
         if not student:
             raise HTTPException(status_code=401, detail="Invalid email or password")
-        
+
+        if student["status"] == "pending":
+            raise HTTPException(
+                status_code=403,
+                detail="Your access request is currently pending admin approval. Credentials will be sent to your email once approved."
+            )
+
+        if student["status"] == "rejected":
+            raise HTTPException(status_code=403, detail="Your access request was declined. Please contact support.")
+
+        if not student["password_hash"]:
+            raise HTTPException(status_code=401, detail="No active password set for this account.")
+
         ok = bcrypt.checkpw(creds.password.encode('utf-8'), student["password_hash"].encode('utf-8'))
         if not ok:
             raise HTTPException(status_code=401, detail="Invalid email or password")
-        
+
         token = create_student_token(student["id"], student["email"])
         del student["password_hash"]
         return {

@@ -674,11 +674,11 @@
 
             <div class="auth-tabs">
                 <button class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthTab('login')">Sign In</button>
-                <button class="auth-tab-btn" id="tabRegisterBtn" onclick="switchAuthTab('register')">Create
-                    Account</button>
+                <button class="auth-tab-btn" id="tabRegisterBtn" onclick="switchAuthTab('register')">📩 Request Access</button>
             </div>
 
             <div id="authAlert" class="alert-box alert-error"></div>
+            <div id="authSuccess" class="alert-box alert-success"></div>
 
             <!-- LOGIN FORM -->
             <form id="loginForm" onsubmit="handleLogin(event)">
@@ -688,31 +688,36 @@
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••" required
-                        autocomplete="current-password">
+                    <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
                 </div>
+                <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.4;">
+                    🔑 Account credentials are issued by Uni World counselors after your portal access request is verified.
+                </p>
                 <button type="submit" class="btn-submit" id="loginSubmitBtn">
                     Sign In to Portal →
                 </button>
             </form>
 
-            <!-- REGISTER FORM -->
-            <form id="registerForm" style="display:none;" onsubmit="handleRegister(event)">
+            <!-- REQUEST ACCESS STEP 1: ENTER DETAILS -->
+            <form id="requestAccessForm" style="display:none;" onsubmit="handleRequestOtp(event)">
+                <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.4;background:#eff6ff;padding:0.8rem;border-radius:10px;border:1px solid #bfdbfe;">
+                     Access to the Uni World Student Portal is by invitation. Request access below to verify your email and receive login credentials.
+                </p>
                 <div class="form-group">
                     <label>Full Name (as in Passport) *</label>
-                    <input type="text" id="regFullName" placeholder="e.g. Alisher Navoiy" required>
+                    <input type="text" id="reqFullName" placeholder="e.g. Alisher Navoiy" required>
                 </div>
                 <div class="form-group">
-                    <label>Email Address *</label>
-                    <input type="email" id="regEmail" placeholder="student@example.com" required>
+                    <label>Email Address (For Credentials) *</label>
+                    <input type="email" id="reqEmail" placeholder="student@example.com" required>
                 </div>
                 <div class="form-group">
                     <label>Phone / Telegram *</label>
-                    <input type="tel" id="regPhone" placeholder="+998 90 123 45 67" required>
+                    <input type="tel" id="reqPhone" placeholder="+998 90 123 45 67" required>
                 </div>
                 <div class="form-group">
                     <label>Target Study Country</label>
-                    <select id="regCountry">
+                    <select id="reqCountry">
                         <option value="China">🇨🇳 China (Wuxi, Beijing, etc.)</option>
                         <option value="Poland">🇵🇱 Poland (Warsaw, Wroclaw)</option>
                         <option value="Germany">🇩🇪 Germany</option>
@@ -725,21 +730,50 @@
                 </div>
                 <div class="form-group">
                     <label>Target Degree</label>
-                    <select id="regDegree">
-                        <option value="Bachelor">Bachelor Degree (Bakavr)</option>
+                    <select id="reqDegree">
+                        <option value="Bachelor">Bachelor Degree (Bakalavr)</option>
                         <option value="Master">Master Degree (Magistratura)</option>
                         <option value="Language Course">1-Year Language Course (Til kursi)</option>
                         <option value="PhD">PhD / Doctorate</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Create Password *</label>
-                    <input type="password" id="regPassword" placeholder="Minimum 6 characters" minlength="6" required>
+                    <label>Target Major / Specific Program (Optional)</label>
+                    <input type="text" id="reqMajor" placeholder="e.g. Computer Science / International Business">
                 </div>
-                <button type="submit" class="btn-submit" id="regSubmitBtn">
-                    Create Student Account →
+                <button type="submit" class="btn-submit" id="reqOtpSubmitBtn">
+                    📩 Send 6-Digit Email Code →
                 </button>
             </form>
+
+            <!-- REQUEST ACCESS STEP 2: VERIFY OTP CODE -->
+            <div id="otpVerificationSection" style="display:none;background:#f8fafc;padding:1.5rem;border-radius:16px;border:1px solid #e2e8f0;margin-top:1rem;">
+                <h3 style="font-size:1.1rem;color:var(--dark);margin-bottom:0.4rem;font-weight:700;">📩 Verify Email Address</h3>
+                <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1.2rem;line-height:1.4;">
+                    Enter the 6-digit verification code sent to <strong id="otpTargetEmail" style="color:var(--primary);"></strong>:
+                </p>
+                <div class="form-group">
+                    <input type="text" id="otpCodeInput" placeholder="1 2 3 4 5 6" maxlength="6" style="font-size:1.6rem;letter-spacing:8px;text-align:center;font-weight:800;color:var(--primary);" required>
+                </div>
+                <button type="button" class="btn-submit" id="verifyOtpBtn" onclick="handleVerifyOtpAndSubmit(event)">
+                    ✅ Verify & Submit Request →
+                </button>
+                <div style="text-align:center;margin-top:0.8rem;">
+                    <button type="button" onclick="handleRequestOtp(event)" style="background:none;border:none;color:var(--primary);font-size:0.82rem;font-weight:700;cursor:pointer;text-decoration:underline;">Resend Code</button>
+                    ·
+                    <button type="button" onclick="cancelOtpStep()" style="background:none;border:none;color:var(--text-muted);font-size:0.82rem;cursor:pointer;">Edit Details</button>
+                </div>
+            </div>
+
+            <!-- SUCCESS CONFIRMATION BOX -->
+            <div id="accessRequestSuccessBox" style="display:none;background:#ecfdf5;padding:1.5rem;border-radius:16px;border:1px solid #a7f3d0;margin-top:1rem;text-align:center;">
+                <div style="font-size:2.5rem;margin-bottom:0.5rem;">🎉</div>
+                <h3 style="font-size:1.2rem;color:#065f46;font-weight:800;margin-bottom:0.4rem;">Email Verified &amp; Request Sent!</h3>
+                <p style="font-size:0.88rem;color:#047857;line-height:1.5;margin-bottom:1rem;">
+                    Your portal access request has been received by our counselors. Once approved, your login credentials will be emailed automatically to <strong id="successTargetEmail"></strong>.
+                </p>
+                <button class="btn-submit" onclick="switchAuthTab('login')" style="background:#059669;">Go to Sign In →</button>
+            </div>
 
             <div style="text-align: center; margin-top: 1.5rem;">
                 <a href="/"
@@ -1028,22 +1062,36 @@
         }
 
         function switchAuthTab(tab) {
-            document.getElementById('tabLoginBtn').classList.toggle('active', tab === 'login');
-            document.getElementById('tabRegisterBtn').classList.toggle('active', tab === 'register');
-            document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
-            document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
             hideAlert();
+            document.getElementById('authSuccess').style.display = 'none';
+            document.getElementById('otpVerificationSection').style.display = 'none';
+            document.getElementById('accessRequestSuccessBox').style.display = 'none';
+
+            if (tab === 'login') {
+                document.getElementById('tabLoginBtn').classList.add('active');
+                document.getElementById('tabRegisterBtn').classList.remove('active');
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('requestAccessForm').style.display = 'none';
+            } else {
+                document.getElementById('tabRegisterBtn').classList.add('active');
+                document.getElementById('tabLoginBtn').classList.remove('active');
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('requestAccessForm').style.display = 'block';
+            }
         }
 
         function showAlert(msg, isError = true) {
-            const box = document.getElementById('authAlert');
+            const box = isError ? document.getElementById('authAlert') : document.getElementById('authSuccess');
+            document.getElementById('authAlert').style.display = 'none';
+            document.getElementById('authSuccess').style.display = 'none';
+
             box.textContent = msg;
-            box.className = `alert-box ${isError ? 'alert-error' : 'alert-success'}`;
             box.style.display = 'block';
         }
 
         function hideAlert() {
             document.getElementById('authAlert').style.display = 'none';
+            document.getElementById('authSuccess').style.display = 'none';
         }
 
         function showToast(msg, type = 'success') {
@@ -1083,39 +1131,99 @@
             }
         }
 
-        async function handleRegister(e) {
-            e.preventDefault();
-            const btn = document.getElementById('regSubmitBtn');
+        async function handleRequestOtp(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            const email = document.getElementById('reqEmail').value.trim();
+            const fullName = document.getElementById('reqFullName').value.trim();
+            if (!email || !fullName) {
+                showAlert('Full Name and Email are required.', true);
+                return;
+            }
+
+            const btn = document.getElementById('reqOtpSubmitBtn');
             btn.disabled = true;
-            btn.textContent = 'Creating account...';
+            btn.textContent = 'Sending 6-digit code...';
             hideAlert();
 
-            const payload = {
-                full_name: document.getElementById('regFullName').value.trim(),
-                email: document.getElementById('regEmail').value.trim(),
-                phone: document.getElementById('regPhone').value.trim(),
-                target_country: document.getElementById('regCountry').value,
-                target_degree: document.getElementById('regDegree').value,
-                password: document.getElementById('regPassword').value
-            };
-
             try {
-                const res = await fetch('/api/student/register', {
+                const res = await fetch('/api/student/request-otp', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({ email })
                 });
                 const data = await res.json();
-                if (!res.ok) throw new Error(data.detail || 'Registration failed');
+                if (!res.ok) throw new Error(data.detail || 'Could not send verification code');
 
-                localStorage.setItem('uni_student_token', data.token);
-                loadStudentDashboard();
+                document.getElementById('otpTargetEmail').textContent = email;
+                document.getElementById('requestAccessForm').style.display = 'none';
+                document.getElementById('otpVerificationSection').style.display = 'block';
+
+                if (data.dev_otp) {
+                    showToast(`[Dev Mode] OTP Verification Code: ${data.dev_otp}`, 'success');
+                } else {
+                    showToast('Verification code sent to your email!');
+                }
             } catch (err) {
                 showAlert(err.message, true);
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Create Student Account →';
+                btn.textContent = '📩 Send 6-Digit Email Code →';
             }
+        }
+
+        async function handleVerifyOtpAndSubmit(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            const email = document.getElementById('reqEmail').value.trim();
+            const otpCode = document.getElementById('otpCodeInput').value.trim();
+            const fullName = document.getElementById('reqFullName').value.trim();
+            const phone = document.getElementById('reqPhone').value.trim();
+            const targetCountry = document.getElementById('reqCountry').value;
+            const targetDegree = document.getElementById('reqDegree').value;
+            const targetMajor = document.getElementById('reqMajor').value.trim();
+
+            if (!otpCode || otpCode.length !== 6) {
+                showAlert('Please enter the complete 6-digit verification code.', true);
+                return;
+            }
+
+            const btn = document.getElementById('verifyOtpBtn');
+            btn.disabled = true;
+            btn.textContent = 'Verifying code...';
+            hideAlert();
+
+            try {
+                const res = await fetch('/api/student/verify-otp-and-request-access', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email,
+                        otp_code: otpCode,
+                        full_name: fullName,
+                        phone,
+                        target_country: targetCountry,
+                        target_degree: targetDegree,
+                        target_major: targetMajor
+                    })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Verification failed');
+
+                document.getElementById('otpVerificationSection').style.display = 'none';
+                document.getElementById('successTargetEmail').textContent = email;
+                document.getElementById('accessRequestSuccessBox').style.display = 'block';
+                showToast('Email verified & access request sent! 🎉');
+            } catch (err) {
+                showAlert(err.message, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '✅ Verify & Submit Request →';
+            }
+        }
+
+        function cancelOtpStep() {
+            hideAlert();
+            document.getElementById('otpVerificationSection').style.display = 'none';
+            document.getElementById('requestAccessForm').style.display = 'block';
         }
 
         function studentLogout() {

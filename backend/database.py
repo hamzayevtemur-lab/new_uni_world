@@ -115,7 +115,7 @@ def init_db():
             CREATE TABLE IF NOT EXISTS students (
                 id                  SERIAL PRIMARY KEY,
                 email               VARCHAR(255) UNIQUE NOT NULL,
-                password_hash       VARCHAR(255) NOT NULL,
+                password_hash       VARCHAR(255),
                 full_name           VARCHAR(200) NOT NULL,
                 phone               VARCHAR(50),
                 date_of_birth       VARCHAR(30),
@@ -132,12 +132,33 @@ def init_db():
                 target_country      VARCHAR(100),
                 target_degree       VARCHAR(50),
                 target_major        VARCHAR(150),
-                status              VARCHAR(50) DEFAULT 'Registered',
+                status              VARCHAR(50) DEFAULT 'pending',
+                email_verified      BOOLEAN DEFAULT FALSE,
+                otp_code            VARCHAR(10),
+                otp_expires_at      TIMESTAMP,
+                approved_at         TIMESTAMP,
                 notes               TEXT,
                 created_at          TIMESTAMP DEFAULT NOW(),
                 updated_at          TIMESTAMP DEFAULT NOW()
             );
         """)
+
+        # Add OTP and verification columns to existing students table if they don't exist yet
+        for col, typedef in [
+            ("email_verified", "BOOLEAN DEFAULT FALSE"),
+            ("otp_code", "VARCHAR(10)"),
+            ("otp_expires_at", "TIMESTAMP"),
+            ("approved_at", "TIMESTAMP"),
+        ]:
+            cur.execute(f"""
+                DO $$ BEGIN
+                    ALTER TABLE students ADD COLUMN {col} {typedef};
+                EXCEPTION WHEN duplicate_column THEN NULL;
+                END $$;
+            """)
+
+        # Allow NULL password_hash for pending access requests
+        cur.execute("ALTER TABLE students ALTER COLUMN password_hash DROP NOT NULL;")
 
         # Student Documents table
         cur.execute("""

@@ -12,16 +12,17 @@ Uni World is a comprehensive web platform for international educational consulti
 - Educational consulting service overviews & consultation request form
 - Student testimonials & news ticker announcements
 
-### 👨‍🎓 Student Portal (`/student`)
-- **Account Registration & JWT Authentication**
-- **Personal Profile Management** (academic background, language scores, passport details)
-- **Application Tracking Dashboard** (real-time status updates on target universities and majors)
-- **Document Management Center** (upload & manage passports, transcripts, diplomas, IELTS certificates)
+### 👨‍🎓 Student Access & Verification (`/student`)
+- **2-Step Email Verification (OTP)**: Students submit access requests with 6-digit email OTP verification before queuing for approval.
+- **Admin-Controlled Credentials**: Access to the portal is invitation/approval-based. Credentials are provided to students upon admin review.
+- **Personal Dossier Management**: Academic background, language scores, passport details.
+- **Application Tracking Dashboard**: Real-time status updates on target university applications.
+- **Document Vault**: Upload & manage passports, academic transcripts, diplomas, and language certificates.
 
 ### 📊 Admin CRM Dashboard (`/admin`)
-- **Student Leads Management**: View and process website inquiry leads
-- **Student Applications & Documents CRM**: Review submitted student profiles, track university application pipelines, and inspect uploaded student documents
-- **Content Management System (CMS)**: Manage countries, partner universities, services, testimonials, and announcement tickers
+- **Access Requests Management**: Review email-verified student access requests, approve student accounts, and dispatch login credentials automatically via email.
+- **Student Leads & Dossier CRM**: Track student application pipelines, inspect uploaded student documents, and generate 1-click university portal auto-fill payloads.
+- **Content Management System (CMS)**: Manage countries, partner universities, services, testimonials, and announcement tickers.
 
 ---
 

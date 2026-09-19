@@ -852,6 +852,9 @@
                 <button class="tab-btn active" onclick="switchTab('students', this)">
                     👥 Student CRM Pipeline
                 </button>
+                <button class="tab-btn" onclick="switchTab('requests', this)">
+                    🔑 Access Requests <span class="badge badge-blue" id="requestsBadge">0</span>
+                </button>
                 <button class="tab-btn" onclick="switchTab('autofill', this)">
                     ⚡ University Portal Auto-fill
                 </button>
@@ -914,6 +917,39 @@
                                 <tr>
                                     <td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">
                                         Loading students...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+            </div>
+
+            <!-- ── TAB: ACCESS REQUESTS ── -->
+            <div id="requestsTab" class="tab-content">
+                <div class="panel">
+                    <h2>
+                        <span>🔑 Email-Verified Student Access Requests</span>
+                        <button class="btn-action btn-view" onclick="loadStudentRequests()">🔄 Refresh List</button>
+                    </h2>
+                    <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1.5rem;">
+                        Students who verified their email address and requested access to the Student Portal. Review their study goals and click <strong>Approve &amp; Issue Credentials</strong> to activate their account and send login details to their email.
+                    </p>
+
+                    <div class="table-responsive">
+                        <table class="crm-table">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Email &amp; Phone</th>
+                                    <th>Target Study Goals</th>
+                                    <th>Verification Status</th>
+                                    <th>Requested At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requestsTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">
+                                        Loading access requests...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1321,6 +1357,7 @@
             document.getElementById(tab + 'Tab').classList.add('active');
 
             if (tab === 'students') loadStudents();
+            if (tab === 'requests') loadStudentRequests();
             if (tab === 'autofill') populateAutofillStudentDropdown();
             if (tab === 'leads') loadLeads();
             if (tab === 'pending') { loadPendingComments(); loadApprovedComments(); }
@@ -1338,9 +1375,87 @@
 
         async function loadCRMData() {
             loadStudents();
+            loadStudentRequests();
             loadLeads();
             loadPendingComments();
             loadNews();
+        }
+
+        // ── Student Access Requests ──
+        async function loadStudentRequests() {
+            try {
+                const requests = await apiGet('/api/admin/student-requests');
+                const badge = document.getElementById('requestsBadge');
+                if (badge) badge.textContent = requests.length;
+
+                const tbody = document.getElementById('requestsTableBody');
+                if (!tbody) return;
+
+                if (!requests.length) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No pending access requests.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = requests.map(r => `
+                    <tr>
+                        <td><strong>${escHtml(r.full_name)}</strong></td>
+                        <td>
+                            <a href="mailto:${escHtml(r.email)}" style="color:var(--primary);font-weight:700;">${escHtml(r.email)}</a><br>
+                            <span style="font-size:0.85rem;color:var(--text-muted);">${escHtml(r.phone || 'No phone')}</span>
+                        </td>
+                        <td>
+                            <span class="badge badge-blue">${escHtml(r.target_country || 'General')}</span>
+                            <span class="badge">${escHtml(r.target_degree || 'Degree')}</span>
+                            ${r.target_major ? `<div style="font-size:0.8rem;color:#475569;margin-top:0.2rem;">${escHtml(r.target_major)}</div>` : ''}
+                        </td>
+                        <td><span style="color:#10b981;font-weight:700;">✅ Email Verified</span></td>
+                        <td style="color:#64748b;font-size:0.82rem;">${new Date(r.created_at).toLocaleString()}</td>
+                        <td>
+                            <div style="display:flex;gap:0.4rem;">
+                                <button class="btn-action btn-view" onclick="approveStudentRequest(${r.id}, '${escHtml(r.full_name)}')">✅ Approve &amp; Issue Email</button>
+                                <button class="btn-action btn-autofill" onclick="rejectStudentRequest(${r.id})">❌ Reject</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) { console.error('Error loading student requests', e); }
+        }
+
+        async function approveStudentRequest(sid, studentName) {
+            const customPassword = prompt(`Approve portal access for ${studentName}?\n\nEnter a custom temporary password (or leave blank to auto-generate a secure random password like UniWorld#4829):`);
+            if (customPassword === null) return;
+
+            try {
+                const payload = customPassword.trim() ? { custom_password: customPassword.trim() } : {};
+                const res = await fetch(`${API_URL}/api/admin/student-requests/${sid}/approve`, {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert(`🎉 Access Approved!\n\nStudent: ${studentName}\nEmail: ${data.email}\nAssigned Password: ${data.assigned_password}\n\nLogin credentials have been emailed to student!`);
+                    showToast('Student access approved & credentials emailed! 📧');
+                    loadStudentRequests();
+                    loadStudents();
+                } else {
+                    showToast(data.detail || 'Approval failed', 'error');
+                }
+            } catch (e) { showToast('Error approving request', 'error'); }
+        }
+
+        async function rejectStudentRequest(sid) {
+            if (!confirm('Reject this portal access request?')) return;
+            try {
+                const res = await fetch(`${API_URL}/api/admin/student-requests/${sid}/reject`, {
+                    method: 'POST',
+                    headers: authHeaders()
+                });
+                if (res.ok) {
+                    showToast('Access request declined');
+                    loadStudentRequests();
+                }
+            } catch (e) { showToast('Error rejecting request', 'error'); }
         }
 
         // ── Student CRM ──

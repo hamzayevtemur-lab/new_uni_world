@@ -33,3 +33,20 @@ class DocumentCreate(BaseModel):
 class DocumentReview(BaseModel):
     status: str  # verified / rejected / pending
     admin_feedback: Optional[str] = None
+
+class RequestOTP(BaseModel):
+    email: str
+
+class VerifyOTPAndRequestAccess(BaseModel):
+    email: str
+    otp_code: str
+    full_name: str
+    phone: Optional[str] = None
+    target_country: Optional[str] = None
+    target_degree: Optional[str] = None
+    target_major: Optional[str] = None
+    notes: Optional[str] = None
+
+class ApproveStudentRequest(BaseModel):
+    custom_password: Optional[str] = None
+
