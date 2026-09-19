@@ -1,11 +1,15 @@
 import os
+import json
 import smtplib
+import urllib.request
+import urllib.error
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
 
 load_dotenv()
 
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 SMTP_HOST = os.getenv("SMTP_HOST", "")
 SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
 SMTP_USER = os.getenv("SMTP_USER", "")
@@ -15,52 +19,96 @@ SMTP_TLS = os.getenv("SMTP_TLS", "true").lower() == "true"
 
 
 def send_email(to_email: str, subject: str, html_content: str, text_content: str = None) -> bool:
-    """Sends an email via SMTP if configured, or logs to console as dev fallback."""
+    """Sends an email via Resend HTTPS API (Recommended) or SMTP if configured, or logs to console as dev fallback."""
     if not text_content:
         text_content = html_content.replace("<br>", "\n").replace("</p>", "\n").replace("<h1>", "").replace("</h1>", "").replace("<h2>", "").replace("</h2>", "")
         import re
         text_content = re.sub('<[^<]+?>', '', text_content)
 
-    if not SMTP_HOST or not SMTP_USER or not SMTP_PASSWORD:
-        print("\n" + "=" * 60)
-        print(f"📧 [DEV EMAIL FALLBACK] (No SMTP Configured)")
-        print(f"TO: {to_email}")
-        print(f"SUBJECT: {subject}")
-        print("-" * 60)
-        print(text_content.strip())
-        print("=" * 60 + "\n")
-        return True
+    # 1. OPTION A: RESEND HTTPS API (100% Reliable over Port 443 / HTTPS, bypasses proxy blocks)
+    if RESEND_API_KEY:
+        try:
+            url = "https://api.resend.com/emails"
+            payload = {
+                "from": os.getenv("RESEND_FROM", "Uni World Admissions <onboarding@resend.dev>"),
+                "to": [to_email],
+                "subject": subject,
+                "html": html_content,
+                "text": text_content
+            }
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(payload).encode("utf-8"),
+                headers={
+                    "Authorization": f"Bearer {RESEND_API_KEY}",
+                    "Content-Type": "application/json"
+                },
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=12) as response:
+                res_body = response.read().decode("utf-8")
+                print(f"📧 [EmailService SUCCESS via Resend HTTPS API] Sent to {to_email}: {res_body}")
+                return True
+        except Exception as e:
+            print(f"⚠️ [Resend API Error]: {e}")
 
-    try:
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = subject
-        msg["From"] = f"Uni World Admissions <{SMTP_FROM}>"
-        msg["To"] = to_email
+    # 2. OPTION B: GMAIL / CUSTOM SMTP
+    is_placeholder_smtp = (
+        not SMTP_HOST or not SMTP_USER or not SMTP_PASSWORD or
+        "YOUR_GMAIL" in SMTP_USER or "YOUR_16_CHAR" in SMTP_PASSWORD
+    )
 
-        part1 = MIMEText(text_content, "plain")
-        part2 = MIMEText(html_content, "html")
-        msg.attach(part1)
-        msg.attach(part2)
+    if not is_placeholder_smtp:
+        try:
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = subject
+            msg["From"] = f"Uni World Admissions <{SMTP_FROM}>"
+            msg["To"] = to_email
 
-        server = smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10)
-        if SMTP_TLS:
-            server.starttls()
-        server.login(SMTP_USER, SMTP_PASSWORD)
-        server.sendmail(SMTP_FROM, [to_email], msg.as_string())
-        server.quit()
-        print(f"[EmailService] Email successfully sent to {to_email}")
-        return True
-    except Exception as e:
-        print(f"[EmailService ERROR] Failed to send email to {to_email}: {e}")
-        # Print fallback to console so credentials/codes are never lost
-        print("\n" + "=" * 60)
-        print(f"📧 [EMERGENCY FALLBACK LOG]")
-        print(f"TO: {to_email}")
-        print(f"SUBJECT: {subject}")
-        print("-" * 60)
-        print(text_content.strip())
-        print("=" * 60 + "\n")
-        return False
+            part1 = MIMEText(text_content, "plain")
+            part2 = MIMEText(html_content, "html")
+            msg.attach(part1)
+            msg.attach(part2)
+
+            clean_password = SMTP_PASSWORD.replace(" ", "")
+
+            import ssl
+            context = ssl._create_unverified_context()
+
+            if SMTP_PORT == 465:
+                server = smtplib.SMTP_SSL(SMTP_HOST, 465, context=context, timeout=12)
+                server.login(SMTP_USER, clean_password)
+                server.sendmail(SMTP_FROM, [to_email], msg.as_string())
+                server.quit()
+            else:
+                try:
+                    server = smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=12)
+                    if SMTP_TLS:
+                        server.starttls(context=context)
+                    server.login(SMTP_USER, clean_password)
+                    server.sendmail(SMTP_FROM, [to_email], msg.as_string())
+                    server.quit()
+                except Exception as e_starttls:
+                    print(f"⚠️ [SMTP STARTTLS 587 failed ({e_starttls}), trying SSL 465...]")
+                    server = smtplib.SMTP_SSL(SMTP_HOST, 465, context=context, timeout=12)
+                    server.login(SMTP_USER, clean_password)
+                    server.sendmail(SMTP_FROM, [to_email], msg.as_string())
+                    server.quit()
+
+            print(f"📧 [EmailService SUCCESS via SMTP] Sent to {to_email}! 🎉")
+            return True
+        except Exception as e:
+            print(f"⚠️ [SMTP Error]: {e}")
+
+    # 3. FALLBACK CONSOLE LOG
+    print("\n" + "=" * 60)
+    print(f"📧 [DEV EMAIL FALLBACK LOG]")
+    print(f"TO: {to_email}")
+    print(f"SUBJECT: {subject}")
+    print("-" * 60)
+    print(text_content.strip())
+    print("=" * 60 + "\n")
+    return False
 
 
 def send_otp_email(to_email: str, otp_code: str) -> bool:
