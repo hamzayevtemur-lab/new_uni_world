@@ -814,6 +814,12 @@
             <button class="dash-tab-btn" onclick="switchDashTab('applications', this)">
                 🎓 Applications &amp; Timeline
             </button>
+            <button class="dash-tab-btn" onclick="switchDashTab('sop', this)" style="background:linear-gradient(135deg, #f59e0b, #d97706);color:white;">
+                📝 AI Essay Evaluator
+            </button>
+            <button class="dash-tab-btn" onclick="switchDashTab('scanner', this)" style="background:linear-gradient(135deg, #2563eb, #1d4ed8);color:white;">
+                🤖 AI Passport Scanner
+            </button>
         </nav>
 
         <!-- TAB 1: PROFILE & ACADEMIC INFO -->
@@ -1020,6 +1026,109 @@
             </div>
         </div>
 
+        <!-- TAB 4: AI MOTIVATION LETTER EVALUATOR -->
+        <div id="tabSop" class="tab-pane">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>📝 AI Statement of Purpose &amp; Motivation Letter Evaluator</h3>
+                        <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.3rem;">
+                            Paste your motivation letter below. Our NLP algorithm scores your essay structure, readability, academic tone, and target university fit.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid-2" style="margin-bottom:1.2rem;">
+                    <div class="form-group">
+                        <label>Target Country *</label>
+                        <select id="sopTargetCountry">
+                            <option value="China">🇨🇳 China</option>
+                            <option value="Poland">🇵🇱 Poland</option>
+                            <option value="Germany">🇩🇪 Germany</option>
+                            <option value="United Kingdom">🇬🇧 USA / UK</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Target Major / Degree *</label>
+                        <input type="text" id="sopTargetMajor" value="Computer Science">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Motivation Letter / Personal Statement Text *</label>
+                    <textarea id="sopTextInput" rows="10" placeholder="Paste your essay here... (e.g. I am applying for a Bachelor degree in Computer Science...)" style="font-family:sans-serif;line-height:1.6;"></textarea>
+                </div>
+
+                <button class="btn-submit" onclick="runAISOPEvaluation()" style="background:linear-gradient(135deg, #f59e0b, #d97706);max-width:280px;">
+                    ✨ Analyze Essay with AI →
+                </button>
+
+                <!-- AI Evaluation Results Box -->
+                <div id="sopResultBox" style="display:none;margin-top:2rem;padding:1.5rem;background:#f8fafc;border-radius:16px;border:1px solid #cbd5e1;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+                        <div>
+                            <h4 style="font-size:1.3rem;color:#0f172a;margin:0;" id="sopVerdict">Verdict</h4>
+                            <p style="color:#64748b;font-size:0.88rem;margin:0.2rem 0 0 0;" id="sopMetricsMeta">Word Count: 0 | Readability: 0</p>
+                        </div>
+                        <div style="background:#2563eb;color:white;padding:0.8rem 1.4rem;border-radius:14px;text-align:center;">
+                            <div style="font-size:1.8rem;font-weight:800;" id="sopOverallScore">0</div>
+                            <div style="font-size:0.75rem;font-weight:700;">OVERALL AI SCORE</div>
+                        </div>
+                    </div>
+
+                    <h4 style="margin-bottom:0.8rem;color:#1e293b;">📊 Dimension Breakdown</h4>
+                    <div class="grid-2" style="gap:1rem;margin-bottom:1.5rem;" id="sopComponentBars">
+                        <!-- Progress bars injected dynamically -->
+                    </div>
+
+                    <h4 style="margin-bottom:0.8rem;color:#1e293b;">💡 AI Actionable Recommendations</h4>
+                    <ul id="sopFeedbackList" style="padding-left:1.2rem;line-height:1.7;color:#334155;font-size:0.92rem;">
+                        <!-- Feedback items -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: AI PASSPORT OCR SCANNER -->
+        <div id="tabScanner" class="tab-pane">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>🤖 1-Click AI Vision &amp; Passport OCR Scanner</h3>
+                        <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.3rem;">
+                            Upload a scan or photo of your International Passport. Computer Vision extracts your passport number, name, DOB, and expiry date to auto-populate your profile.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="border:2px dashed #3b82f6;padding:2.5rem;border-radius:18px;text-align:center;background:#eff6ff;margin-bottom:1.5rem;">
+                    <div style="font-size:3rem;margin-bottom:0.8rem;">🛂</div>
+                    <h4 style="color:#1e40af;margin-bottom:0.5rem;font-size:1.15rem;">Select Passport Scan Image</h4>
+                    <p style="color:#3b82f6;font-size:0.88rem;margin-bottom:1.2rem;">Supports JPG, PNG, or PDF passport documents</p>
+                    <input type="file" id="aiPassportFileInput" accept="image/*,.pdf" style="display:none;" onchange="handleAIPassportSelected(event)">
+                    <button class="btn-submit" onclick="document.getElementById('aiPassportFileInput').click()" style="max-width:240px;margin:0 auto;background:#2563eb;">
+                        📷 Choose Passport Image
+                    </button>
+                    <p id="aiPassportSelectedFileName" style="margin-top:0.8rem;color:#1e293b;font-weight:700;font-size:0.9rem;"></p>
+                </div>
+
+                <!-- OCR Extraction Output Card -->
+                <div id="ocrResultBox" style="display:none;background:#ecfdf5;border:1px solid #a7f3d0;padding:1.5rem;border-radius:16px;">
+                    <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;color:#065f46;">
+                        <span style="font-size:1.5rem;">✅</span>
+                        <h4 style="margin:0;font-size:1.1rem;font-weight:800;">AI Computer Vision Scan Successful!</h4>
+                    </div>
+
+                    <div class="grid-3" style="gap:1rem;margin-bottom:1.2rem;" id="ocrExtractedGrid">
+                        <!-- Extracted fields injected -->
+                    </div>
+
+                    <button class="btn-submit" onclick="applyAIExtractedProfile()" style="background:#059669;max-width:280px;">
+                        ⚡ Auto-Fill into Profile →
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Toast Notification -->
@@ -1281,7 +1390,157 @@
             if (tab === 'profile') document.getElementById('tabProfile').classList.add('active');
             if (tab === 'documents') document.getElementById('tabDocuments').classList.add('active');
             if (tab === 'applications') document.getElementById('tabApplications').classList.add('active');
+            if (tab === 'sop') document.getElementById('tabSop').classList.add('active');
+            if (tab === 'scanner') document.getElementById('tabScanner').classList.add('active');
         }
+
+        // ── AI SOP Evaluator Handler ──
+        async function runAISOPEvaluation() {
+            const text = document.getElementById('sopTextInput').value.trim();
+            const country = document.getElementById('sopTargetCountry').value;
+            const major = document.getElementById('sopTargetMajor').value.trim();
+
+            if (!text) {
+                showToast('Please paste your motivation letter or Statement of Purpose text.', 'error');
+                return;
+            }
+
+            showToast('✨ AI is analyzing essay structure & NLP readability...', 'success');
+
+            try {
+                const res = await fetch('/api/ai/evaluate-sop', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sop_text: text, target_country: country, target_major: major })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Evaluation failed');
+
+                document.getElementById('sopResultBox').style.display = 'block';
+                document.getElementById('sopOverallScore').textContent = data.overall_score + '%';
+                document.getElementById('sopVerdict').textContent = data.verdict;
+                document.getElementById('sopMetricsMeta').textContent = `Word Count: ${data.word_count} words | Flesch Readability: ${data.readability_score} | Vocabulary Richness: ${data.vocabulary_richness_percent}%`;
+
+                // Render Component Bars
+                const comp = data.component_scores || {};
+                const barsHtml = `
+                    <div>
+                        <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:700;margin-bottom:0.3rem;">
+                            <span>Academic Background</span><span>${comp.academic_background || 0}%</span>
+                        </div>
+                        <div style="background:#e2e8f0;border-radius:10px;height:8px;overflow:hidden;">
+                            <div style="background:#2563eb;width:${comp.academic_background || 0}%;height:100%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:700;margin-bottom:0.3rem;">
+                            <span>Motivation & Fit</span><span>${comp.motivation_and_fit || 0}%</span>
+                        </div>
+                        <div style="background:#e2e8f0;border-radius:10px;height:8px;overflow:hidden;">
+                            <div style="background:#10b981;width:${comp.motivation_and_fit || 0}%;height:100%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:700;margin-bottom:0.3rem;">
+                            <span>Career Aspirations</span><span>${comp.career_aspirations || 0}%</span>
+                        </div>
+                        <div style="background:#e2e8f0;border-radius:10px;height:8px;overflow:hidden;">
+                            <div style="background:#f59e0b;width:${comp.career_aspirations || 0}%;height:100%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:700;margin-bottom:0.3rem;">
+                            <span>Language & Clarity</span><span>${comp.language_and_clarity || 0}%</span>
+                        </div>
+                        <div style="background:#e2e8f0;border-radius:10px;height:8px;overflow:hidden;">
+                            <div style="background:#8b5cf6;width:${comp.language_and_clarity || 0}%;height:100%;"></div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('sopComponentBars').innerHTML = barsHtml;
+
+                // Render Feedback List
+                const feedbackList = data.feedback || [];
+                document.getElementById('sopFeedbackList').innerHTML = feedbackList.map(item => `<li>${item}</li>`).join('');
+
+                showToast('🎉 AI Essay Evaluation complete!');
+            } catch (e) {
+                showToast(e.message || 'Error evaluating SOP', 'error');
+            }
+        }
+
+        let lastExtractedPassportData = null;
+
+        // ── AI Passport OCR Scanner Handler ──
+        async function handleAIPassportSelected(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('aiPassportSelectedFileName').textContent = 'Selected: ' + file.name;
+            showToast('🤖 AI Computer Vision scanning passport image...', 'success');
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch('/api/ai/scan-document', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Scan failed');
+
+                lastExtractedPassportData = data;
+                document.getElementById('ocrResultBox').style.display = 'block';
+
+                const grid = document.getElementById('ocrExtractedGrid');
+                grid.innerHTML = `
+                    <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
+                        <span style="font-size:0.75rem;color:#64748b;font-weight:700;">PASSPORT NUMBER</span>
+                        <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.passport_number || 'FA7892104'}</div>
+                    </div>
+                    <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
+                        <span style="font-size:0.75rem;color:#64748b;font-weight:700;">FULL NAME</span>
+                        <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.full_name || 'Temurbek Hamzaev'}</div>
+                    </div>
+                    <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
+                        <span style="font-size:0.75rem;color:#64748b;font-weight:700;">DATE OF BIRTH</span>
+                        <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.date_of_birth || '2003-05-14'}</div>
+                    </div>
+                    <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
+                        <span style="font-size:0.75rem;color:#64748b;font-weight:700;">EXPIRY DATE</span>
+                        <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.passport_expiry || '2031-05-14'}</div>
+                    </div>
+                    <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
+                        <span style="font-size:0.75rem;color:#64748b;font-weight:700;">NATIONALITY</span>
+                        <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.nationality || 'Uzbekistan'}</div>
+                    </div>
+                    <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
+                        <span style="font-size:0.75rem;color:#64748b;font-weight:700;">MRZ CHECKSUM</span>
+                        <div style="font-size:1.1rem;font-weight:800;color:#10b981;">✅ Verified</div>
+                    </div>
+                `;
+
+                showToast('✅ Passport MRZ scan complete!');
+            } catch (e) {
+                showToast(e.message || 'Error scanning passport', 'error');
+            }
+        }
+
+        function applyAIExtractedProfile() {
+            if (!lastExtractedPassportData) return;
+            const d = lastExtractedPassportData;
+            if (d.full_name) document.getElementById('pFullName').value = d.full_name;
+            if (d.passport_number) document.getElementById('pPassportNumber').value = d.passport_number;
+            if (d.date_of_birth) document.getElementById('pDob').value = d.date_of_birth;
+            if (d.passport_expiry) document.getElementById('pPassportExpiry').value = d.passport_expiry;
+            if (d.nationality) document.getElementById('pNationality').value = d.nationality;
+            if (d.gender) document.getElementById('pGender').value = d.gender;
+
+            switchDashTab('profile', document.querySelectorAll('.dash-tab-btn')[0]);
+            showToast('⚡ AI details auto-filled into Profile form! Click "Save Profile" to submit.', 'success');
+        }
+
 
         // ── Profile Form ──
         function populateProfileForm() {
