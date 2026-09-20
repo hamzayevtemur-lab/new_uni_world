@@ -848,3 +848,50 @@ function escH(str) {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
 }
+
+// ── RAG AI Counselor Floating Widget Script ──
+function toggleAIChat() {
+    const win = document.getElementById('aiChatWindow');
+    if (win) win.classList.toggle('active');
+}
+
+async function sendAIChatMessage() {
+    const input = document.getElementById('aiChatInput');
+    const msgBox = document.getElementById('aiChatMessages');
+    if (!input || !msgBox) return;
+
+    const userText = input.value.trim();
+    if (!userText) return;
+
+    // Append User Message
+    msgBox.innerHTML += `<div class="ai-msg ai-msg-user">${escH(userText)}</div>`;
+    input.value = '';
+    msgBox.scrollTop = msgBox.scrollHeight;
+
+    // Typing Indicator
+    const typingId = 'typing_' + Date.now();
+    msgBox.innerHTML += `<div id="${typingId}" class="ai-msg ai-msg-bot">⏳ Thinking & scanning Knowledge Base...</div>`;
+    msgBox.scrollTop = msgBox.scrollHeight;
+
+    try {
+        const res = await fetch('/api/ai/counselor-chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: userText })
+        });
+        const data = await res.json();
+
+        const typingEl = document.getElementById(typingId);
+        if (typingEl) typingEl.remove();
+
+        const sourcesTag = data.retrieved_sources && data.retrieved_sources.length
+            ? `<div style="margin-top:8px;font-size:0.75rem;color:#64748b;">📚 Sources: ${data.retrieved_sources.join(', ')}</div>`
+            : '';
+
+        msgBox.innerHTML += `<div class="ai-msg ai-msg-bot">${escH(data.answer).replace(/\n/g, '<br>')}${sourcesTag}</div>`;
+        msgBox.scrollTop = msgBox.scrollHeight;
+    } catch (e) {
+        const typingEl = document.getElementById(typingId);
+        if (typingEl) typingEl.innerHTML = '⚠️ AI Counselor is temporarily offline. Please try again in a moment.';
+    }
+}

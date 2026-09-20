@@ -890,6 +890,191 @@
         }
     </style>
 
+    <!-- ── 24/7 RAG AI COUNSELOR FLOATING CHAT WIDGET ── -->
+    <div id="aiChatWidget" class="ai-chat-widget">
+        <button id="aiChatToggleBtn" class="ai-chat-toggle-btn" onclick="toggleAIChat()">
+            <span style="font-size:1.4rem;">🤖</span>
+            <span>AI Counselor</span>
+            <span class="ai-badge-online">ONLINE</span>
+        </button>
+
+        <div id="aiChatWindow" class="ai-chat-window">
+            <div class="ai-chat-header">
+                <div style="display:flex;align-items:center;gap:0.6rem;">
+                    <div class="ai-avatar">🤖</div>
+                    <div>
+                        <h4 style="color:white;margin:0;font-size:0.95rem;">Uni World AI Counselor</h4>
+                        <p style="color:#93c5fd;margin:0;font-size:0.75rem;">RAG Knowledge-Indexed AI Assistant</p>
+                    </div>
+                </div>
+                <button class="ai-close-btn" onclick="toggleAIChat()">✕</button>
+            </div>
+
+            <div id="aiChatMessages" class="ai-chat-messages">
+                <div class="ai-msg ai-msg-bot">
+                    🎓 <strong>Hello! I am your Uni World AI Education Counselor.</strong><br><br>
+                    Ask me anything about 100% scholarships in China, study visas for Poland/Germany, tuition costs, or application steps!
+                </div>
+            </div>
+
+            <div class="ai-chat-input-area">
+                <input type="text" id="aiChatInput" placeholder="Ask about scholarships, visas, tuition..." onkeydown="if(event.key==='Enter') sendAIChatMessage()">
+                <button onclick="sendAIChatMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 99999;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        }
+
+        .ai-chat-toggle-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            color: white;
+            padding: 0.8rem 1.4rem;
+            border-radius: 50px;
+            border: 2px solid rgba(255,255,255,0.2);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+            transition: all 0.25s ease;
+        }
+
+        .ai-chat-toggle-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.5);
+        }
+
+        .ai-badge-online {
+            background: #10b981;
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 800;
+        }
+
+        .ai-chat-window {
+            display: none;
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 380px;
+            height: 480px;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+            border: 1px solid #e2e8f0;
+            flex-direction: column;
+            overflow: hidden;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .ai-chat-window.active {
+            display: flex;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            padding: 1rem 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ai-avatar {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .ai-close-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .ai-msg {
+            padding: 0.8rem 1rem;
+            border-radius: 14px;
+            font-size: 0.88rem;
+            line-height: 1.5;
+            max-width: 88%;
+        }
+
+        .ai-msg-bot {
+            background: white;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
+            align-self: flex-start;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .ai-msg-user {
+            background: #2563eb;
+            color: white;
+            align-self: flex-end;
+        }
+
+        .ai-chat-input-area {
+            display: flex;
+            padding: 0.8rem;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            gap: 0.5rem;
+        }
+
+        .ai-chat-input-area input {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            font-size: 0.88rem;
+            outline: none;
+        }
+
+        .ai-chat-input-area button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+    </style>
+
     <script src="/static/homepage.js"></script>
 </body>
 

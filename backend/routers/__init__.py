@@ -7,3 +7,4 @@ from .news import router as news_router
 from .countries import router as countries_router
 from .services import router as services_router
 from .universities import router as universities_router
+from .ai import router as ai_router

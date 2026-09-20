@@ -1,0 +1,37 @@
+[
+  {
+    "id": "china_wuxi_scholarship",
+    "category": "Universities & Scholarships",
+    "country": "China",
+    "keywords": ["wuxi", "china", "scholarship", "100%", "tuition", "free", "dormitory"],
+    "content": "Wuxi University in Jiangsu, China offers 100% Full Tuition Scholarships for international Bachelor's degree students in Software Engineering, Computer Science, and International Trade. Annual accommodation fee is only around $300-$500/year, and living costs in Wuxi are approx $250/month."
+  },
+  {
+    "id": "poland_study_visa",
+    "category": "Visa Requirements",
+    "country": "Poland",
+    "keywords": ["poland", "warsaw", "visa", "schengen", "bank statement", "apostille"],
+    "content": "To apply for a National D-Type Study Visa for Poland (Schengen Zone), Uzbek students need an Official Acceptance Letter from a Polish university (e.g. Warsaw University of Technology or Vistula University), apostilled High School Diploma, bank statement showing min. €3,500-€4,000 for living expenses, and health insurance covering €30,000."
+  },
+  {
+    "id": "germany_iu_university",
+    "category": "Universities & Tuition",
+    "country": "Germany",
+    "keywords": ["germany", "iu", "online", "campus", "tuition", "english", "work permit"],
+    "content": "IU International University of Applied Sciences in Germany offers English-taught Bachelor's and Master's programs in Data Science, AI, and Business. Students can choose online or on-campus study in Berlin/Bad Honnef and get 18-month post-study work visa in Germany."
+  },
+  {
+    "id": "ielts_duolingo_requirements",
+    "category": "Language Requirements",
+    "country": "General",
+    "keywords": ["ielts", "duolingo", "english", "score", "requirement", "without ielts"],
+    "content": "Most partner universities in China and Poland accept Duolingo English Test (minimum 95-105) or IELTS (minimum 5.5 - 6.0). Some universities in China allow admission with an official English Proficiency Letter from your high school if you studied in English."
+  },
+  {
+    "id": "uniworld_application_process",
+    "category": "Application Steps",
+    "country": "General",
+    "keywords": ["process", "step", "how to apply", "portal", "agent", "service"],
+    "content": "Uni World application steps: 1. Register on Uni World Student Portal and request OTP verification. 2. Fill profile details and upload Passport + Diploma + IELTS scan. 3. Receive 1-on-1 counselor review & university submission. 4. Receive official University Acceptance Letter within 2-4 weeks."
+  }
+]

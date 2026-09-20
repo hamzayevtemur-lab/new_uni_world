@@ -15,6 +15,7 @@ from routers import (
     countries_router,
     services_router,
     universities_router,
+    ai_router,
 )
 
 # ── App Initialization ────────────────────────────────────────────────────────
@@ -50,6 +51,7 @@ app.include_router(news_router)
 app.include_router(countries_router)
 app.include_router(services_router)
 app.include_router(universities_router)
+app.include_router(ai_router)
 
 # ── Frontend Page Views ──────────────────────────────────────────────────────
 
