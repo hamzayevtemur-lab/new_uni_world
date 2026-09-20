@@ -73,13 +73,18 @@ def send_email(to_email: str, subject: str, html_content: str, text_content: str
             clean_password = SMTP_PASSWORD.replace(" ", "")
 
             import ssl
-            context = ssl._create_unverified_context()
+            try:
+                context = ssl.create_default_context()
+            except Exception:
+                context = ssl._create_unverified_context()
 
-            if SMTP_PORT == 465:
+            if SMTP_PORT == 465 or "gmail" in SMTP_HOST.lower():
                 server = smtplib.SMTP_SSL(SMTP_HOST, 465, context=context, timeout=12)
                 server.login(SMTP_USER, clean_password)
                 server.sendmail(SMTP_FROM, [to_email], msg.as_string())
                 server.quit()
+                print(f"📧 [EmailService SUCCESS via SSL 465] Sent to {to_email}! 🎉")
+                return True
             else:
                 try:
                     server = smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=12)
