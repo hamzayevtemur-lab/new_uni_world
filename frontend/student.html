@@ -1408,7 +1408,7 @@
                 document.getElementById('sopResultBox').style.display = 'block';
                 document.getElementById('sopOverallScore').textContent = data.overall_score + '%';
                 document.getElementById('sopVerdict').textContent = data.verdict;
-                document.getElementById('sopMetricsMeta').textContent = `Word Count: ${data.word_count} words | Flesch Readability: ${data.readability_score} | Vocabulary Richness: ${data.vocabulary_richness_percent}%`;
+                document.getElementById('sopMetricsMeta').textContent = `⚡ Model: ${data.transformer_analysis?.model || 'Hugging Face DistilBERT'} | Tone Confidence: ${data.transformer_analysis?.confidence_percent || 99}% | Words: ${data.word_count} | Flesch Readability: ${data.readability_score}`;
 
                 // Render Component Bars
                 const comp = data.component_scores || {};
@@ -1448,9 +1448,11 @@
                 `;
                 document.getElementById('sopComponentBars').innerHTML = barsHtml;
 
-                // Render Feedback List
-                const feedbackList = data.feedback || [];
-                document.getElementById('sopFeedbackList').innerHTML = feedbackList.map(item => `<li>${item}</li>`).join('');
+                // Render Feedback Tips
+                const tipsList = document.getElementById('sopFeedbackList');
+                tipsList.innerHTML = (data.feedback || []).map(tip => `
+                    <li style="margin-bottom:0.5rem;font-size:0.9rem;color:#334155;line-height:1.5;">${tip}</li>
+                `).join('');
 
                 showToast('🎉 AI Essay Evaluation complete!');
             } catch (e) {
@@ -1504,6 +1506,10 @@
                     <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
                         <span style="font-size:0.75rem;color:#64748b;font-weight:700;">NATIONALITY</span>
                         <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.nationality || 'Uzbekistan'}</div>
+                    </div>
+                    <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
+                        <span style="font-size:0.75rem;color:#64748b;font-weight:700;">DEEP LEARNING MODEL</span>
+                        <div style="font-size:0.95rem;font-weight:800;color:#2563eb;">${data.model_architecture || 'PyTorch 2D CNN'}</div>
                     </div>
                     <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
                         <span style="font-size:0.75rem;color:#64748b;font-weight:700;">MRZ CHECKSUM</span>

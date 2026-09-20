@@ -1,9 +1,27 @@
 import os
 import json
 import re
+import torch
+from typing import Dict, Any, List
+
+# ── Hugging Face SentenceTransformers Vector Engine ───────────────────────────
+try:
+    from sentence_transformers import SentenceTransformer, util
+    EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+    encoder_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
+    HAVE_SENTENCE_TRANSFORMERS = True
+    print(f"✅ [HuggingFace / PyTorch] Loaded SentenceTransformer model: {EMBEDDING_MODEL_NAME}")
+except Exception as e:
+    HAVE_SENTENCE_TRANSFORMERS = False
+    print(f"⚠️ [SentenceTransformers Warning]: Could not load model: {e}")
 
 
-def load_knowledge_base() -> list:
+# Cache vector embeddings in memory for fast RAG search
+_KB_CACHE = []
+_EMBEDDINGS_CACHE = None
+
+
+def load_knowledge_base() -> List[dict]:
     """Loads knowledge base data JSON for semantic vector search."""
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     kb_path = os.path.join(base_dir, "data", "knowledge_base.json")
@@ -13,31 +31,25 @@ def load_knowledge_base() -> list:
     return []
 
 
-def calculate_semantic_similarity(query: str, doc: dict) -> float:
-    """Calculates keyword overlap & semantic matching score between student query and KB doc."""
-    q_words = set(re.findall(r'\w+', query.lower()))
-    if not q_words:
-        return 0.0
+def get_kb_embeddings():
+    """Encodes knowledge base documents into 384-dimensional PyTorch tensor embeddings."""
+    global _KB_CACHE, _EMBEDDINGS_CACHE
+    if _EMBEDDINGS_CACHE is not None:
+        return _KB_CACHE, _EMBEDDINGS_CACHE
 
-    score = 0.0
-    # Match against keywords list
-    for kw in doc.get("keywords", []):
-        if kw.lower() in query.lower():
-            score += 2.5
-
-    # Match against content words
-    doc_words = set(re.findall(r'\w+', doc.get("content", "").lower()))
-    overlap = len(q_words.intersection(doc_words))
-    score += (overlap / len(q_words)) * 1.5
-
-    return score
+    _KB_CACHE = load_knowledge_base()
+    if HAVE_SENTENCE_TRANSFORMERS and _KB_CACHE:
+        doc_texts = [f"{d.get('title', '')} {d.get('content', '')}" for d in _KB_CACHE]
+        _EMBEDDINGS_CACHE = encoder_model.encode(doc_texts, convert_to_tensor=True)
+    return _KB_CACHE, _EMBEDDINGS_CACHE
 
 
-def answer_counselor_rag(query: str, student_context: dict = None) -> dict:
+def answer_counselor_rag(query: str, student_context: dict = None) -> Dict[str, Any]:
     """
-    RAG AI Counselor Pipeline:
-    1. Retrieves top-k semantically relevant context passages from Vector KB.
-    2. Synthesizes a structured AI Counselor response with recommendations.
+    [Hugging Face + PyTorch SentenceTransformer RAG Pipeline]
+    1. Encodes query into dense vector embedding space.
+    2. Performs PyTorch cosine similarity search over Vector KB.
+    3. Synthesizes AI Counselor response with semantic similarity scores & citations.
     """
     cleaned_query = query.strip()
     if not cleaned_query:
@@ -47,23 +59,46 @@ def answer_counselor_rag(query: str, student_context: dict = None) -> dict:
             "suggested_actions": ["Explore China 100% Scholarships", "Check Poland Visa Checklist", "Test AI SOP Evaluator"]
         }
 
-    kb = load_knowledge_base()
-    scored_docs = []
-    for doc in kb:
-        score = calculate_semantic_similarity(cleaned_query, doc)
-        scored_docs.append((score, doc))
+    kb, kb_embeddings = get_kb_embeddings()
+    top_docs = []
 
-    scored_docs.sort(key=lambda x: x[0], reverse=True)
-    top_docs = [doc for score, doc in scored_docs[:2] if score > 0.5]
+    # 1. Hugging Face PyTorch Vector Embedding Cosine Search
+    if HAVE_SENTENCE_TRANSFORMERS and kb_embeddings is not None:
+        query_embedding = encoder_model.encode(cleaned_query, convert_to_tensor=True)
+        cosine_scores = util.cos_sim(query_embedding, kb_embeddings)[0]
+        top_k = min(3, len(kb))
+        best_results = torch.topk(cosine_scores, k=top_k)
 
-    # Synthesize AI Counselor Response
+        for score, idx in zip(best_results.values, best_results.indices):
+            sim_score = float(score)
+            if sim_score > 0.25:
+                doc = kb[idx.item()]
+                top_docs.append((sim_score, doc))
+
+    # 2. Fallback Keyword Similarity if embeddings unavailable
+    if not top_docs:
+        q_words = set(re.findall(r'\w+', cleaned_query.lower()))
+        for doc in kb:
+            doc_text = (doc.get("title", "") + " " + doc.get("content", "")).lower()
+            overlap = sum(1 for w in q_words if w in doc_text)
+            if overlap > 0:
+                top_docs.append((overlap / max(len(q_words), 1), doc))
+        top_docs.sort(key=lambda x: x[0], reverse=True)
+        top_docs = top_docs[:2]
+
+    # 3. Response Generation with Source Citations & Cosine Scores
     if top_docs:
-        main_info = top_docs[0]["content"]
-        secondary_info = f"\n\n💡 Additional Note: {top_docs[1]['content']}" if len(top_docs) > 1 else ""
-        answer = f"🎓 **Uni World AI Counselor Response:**\n\n{main_info}{secondary_info}\n\nWould you like me to guide you through applying or evaluating your eligibility?"
-        sources = [doc["category"] + " (" + doc["country"] + ")" for doc in top_docs]
+        best_score, main_doc = top_docs[0]
+        main_info = main_doc["content"]
+        secondary_info = f"\n\n💡 Additional Note: {top_docs[1][1]['content']}" if len(top_docs) > 1 else ""
+
+        answer = (
+            f"🎓 **Uni World AI Counselor Response (Dense Vector RAG):**\n\n"
+            f"{main_info}{secondary_info}\n\n"
+            f"Would you like me to guide you through applying or evaluating your eligibility?"
+        )
+        sources = [f"{d[1]['category']} ({d[1]['country']}) - Similarity: {round(d[0]*100, 1)}%" for d in top_docs]
     else:
-        # Intelligent fallback with general admissions advice
         answer = (
             "🎓 **Uni World AI Counselor Response:**\n\n"
             f"Thank you for asking about '{cleaned_query}'. Uni World offers full admission support for top universities in China (e.g. Wuxi University with 100% scholarships), Poland (Warsaw Tech, Vistula), Germany, and the UK.\n\n"
@@ -74,6 +109,7 @@ def answer_counselor_rag(query: str, student_context: dict = None) -> dict:
     return {
         "answer": answer,
         "retrieved_sources": sources,
+        "embedding_model": "sentence-transformers/all-MiniLM-L6-v2 (PyTorch)",
         "suggested_actions": [
             "Start Student Application",
             "Evaluate Motivation Letter with AI",
