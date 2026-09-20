@@ -1,7 +1,10 @@
 import re
 import io
 import datetime
-from PIL import Image
+try:
+    from PIL import Image
+except ImportError:
+    Image = None
 
 
 def parse_mrz_line(line1: str, line2: str) -> dict:
@@ -70,18 +73,15 @@ def scan_document_ai(image_bytes: bytes) -> dict:
     High-level Computer Vision & OCR pipeline for Passport / Diploma / IELTS certificates.
     Performs image preprocessing, OCR extraction, and MRZ pattern matching.
     """
-    try:
-        # Load PIL image
-        img = Image.open(io.BytesIO(image_bytes))
-        width, height = img.size
-
-        # Try EasyOCR / PyTesseract if installed
         extracted_text = ""
-        try:
-            import pytesseract
-            extracted_text = pytesseract.image_to_string(img)
-        except Exception:
-            pass
+        if Image is not None:
+            try:
+                img = Image.open(io.BytesIO(image_bytes))
+                width, height = img.size
+                import pytesseract
+                extracted_text = pytesseract.image_to_string(img)
+            except Exception:
+                pass
 
         # Search for MRZ lines in extracted text or image text representation
         mrz_matches = re.findall(r'[P|V|C][<A-Z0-9]{43}', extracted_text.upper())
