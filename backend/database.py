@@ -1,50 +1,106 @@
-import psycopg2
-import psycopg2.extras
-from config import DATABASE_URL
+import urllib.parse
+import pymysql
+import pymysql.cursors
+from config import (
+    DATABASE_URL,
+    MYSQL_HOST,
+    MYSQL_PORT,
+    MYSQL_USER,
+    MYSQL_PASSWORD,
+    MYSQL_DATABASE,
+)
+
 
 def get_conn():
-    return psycopg2.connect(DATABASE_URL, cursor_factory=psycopg2.extras.RealDictCursor)
+    """Establishes connection to MySQL database using PyMySQL and returns DictCursor."""
+    if DATABASE_URL and (DATABASE_URL.startswith("mysql://") or DATABASE_URL.startswith("mysql+pymysql://")):
+        url_clean = DATABASE_URL.replace("mysql+pymysql://", "mysql://")
+        parsed = urllib.parse.urlparse(url_clean)
+        return pymysql.connect(
+            host=parsed.hostname or "127.0.0.1",
+            port=parsed.port or 3306,
+            user=parsed.username or "root",
+            password=parsed.password or "",
+            database=parsed.path.lstrip("/") or "uniworld",
+            charset="utf8mb4",
+            autocommit=False,
+            cursorclass=pymysql.cursors.DictCursor,
+        )
+
+    return pymysql.connect(
+        host=MYSQL_HOST,
+        port=MYSQL_PORT,
+        user=MYSQL_USER,
+        password=MYSQL_PASSWORD,
+        database=MYSQL_DATABASE,
+        charset="utf8mb4",
+        autocommit=False,
+        cursorclass=pymysql.cursors.DictCursor,
+    )
+
+
+def add_column_if_not_exists(cur, table_name, column_name, column_def):
+    """Safely adds a column to a MySQL table if it does not already exist."""
+    cur.execute(
+        """
+        SELECT COUNT(*) AS cnt
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = %s
+          AND COLUMN_NAME = %s
+    """,
+        (table_name, column_name),
+    )
+    res = cur.fetchone()
+    if not res or res.get("cnt", 0) == 0:
+        cur.execute(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_def};")
+
 
 def init_db():
-    """Initializes all standard and CRM tables automatically on startup."""
+    """Initializes all MySQL tables and auto-migrations on app startup."""
     try:
         conn = get_conn()
         cur = conn.cursor()
-        
+
         # Comments table
-        cur.execute("""
+        cur.execute(
+            """
             CREATE TABLE IF NOT EXISTS comments (
-                id          SERIAL PRIMARY KEY,
-                name        VARCHAR(100),
-                country     VARCHAR(100),
-                rating      INT,
+                id           INT AUTO_INCREMENT PRIMARY KEY,
+                name         VARCHAR(100),
+                country      VARCHAR(100),
+                rating       INT,
                 comment_text TEXT,
-                is_approved BOOLEAN DEFAULT FALSE,
-                created_at  TIMESTAMP DEFAULT NOW()
-            );
-        """)
-        
-        # News table
-        cur.execute("""
+                is_approved  BOOLEAN DEFAULT FALSE,
+                created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        """
+        )
+
+        # News / Announcements table
+        cur.execute(
+            """
             CREATE TABLE IF NOT EXISTS news (
-                id          SERIAL PRIMARY KEY,
+                id          INT AUTO_INCREMENT PRIMARY KEY,
                 title       VARCHAR(255) NOT NULL,
                 body        TEXT NOT NULL,
                 badge_text  VARCHAR(80),
                 image_url   VARCHAR(500),
                 link_url    VARCHAR(500),
                 link_text   VARCHAR(100),
-                expires_at  TIMESTAMP,
+                expires_at  TIMESTAMP NULL DEFAULT NULL,
                 is_active   BOOLEAN DEFAULT TRUE,
                 is_ticker   BOOLEAN DEFAULT FALSE,
-                created_at  TIMESTAMP DEFAULT NOW()
-            );
-        """)
-        
+                created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        """
+        )
+
         # Countries table
-        cur.execute("""
+        cur.execute(
+            """
             CREATE TABLE IF NOT EXISTS countries (
-                id                SERIAL PRIMARY KEY,
+                id                INT AUTO_INCREMENT PRIMARY KEY,
                 name              VARCHAR(100) NOT NULL,
                 flag_emoji        VARCHAR(10),
                 university_count  VARCHAR(50),
@@ -57,14 +113,16 @@ def init_db():
                 visa_requirements TEXT,
                 sort_order        INT DEFAULT 0,
                 is_active         BOOLEAN DEFAULT TRUE,
-                created_at        TIMESTAMP DEFAULT NOW()
-            );
-        """)
-        
+                created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        """
+        )
+
         # Services table
-        cur.execute("""
+        cur.execute(
+            """
             CREATE TABLE IF NOT EXISTS services (
-                id            SERIAL PRIMARY KEY,
+                id            INT AUTO_INCREMENT PRIMARY KEY,
                 title         VARCHAR(200) NOT NULL,
                 icon_emoji    VARCHAR(10),
                 image_url     VARCHAR(500),
@@ -75,14 +133,16 @@ def init_db():
                 modal_key     VARCHAR(50),
                 sort_order    INT DEFAULT 0,
                 is_active     BOOLEAN DEFAULT TRUE,
-                created_at    TIMESTAMP DEFAULT NOW()
-            );
-        """)
-        
+                created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        """
+        )
+
         # Universities table
-        cur.execute("""
+        cur.execute(
+            """
             CREATE TABLE IF NOT EXISTS universities (
-                id           SERIAL PRIMARY KEY,
+                id           INT AUTO_INCREMENT PRIMARY KEY,
                 name         VARCHAR(200) NOT NULL,
                 country      VARCHAR(100),
                 image_url    VARCHAR(500),
@@ -92,30 +152,34 @@ def init_db():
                 link_url     VARCHAR(500),
                 sort_order   INT DEFAULT 0,
                 is_active    BOOLEAN DEFAULT TRUE,
-                created_at   TIMESTAMP DEFAULT NOW()
-            );
-        """)
+                created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        """
+        )
 
-        # Leads table (captured inquiries)
-        cur.execute("""
+        # Leads table (contact form inquiries)
+        cur.execute(
+            """
             CREATE TABLE IF NOT EXISTS leads (
-                id              SERIAL PRIMARY KEY,
-                name            VARCHAR(150) NOT NULL,
-                phone           VARCHAR(50) NOT NULL,
-                email           VARCHAR(255),
-                country         VARCHAR(100),
-                message         TEXT,
-                status          VARCHAR(30) DEFAULT 'new',
-                created_at      TIMESTAMP DEFAULT NOW()
-            );
-        """)
+                id          INT AUTO_INCREMENT PRIMARY KEY,
+                name        VARCHAR(150) NOT NULL,
+                phone       VARCHAR(50) NOT NULL,
+                email       VARCHAR(255),
+                country     VARCHAR(100),
+                message     TEXT,
+                status      VARCHAR(30) DEFAULT 'new',
+                created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        """
+        )
 
         # Students CRM table
-        cur.execute("""
+        cur.execute(
+            """
             CREATE TABLE IF NOT EXISTS students (
-                id                  SERIAL PRIMARY KEY,
+                id                  INT AUTO_INCREMENT PRIMARY KEY,
                 email               VARCHAR(255) UNIQUE NOT NULL,
-                password_hash       VARCHAR(255),
+                password_hash       VARCHAR(255) NULL,
                 full_name           VARCHAR(200) NOT NULL,
                 phone               VARCHAR(50),
                 date_of_birth       VARCHAR(30),
@@ -135,36 +199,27 @@ def init_db():
                 status              VARCHAR(50) DEFAULT 'pending',
                 email_verified      BOOLEAN DEFAULT FALSE,
                 otp_code            VARCHAR(10),
-                otp_expires_at      TIMESTAMP,
-                approved_at         TIMESTAMP,
+                otp_expires_at      TIMESTAMP NULL DEFAULT NULL,
+                approved_at         TIMESTAMP NULL DEFAULT NULL,
                 notes               TEXT,
-                created_at          TIMESTAMP DEFAULT NOW(),
-                updated_at          TIMESTAMP DEFAULT NOW()
-            );
-        """)
+                created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        """
+        )
 
-        # Add OTP and verification columns to existing students table if they don't exist yet
-        for col, typedef in [
-            ("email_verified", "BOOLEAN DEFAULT FALSE"),
-            ("otp_code", "VARCHAR(10)"),
-            ("otp_expires_at", "TIMESTAMP"),
-            ("approved_at", "TIMESTAMP"),
-        ]:
-            cur.execute(f"""
-                DO $$ BEGIN
-                    ALTER TABLE students ADD COLUMN {col} {typedef};
-                EXCEPTION WHEN duplicate_column THEN NULL;
-                END $$;
-            """)
-
-        # Allow NULL password_hash for pending access requests
-        cur.execute("ALTER TABLE students ALTER COLUMN password_hash DROP NOT NULL;")
+        # Add OTP and verification columns if upgrading existing table
+        add_column_if_not_exists(cur, "students", "email_verified", "BOOLEAN DEFAULT FALSE")
+        add_column_if_not_exists(cur, "students", "otp_code", "VARCHAR(10)")
+        add_column_if_not_exists(cur, "students", "otp_expires_at", "TIMESTAMP NULL DEFAULT NULL")
+        add_column_if_not_exists(cur, "students", "approved_at", "TIMESTAMP NULL DEFAULT NULL")
 
         # Student Documents table
-        cur.execute("""
+        cur.execute(
+            """
             CREATE TABLE IF NOT EXISTS student_documents (
-                id              SERIAL PRIMARY KEY,
-                student_id      INT REFERENCES students(id) ON DELETE CASCADE,
+                id              INT AUTO_INCREMENT PRIMARY KEY,
+                student_id      INT NOT NULL,
                 doc_type        VARCHAR(50) NOT NULL,
                 title           VARCHAR(200) NOT NULL,
                 file_url        VARCHAR(1000) NOT NULL,
@@ -172,15 +227,18 @@ def init_db():
                 file_size       VARCHAR(50),
                 status          VARCHAR(30) DEFAULT 'pending',
                 admin_feedback  TEXT,
-                uploaded_at     TIMESTAMP DEFAULT NOW()
-            );
-        """)
+                uploaded_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        """
+        )
 
         # Student University Applications table
-        cur.execute("""
+        cur.execute(
+            """
             CREATE TABLE IF NOT EXISTS student_applications (
-                id                  SERIAL PRIMARY KEY,
-                student_id          INT REFERENCES students(id) ON DELETE CASCADE,
+                id                  INT AUTO_INCREMENT PRIMARY KEY,
+                student_id          INT NOT NULL,
                 university_name     VARCHAR(255) NOT NULL,
                 country             VARCHAR(100),
                 program_name        VARCHAR(255),
@@ -189,13 +247,16 @@ def init_db():
                 portal_url          VARCHAR(1000),
                 application_id      VARCHAR(100),
                 notes               TEXT,
-                created_at          TIMESTAMP DEFAULT NOW(),
-                updated_at          TIMESTAMP DEFAULT NOW()
-            );
-        """)
+                created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        """
+        )
 
         conn.commit()
         cur.close()
         conn.close()
+        print("✅ [MySQL init_db] All database tables created & verified successfully!")
     except Exception as e:
-        print(f"[init_db] Note/Warning: {e}")
+        print(f"⚠️ [MySQL init_db Error/Warning]: {e}")

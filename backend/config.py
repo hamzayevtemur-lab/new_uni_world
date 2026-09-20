@@ -17,5 +17,11 @@ ADMIN_PASSWORD_HASH = os.getenv(
     "$2b$12$mIbmynOzDKeXHWJa2DShWewN/PGo5eeKN/caw4opVm3cyUP0LK6ay",
 )
 
+MYSQL_HOST = os.getenv("MYSQL_HOST", "127.0.0.1")
+MYSQL_PORT = int(os.getenv("MYSQL_PORT", 3306))
+MYSQL_USER = os.getenv("MYSQL_USER", "root")
+MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "")
+MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "uniworld")
+
 DATABASE_URL = os.getenv("DATABASE_URL")
-PORT = int(os.getenv("PORT", 8080))
+PORT = int(os.getenv("PORT", 4000))

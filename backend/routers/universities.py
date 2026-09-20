@@ -32,10 +32,10 @@ async def create_university(u: UniversityCreate, _=Depends(verify_admin_token)):
         cur.execute("""
             INSERT INTO universities (name, country, image_url, description,
                                       programs, ranking, link_url, sort_order, is_active)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
         """, (u.name, u.country, u.image_url, u.description,
               u.programs, u.ranking, u.link_url, u.sort_order, u.is_active))
-        new_id = cur.fetchone()["id"]
+        new_id = cur.lastrowid
         conn.commit(); cur.close(); conn.close()
         return {"message": "University created", "id": new_id}
     except Exception as e:

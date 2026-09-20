@@ -32,10 +32,10 @@ async def create_service(s: ServiceCreate, _=Depends(verify_admin_token)):
         cur.execute("""
             INSERT INTO services (title, icon_emoji, image_url, description, details, benefits,
                                   is_featured, modal_key, sort_order, is_active)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
         """, (s.title, s.icon_emoji, s.image_url, s.description, s.details, s.benefits,
               s.is_featured, s.modal_key, s.sort_order, s.is_active))
-        new_id = cur.fetchone()["id"]
+        new_id = cur.lastrowid
         conn.commit(); cur.close(); conn.close()
         return {"message": "Service created", "id": new_id}
     except Exception as e:

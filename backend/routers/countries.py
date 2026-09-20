@@ -33,11 +33,11 @@ async def create_country(c: CountryCreate, _=Depends(verify_admin_token)):
             INSERT INTO countries (name, flag_emoji, university_count, description,
                                    image_url, modal_key, programs, cost_of_living,
                                    language, visa_requirements, sort_order, is_active)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
         """, (c.name, c.flag_emoji, c.university_count, c.description,
               c.image_url, c.modal_key, c.programs, c.cost_of_living,
               c.language, c.visa_requirements, c.sort_order, c.is_active))
-        new_id = cur.fetchone()["id"]
+        new_id = cur.lastrowid
         conn.commit(); cur.close(); conn.close()
         return {"message": "Country created", "id": new_id}
     except Exception as e:

@@ -57,10 +57,10 @@ async def create_news(n: NewsCreate, _=Depends(verify_admin_token)):
         cur.execute("""
             INSERT INTO news (title, body, badge_text, image_url, link_url, link_text,
                               expires_at, is_active, is_ticker)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
         """, (n.title, n.body, n.badge_text, n.image_url, n.link_url, n.link_text,
               n.expires_at, n.is_active, n.is_ticker))
-        new_id = cur.fetchone()["id"]
+        new_id = cur.lastrowid
         conn.commit(); cur.close(); conn.close()
         return {"message": "Created", "id": new_id}
     except Exception as e:

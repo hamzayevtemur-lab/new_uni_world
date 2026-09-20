@@ -43,7 +43,6 @@ async def admin_approve_student_request(sid: int, body: Optional[ApproveStudentR
             conn.close()
             raise HTTPException(status_code=404, detail="Student request not found")
 
-        # Determine password to assign
         raw_password = (body.custom_password.strip() if body and body.custom_password else None)
         if not raw_password:
             raw_password = f"UniWorld#{random.randint(1000, 9999)}"
@@ -57,15 +56,14 @@ async def admin_approve_student_request(sid: int, body: Optional[ApproveStudentR
                 approved_at = NOW(),
                 updated_at = NOW()
             WHERE id = %s
-            RETURNING id, email, full_name, status, approved_at
         """, (pwd_hash, sid))
 
+        cur.execute("SELECT id, email, full_name, status, approved_at FROM students WHERE id = %s", (sid,))
         updated = cur.fetchone()
         conn.commit()
         cur.close()
         conn.close()
 
-        # Dispatch credentials email
         sent = send_student_credentials_email(student["email"], student["full_name"], raw_password)
 
         return {
@@ -85,10 +83,8 @@ async def admin_reject_student_request(sid: int, _=Depends(verify_admin_token)):
     try:
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute("""
-            UPDATE students SET status = 'rejected', updated_at = NOW()
-            WHERE id = %s RETURNING id, status
-        """, (sid,))
+        cur.execute("UPDATE students SET status = 'rejected', updated_at = NOW() WHERE id = %s", (sid,))
+        cur.execute("SELECT id, status FROM students WHERE id = %s", (sid,))
         updated = cur.fetchone()
         conn.commit()
         cur.close()
@@ -111,7 +107,8 @@ async def admin_get_all_students(_=Depends(verify_admin_token)):
             FROM students s
             LEFT JOIN student_documents d ON d.student_id = s.id
             LEFT JOIN student_applications a ON a.student_id = s.id
-            GROUP BY s.id
+            GROUP BY s.id, s.email, s.full_name, s.phone, s.nationality, s.passport_number,
+                     s.target_country, s.target_degree, s.target_major, s.status, s.created_at, s.updated_at
             ORDER BY s.updated_at DESC
         """)
         rows = cur.fetchall()
@@ -153,8 +150,9 @@ async def admin_update_student_status(sid: int, status_data: StudentStatusUpdate
         cur = conn.cursor()
         cur.execute("""
             UPDATE students SET status = %s, notes = COALESCE(%s, notes), updated_at = NOW()
-            WHERE id = %s RETURNING id, status, notes
+            WHERE id = %s
         """, (status_data.status, status_data.notes, sid))
+        cur.execute("SELECT id, status, notes FROM students WHERE id = %s", (sid,))
         updated = cur.fetchone()
         conn.commit()
         cur.close()
@@ -172,8 +170,8 @@ async def admin_review_document(doc_id: int, review: DocumentReview, _=Depends(v
             UPDATE student_documents
             SET status = %s, admin_feedback = %s
             WHERE id = %s
-            RETURNING id, student_id, status, admin_feedback
         """, (review.status, review.admin_feedback, doc_id))
+        cur.execute("SELECT id, student_id, status, admin_feedback FROM student_documents WHERE id = %s", (doc_id,))
         doc = cur.fetchone()
         conn.commit()
         cur.close()
@@ -190,9 +188,8 @@ async def admin_create_application(sid: int, app_data: ApplicationCreate, _=Depe
         cur.execute("""
             INSERT INTO student_applications (student_id, university_name, country, program_name, intake_semester, status, portal_url, application_id, notes)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            RETURNING id
         """, (sid, app_data.university_name, app_data.country, app_data.program_name, app_data.intake_semester, app_data.status, app_data.portal_url, app_data.application_id, app_data.notes))
-        new_id = cur.fetchone()["id"]
+        new_id = cur.lastrowid
         
         if app_data.status in ["Submitted to University", "Applied"]:
             cur.execute("UPDATE students SET status = 'Applied', updated_at = NOW() WHERE id = %s", (sid,))

@@ -110,13 +110,13 @@ async def student_verify_otp(data: VerifyOTPAndRequestAccess):
                 otp_code = NULL,
                 updated_at = NOW()
             WHERE id = %s
-            RETURNING id, email, full_name, status, email_verified
         """, (
             data.full_name, data.phone, data.target_country,
             data.target_degree, data.target_major, data.notes,
             student["id"]
         ))
 
+        cur.execute("SELECT id, email, full_name, status, email_verified FROM students WHERE id = %s", (student["id"],))
         updated = cur.fetchone()
         conn.commit()
         cur.close()
@@ -224,7 +224,6 @@ async def student_update_profile(p: StudentProfileUpdate, current=Depends(verify
                 target_major = COALESCE(%s, target_major),
                 updated_at = NOW()
             WHERE id = %s
-            RETURNING *
         """, (
             p.full_name, p.phone, p.date_of_birth, p.gender, p.nationality,
             p.passport_number, p.passport_expiry, p.address, p.emergency_contact,
@@ -232,6 +231,7 @@ async def student_update_profile(p: StudentProfileUpdate, current=Depends(verify
             p.target_country, p.target_degree, p.target_major,
             current["student_id"]
         ))
+        cur.execute("SELECT * FROM students WHERE id = %s", (current["student_id"],))
         updated = cur.fetchone()
         conn.commit()
         cur.close()
@@ -249,9 +249,10 @@ async def student_upload_document(doc: DocumentCreate, current=Depends(verify_st
         cur.execute("""
             INSERT INTO student_documents (student_id, doc_type, title, file_url, file_name, file_size, status)
             VALUES (%s, %s, %s, %s, %s, %s, 'pending')
-            RETURNING id, doc_type, title, file_url, status, uploaded_at
         """, (current["student_id"], doc.doc_type, doc.title, doc.file_url, doc.file_name, doc.file_size))
         
+        doc_id = cur.lastrowid
+        cur.execute("SELECT id, doc_type, title, file_url, status, uploaded_at FROM student_documents WHERE id = %s", (doc_id,))
         new_doc = cur.fetchone()
         
         cur.execute("SELECT status FROM students WHERE id = %s", (current["student_id"],))

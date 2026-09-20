@@ -11,10 +11,10 @@ async def submit_lead(lead: LeadCreate):
         conn = get_conn()
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO leads (name, phone, email, country, message) VALUES (%s,%s,%s,%s,%s) RETURNING id",
+            "INSERT INTO leads (name, phone, email, country, message) VALUES (%s,%s,%s,%s,%s)",
             (lead.name, lead.phone, lead.email, lead.country, lead.message)
         )
-        new_id = cur.fetchone()["id"]
+        new_id = cur.lastrowid
         conn.commit()
         cur.close()
         conn.close()
