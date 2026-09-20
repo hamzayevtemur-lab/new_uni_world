@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from config import FRONTEND, PORT
-from database import init_db
+from init_schema import init_db
 from routers import (
     auth_router,
     student_router,
