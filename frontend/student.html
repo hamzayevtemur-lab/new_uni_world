@@ -825,6 +825,24 @@
         <!-- TAB 1: PROFILE & ACADEMIC INFO -->
         <div id="tabProfile" class="tab-pane active">
             <div class="panel">
+                <!-- 🤖 AI PASSPORT SCANNER AUTO-FILL BANNER -->
+                <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); border-radius: 16px; padding: 1.5rem; color: white; margin-bottom: 1.8rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);">
+                    <div>
+                        <h4 style="margin:0 0 0.3rem 0; font-size: 1.15rem; font-weight:800; display: flex; align-items: center; gap: 0.5rem; color:white;">
+                            <span>🤖</span> Save Time! 1-Click AI Passport Auto-Fill
+                        </h4>
+                        <p style="margin:0; color: #93c5fd; font-size: 0.88rem;">
+                            Upload your passport scan to automatically extract &amp; populate your Name, Passport #, DOB, Expiry Date, and Gender.
+                        </p>
+                    </div>
+                    <div>
+                        <input type="file" id="topPassportFileInput" accept="image/*,.pdf" style="display:none;" onchange="handleAIPassportSelected(event)">
+                        <button type="button" class="btn-submit" onclick="document.getElementById('topPassportFileInput').click()" style="background:#f59e0b; color:#0f172a; font-weight:800; border:none; padding:0.8rem 1.4rem; border-radius:12px; cursor:pointer; box-shadow:0 4px 12px rgba(245, 158, 11, 0.4);">
+                            📷 Scan Passport &amp; Auto-Fill →
+                        </button>
+                    </div>
+                </div>
+
                 <div class="panel-header">
                     <h3>👤 Personal &amp; Passport Details</h3>
                     <span style="font-size: 0.85rem; color: var(--text-muted);">Please make sure passport details match
@@ -1521,7 +1539,8 @@
                     </div>
                 `;
 
-                showToast('✅ Passport MRZ scan complete!');
+                showToast('✅ Passport MRZ scan complete! Auto-filling profile...', 'success');
+                applyAIExtractedProfile();
             } catch (e) {
                 showToast(e.message || 'Error scanning passport', 'error');
             }
@@ -1530,15 +1549,31 @@
         function applyAIExtractedProfile() {
             if (!lastExtractedPassportData) return;
             const d = lastExtractedPassportData;
-            if (d.full_name) document.getElementById('pFullName').value = d.full_name;
-            if (d.passport_number) document.getElementById('pPassportNumber').value = d.passport_number;
-            if (d.date_of_birth) document.getElementById('pDob').value = d.date_of_birth;
-            if (d.passport_expiry) document.getElementById('pPassportExpiry').value = d.passport_expiry;
-            if (d.nationality) document.getElementById('pNationality').value = d.nationality;
-            if (d.gender) document.getElementById('pGender').value = d.gender;
+            const fieldsToHighlight = [];
+
+            if (d.full_name) { document.getElementById('pFullName').value = d.full_name; fieldsToHighlight.push('pFullName'); }
+            if (d.passport_number) { document.getElementById('pPassportNumber').value = d.passport_number; fieldsToHighlight.push('pPassportNumber'); }
+            if (d.date_of_birth) { document.getElementById('pDob').value = d.date_of_birth; fieldsToHighlight.push('pDob'); }
+            if (d.passport_expiry) { document.getElementById('pPassportExpiry').value = d.passport_expiry; fieldsToHighlight.push('pPassportExpiry'); }
+            if (d.nationality) { document.getElementById('pNationality').value = d.nationality; fieldsToHighlight.push('pNationality'); }
+            if (d.gender) { document.getElementById('pGender').value = d.gender; fieldsToHighlight.push('pGender'); }
 
             switchDashTab('profile', document.querySelectorAll('.dash-tab-btn')[0]);
-            showToast('⚡ AI details auto-filled into Profile form! Click "Save Profile" to submit.', 'success');
+
+            // Flash green border on updated fields
+            fieldsToHighlight.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.style.borderColor = '#10b981';
+                    el.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.2)';
+                    setTimeout(() => {
+                        el.style.borderColor = '';
+                        el.style.boxShadow = '';
+                    }, 3000);
+                }
+            });
+
+            showToast('⚡ AI extracted details & auto-filled your Profile! Review & click "Save Profile".', 'success');
         }
 
 
