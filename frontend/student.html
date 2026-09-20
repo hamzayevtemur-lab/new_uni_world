@@ -817,9 +817,6 @@
             <button class="dash-tab-btn" onclick="switchDashTab('sop', this)" style="background:linear-gradient(135deg, #f59e0b, #d97706);color:white;">
                 📝 AI Essay Evaluator
             </button>
-            <button class="dash-tab-btn" onclick="switchDashTab('scanner', this)" style="background:linear-gradient(135deg, #2563eb, #1d4ed8);color:white;">
-                🤖 AI Passport Scanner
-            </button>
         </nav>
 
         <!-- TAB 1: PROFILE & ACADEMIC INFO -->
@@ -1103,47 +1100,6 @@
                     <ul id="sopFeedbackList" style="padding-left:1.2rem;line-height:1.7;color:#334155;font-size:0.92rem;">
                         <!-- Feedback items -->
                     </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 5: AI PASSPORT OCR SCANNER -->
-        <div id="tabScanner" class="tab-pane">
-            <div class="panel">
-                <div class="panel-header">
-                    <div>
-                        <h3>🤖 1-Click AI Vision &amp; Passport OCR Scanner</h3>
-                        <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.3rem;">
-                            Upload a scan or photo of your International Passport. Computer Vision extracts your passport number, name, DOB, and expiry date to auto-populate your profile.
-                        </p>
-                    </div>
-                </div>
-
-                <div style="border:2px dashed #3b82f6;padding:2.5rem;border-radius:18px;text-align:center;background:#eff6ff;margin-bottom:1.5rem;">
-                    <div style="font-size:3rem;margin-bottom:0.8rem;">🛂</div>
-                    <h4 style="color:#1e40af;margin-bottom:0.5rem;font-size:1.15rem;">Select Passport Scan Image</h4>
-                    <p style="color:#3b82f6;font-size:0.88rem;margin-bottom:1.2rem;">Supports JPG, PNG, or PDF passport documents</p>
-                    <input type="file" id="aiPassportFileInput" accept="image/*,.pdf" style="display:none;" onchange="handleAIPassportSelected(event)">
-                    <button class="btn-submit" onclick="document.getElementById('aiPassportFileInput').click()" style="max-width:240px;margin:0 auto;background:#2563eb;">
-                        📷 Choose Passport Image
-                    </button>
-                    <p id="aiPassportSelectedFileName" style="margin-top:0.8rem;color:#1e293b;font-weight:700;font-size:0.9rem;"></p>
-                </div>
-
-                <!-- OCR Extraction Output Card -->
-                <div id="ocrResultBox" style="display:none;background:#ecfdf5;border:1px solid #a7f3d0;padding:1.5rem;border-radius:16px;">
-                    <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;color:#065f46;">
-                        <span style="font-size:1.5rem;">✅</span>
-                        <h4 style="margin:0;font-size:1.1rem;font-weight:800;">AI Computer Vision Scan Successful!</h4>
-                    </div>
-
-                    <div class="grid-3" style="gap:1rem;margin-bottom:1.2rem;" id="ocrExtractedGrid">
-                        <!-- Extracted fields injected -->
-                    </div>
-
-                    <button class="btn-submit" onclick="applyAIExtractedProfile()" style="background:#059669;max-width:280px;">
-                        ⚡ Auto-Fill into Profile →
-                    </button>
                 </div>
             </div>
         </div>
