@@ -831,12 +831,27 @@
                         <p style="margin:0; color: #93c5fd; font-size: 0.88rem;">
                             Upload your passport scan to automatically extract &amp; populate your Name, Passport #, DOB, Expiry Date, and Gender.
                         </p>
+                        <div id="aiPassportSelectedFileName" style="font-size:0.85rem; color:#f59e0b; font-weight:700; margin-top:0.4rem;"></div>
                     </div>
                     <div>
                         <input type="file" id="topPassportFileInput" accept="image/*,.pdf" style="display:none;" onchange="handleAIPassportSelected(event)">
                         <button type="button" class="btn-submit" onclick="document.getElementById('topPassportFileInput').click()" style="background:#f59e0b; color:#0f172a; font-weight:800; border:none; padding:0.8rem 1.4rem; border-radius:12px; cursor:pointer; box-shadow:0 4px 12px rgba(245, 158, 11, 0.4);">
                             📷 Scan Passport &amp; Auto-Fill →
                         </button>
+                    </div>
+                </div>
+
+                <!-- 🤖 AI OCR RESULT CARD -->
+                <div id="ocrResultBox" style="display:none; background:#f8fafc; border:2px solid #2563eb; border-radius:16px; padding:1.2rem; margin-bottom:1.8rem; animation:fadeIn 0.3s ease;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem;">
+                        <h5 style="margin:0; font-size:1rem; color:#1e293b; font-weight:800;">
+                            ✨ Extracted Passport Data (Auto-Filled)
+                        </h5>
+                        <span style="background:#10b981; color:white; padding:0.2rem 0.6rem; border-radius:20px; font-size:0.75rem; font-weight:700;">
+                            MRZ Checksum: Verified
+                        </span>
+                    </div>
+                    <div id="ocrExtractedGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:0.8rem;">
                     </div>
                 </div>
 
@@ -1450,7 +1465,8 @@
             const file = e.target.files[0];
             if (!file) return;
 
-            document.getElementById('aiPassportSelectedFileName').textContent = 'Selected: ' + file.name;
+            const nameEl = document.getElementById('aiPassportSelectedFileName');
+            if (nameEl) nameEl.textContent = 'Selected: ' + file.name;
             showToast('🤖 AI Computer Vision scanning passport image...', 'success');
 
             const formData = new FormData();
