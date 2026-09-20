@@ -1,7 +1,10 @@
 import os
 import urllib.parse
+from dotenv import load_dotenv
 import pymysql
 import pymysql.cursors
+
+load_dotenv()
 
 
 def get_database_url() -> str:
