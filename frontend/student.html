@@ -1408,7 +1408,7 @@
                 document.getElementById('sopResultBox').style.display = 'block';
                 document.getElementById('sopOverallScore').textContent = data.overall_score + '%';
                 document.getElementById('sopVerdict').textContent = data.verdict;
-                document.getElementById('sopMetricsMeta').textContent = `⚡ Model: ${data.transformer_analysis?.model || 'Hugging Face DistilBERT'} | Tone Confidence: ${data.transformer_analysis?.confidence_percent || 99}% | Words: ${data.word_count} | Flesch Readability: ${data.readability_score}`;
+                document.getElementById('sopMetricsMeta').textContent = `⚡ Model: ${data.embedding_analysis?.model || 'SentenceTransformer (all-MiniLM-L6-v2)'} | Semantic Score: ${data.embedding_analysis?.semantic_score ?? data.overall_score}% | Words: ${data.word_count} | Readability: ${data.readability_score}`;
 
                 // Render Component Bars
                 const comp = data.component_scores || {};

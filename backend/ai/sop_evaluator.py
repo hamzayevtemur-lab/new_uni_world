@@ -2,65 +2,79 @@
 backend/ai/sop_evaluator.py
 ============================
 Statement of Purpose (SOP) / Motivation Letter Evaluator
-using Hugging Face BERT Hidden State Embeddings + PyTorch
+using Hugging Face SentenceTransformer Embeddings + PyTorch
 
 Architecture:
-  1. Load pretrained BERT (bert-base-uncased) via HuggingFace AutoModel
-  2. Tokenize essay text using AutoTokenizer
-  3. Forward pass → extract [CLS] token hidden state (768-dim sentence embedding)
-  4. Compute cosine similarity against two anchor embeddings:
-       - Strong SOP reference (academic, goal-oriented, research-focused language)
-       - Weak SOP reference   (vague, generic, short, low-quality language)
-  5. Compute semantic quality score from cosine similarities:
-       quality_score = (sim_strong - sim_weak + 1) / 2   → normalized to [0, 1]
-  6. Combine with linguistic features (Flesch Reading Ease, vocabulary richness,
-     keyword coverage) using a weighted composite formula
-  7. Return structured evaluation report with component scores & feedback tips
+  1. Load SentenceTransformer (all-MiniLM-L6-v2) — a model specifically
+     fine-tuned for semantic similarity via siamese network training.
+     Unlike raw BERT [CLS], SentenceTransformer embeddings are designed
+     to be directly compared with cosine similarity.
+  2. Encode the student essay → 384-dimensional dense embedding vector
+  3. Encode two anchor reference SOPs:
+       - Strong SOP (academic, goal-oriented, research-specific language)
+       - Weak SOP  (vague, generic, low-quality language)
+  4. Compute cosine similarity between essay and both anchors:
+       semantic_score = (sim_strong - sim_weak + 1) / 2  → [0, 1]
+  5. Combine with NLP linguistic features (from scratch — no library):
+       - Flesch Reading Ease (readability formula)
+       - Type-Token Ratio (vocabulary diversity)
+       - Academic keyword coverage
+       - Word count score
+  6. Weighted composite scoring formula
+  7. Generate actionable, field-specific feedback tips
+
+Note on design:
+  This system is an NLP-based heuristic evaluator that combines
+  Transformer embeddings with rule-based linguistic features.
+  The weights (0.35, 0.20, 0.20, 0.15, 0.10) are manually set,
+  not learned from labeled data. A future version with labeled SOP
+  data and a supervised regression/classification model would be
+  required to claim learned, data-driven weights.
 """
 
 import re
-import math
 import torch
 import torch.nn.functional as F
 from typing import Dict, Any, List
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 1. Model & Tokenizer Initialization
+# 1. SentenceTransformer Model Initialization
 # ─────────────────────────────────────────────────────────────────────────────
+# Using SentenceTransformer instead of raw BERT [CLS] because:
+#   - BERT [CLS] is pre-trained for Masked LM & NSP, NOT similarity
+#   - SentenceTransformer is fine-tuned with siamese networks on NLI & STS
+#     datasets, making its embeddings meaningful for cosine similarity
+#   - This is the same model already used in the RAG counselor module
 try:
-    from transformers import AutoTokenizer, AutoModel
+    from sentence_transformers import SentenceTransformer, util as st_util
 
-    MODEL_NAME = "bert-base-uncased"
-    MAX_LENGTH = 512
+    EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+    EMBEDDING_DIM = 384
 
-    print(f"Loading tokenizer: {MODEL_NAME} ...")
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-
-    print(f"Loading model: {MODEL_NAME} ...")
-    # AutoModel returns hidden states — NOT classification logits
-    # This lets us extract the [CLS] token embedding (sentence representation)
-    bert_model = AutoModel.from_pretrained(MODEL_NAME)
-    bert_model.eval()  # Inference mode: disables Dropout
-
-    print(f"✅ [HuggingFace / PyTorch] Loaded BERT: {MODEL_NAME}")
-    print(f"   Hidden size: {bert_model.config.hidden_size} dimensions")
-    HAVE_BERT = True
+    print(f"Loading SentenceTransformer: {EMBEDDING_MODEL_NAME} ...")
+    sentence_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
+    HAVE_SENTENCE_MODEL = True
+    print(f"✅ [HuggingFace / SentenceTransformers] Loaded: {EMBEDDING_MODEL_NAME}")
+    print(f"   Embedding dimension: {EMBEDDING_DIM}")
 
 except Exception as e:
-    HAVE_BERT = False
-    bert_model = None
-    tokenizer = None
-    print(f"⚠️ [BERT Load Warning]: {e}")
+    HAVE_SENTENCE_MODEL = False
+    sentence_model = None
+    EMBEDDING_DIM = 384
+    print(f"⚠️ [SentenceTransformer Load Warning]: {e}")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 2. Anchor Embedding References (for Cosine Similarity Scoring)
 # ─────────────────────────────────────────────────────────────────────────────
-
-# Reference texts that represent what a STRONG and WEAK SOP look like.
-# The [CLS] embedding of the student essay is compared to both anchors.
-# A strong essay will have high cosine similarity to the strong anchor.
+# These serve as semantic quality benchmarks.
+# The student essay embedding is compared against both anchors.
+# A high-quality essay → high similarity to strong anchor, low to weak.
+#
+# Limitation (acknowledged): currently only 2 general references are used.
+# A more robust system would maintain a labeled reference dataset
+# organized by major (CS, Engineering, Business, Medicine, etc.).
 
 STRONG_SOP_REFERENCE = """
 I am applying for a Master of Science in Computer Science at Wuxi University
@@ -71,6 +85,8 @@ a paper on transformer architectures. My long-term career goal is to establish a
 AI research lab in Central Asia to advance machine learning education and contribute
 to global scientific innovation. Studying in China aligns perfectly with this vision
 due to the university faculty expertise and 100% scholarship support provided.
+I have a clear academic background, a specific research focus, and a defined vision
+for how this degree connects to my long-term professional contributions.
 """
 
 WEAK_SOP_REFERENCE = """
@@ -84,40 +100,31 @@ _strong_anchor_embedding: torch.Tensor = None
 _weak_anchor_embedding: torch.Tensor = None
 
 
-def get_cls_embedding(text: str) -> torch.Tensor:
+def get_sentence_embedding(text: str) -> torch.Tensor:
     """
-    Tokenizes text and extracts the [CLS] token hidden state from BERT.
-    The [CLS] token (index 0 of last_hidden_state) is used as the
-    sentence-level semantic representation in BERT-based models.
+    Encodes text into a 384-dimensional dense embedding vector using
+    SentenceTransformer (all-MiniLM-L6-v2).
+
+    This model was specifically fine-tuned on Natural Language Inference (NLI)
+    and Semantic Textual Similarity (STS) datasets using a siamese network
+    architecture — making its embeddings meaningful for cosine similarity
+    comparisons, unlike standard BERT [CLS] representations.
 
     Returns:
-        cls_embedding: FloatTensor of shape [768]
+        embedding: FloatTensor of shape [384]
     """
-    inputs = tokenizer(
-        text,
-        truncation=True,
-        max_length=MAX_LENGTH,
-        return_tensors="pt",
-        padding=False
-    )
-
-    with torch.no_grad():
-        # Forward pass through BERT encoder
-        # outputs.last_hidden_state shape: [1, seq_len, 768]
-        outputs = bert_model(**inputs)
-
-    # Extract [CLS] token: position 0 in the sequence dimension
-    # Shape: [1, 768] → squeeze → [768]
-    cls_embedding = outputs.last_hidden_state[:, 0, :].squeeze(0)
-    return cls_embedding
+    # SentenceTransformer handles tokenization + pooling internally
+    # convert_to_tensor=True returns a PyTorch tensor directly
+    embedding = sentence_model.encode(text, convert_to_tensor=True)
+    return embedding  # shape: [384]
 
 
 def get_anchor_embeddings():
-    """Returns (or computes) the cached anchor embeddings."""
+    """Returns (or computes once) the cached anchor embeddings."""
     global _strong_anchor_embedding, _weak_anchor_embedding
     if _strong_anchor_embedding is None:
-        _strong_anchor_embedding = get_cls_embedding(STRONG_SOP_REFERENCE)
-        _weak_anchor_embedding = get_cls_embedding(WEAK_SOP_REFERENCE)
+        _strong_anchor_embedding = get_sentence_embedding(STRONG_SOP_REFERENCE)
+        _weak_anchor_embedding = get_sentence_embedding(WEAK_SOP_REFERENCE)
     return _strong_anchor_embedding, _weak_anchor_embedding
 
 
@@ -167,34 +174,39 @@ def calculate_vocabulary_richness(words: List[str]) -> float:
 
 def compute_semantic_quality(essay_embedding: torch.Tensor) -> Dict[str, Any]:
     """
-    Computes semantic essay quality by measuring cosine similarity between
-    the student essay [CLS] embedding and the strong/weak anchor embeddings.
+    Computes semantic essay quality by comparing the student essay embedding
+    against strong and weak anchor embeddings using cosine similarity.
 
     Scoring formula:
-        raw_score = cosine_sim(essay, strong_anchor) - cosine_sim(essay, weak_anchor)
-        normalized = (raw_score + 1) / 2  → maps [-1, 1] range into [0, 1]
-        percentage  = normalized * 100
+        raw_score  = cosine_sim(essay, strong_anchor) - cosine_sim(essay, weak_anchor)
+        normalized = (raw_score + 1) / 2   → maps [-1, 1] into [0, 1]
+        percentage = normalized * 100
 
-    A well-written essay should have high cosine sim to the strong anchor
-    and low cosine sim to the weak anchor → raw_score close to +1.
+    A well-written essay → high sim_strong, low sim_weak → raw_score near +1
+    A weak essay         → low  sim_strong, high sim_weak → raw_score near -1
+
+    Note: SentenceTransformer embeddings are calibrated for cosine similarity
+    (trained on STS/NLI tasks), so these scores are semantically meaningful.
     """
     strong_anchor, weak_anchor = get_anchor_embeddings()
 
-    # Cosine Similarity using PyTorch F.cosine_similarity
-    sim_strong = float(F.cosine_similarity(essay_embedding.unsqueeze(0),
-                                           strong_anchor.unsqueeze(0)))
-    sim_weak = float(F.cosine_similarity(essay_embedding.unsqueeze(0),
-                                         weak_anchor.unsqueeze(0)))
+    # PyTorch cosine similarity: dot(a, b) / (||a|| * ||b||)
+    sim_strong = float(F.cosine_similarity(
+        essay_embedding.unsqueeze(0), strong_anchor.unsqueeze(0)
+    ))
+    sim_weak = float(F.cosine_similarity(
+        essay_embedding.unsqueeze(0), weak_anchor.unsqueeze(0)
+    ))
 
-    raw_score = sim_strong - sim_weak                  # Range: approximately [-1, 1]
-    normalized = (raw_score + 1.0) / 2.0              # Normalize to [0, 1]
+    raw_score = sim_strong - sim_weak           # ~ [-1, 1]
+    normalized = (raw_score + 1.0) / 2.0       # → [0, 1]
     quality_percent = round(min(100.0, max(0.0, normalized * 100)), 1)
 
     return {
         "semantic_quality_score": quality_percent,
         "cosine_sim_strong": round(sim_strong, 4),
         "cosine_sim_weak": round(sim_weak, 4),
-        "bert_cls_dim": essay_embedding.shape[0],
+        "embedding_dim": essay_embedding.shape[0],
     }
 
 
@@ -247,6 +259,15 @@ def evaluate_sop_ai(
 
     # Guard: too short to evaluate meaningfully
     if word_count < 50:
+        short_embedding = {
+            "model": EMBEDDING_MODEL_NAME if HAVE_SENTENCE_MODEL else "Unavailable",
+            "semantic_quality_score": 0.0,
+            "cosine_sim_strong": 0.0,
+            "cosine_sim_weak": 0.0,
+            "embedding_dim": EMBEDDING_DIM,
+            "semantic_assessment": "LOW",
+            "semantic_score": 0.0,
+        }
         return {
             "overall_score": 20,
             "verdict": "Too Short",
@@ -254,18 +275,22 @@ def evaluate_sop_ai(
             "readability_score": 0.0,
             "vocabulary_richness_percent": 0.0,
             "matched_keywords_count": 0,
+            "embedding_analysis": short_embedding,
+            "transformer_analysis": short_embedding,
             "bert_analysis": {
-                "model": MODEL_NAME if HAVE_BERT else "Unavailable",
+                "model": EMBEDDING_MODEL_NAME if HAVE_SENTENCE_MODEL else "Unavailable",
                 "semantic_quality_score": 0.0,
                 "cosine_sim_strong": 0.0,
                 "cosine_sim_weak": 0.0,
-                "bert_cls_dim": 768,
+                "bert_cls_dim": EMBEDDING_DIM,
             },
             "component_scores": {
                 "semantic_quality": 20,
                 "academic_background": 20,
-                "readability": 20,
-                "vocabulary_richness": 20,
+                "motivation_and_fit": 20,
+                "career_aspirations": 20,
+                "language_and_clarity": 20,
+                "word_length": 20,
             },
             "feedback": [
                 "❌ Your essay is too short. A university SOP should be 400–800 words.",
@@ -274,23 +299,23 @@ def evaluate_sop_ai(
         }
 
     # ── Step 1 & 2: BERT [CLS] Embedding + Cosine Similarity Scoring ──────────
-    bert_analysis = {
-        "model": MODEL_NAME if HAVE_BERT else "Fallback",
+    embedding_analysis = {
+        "model": EMBEDDING_MODEL_NAME if HAVE_SENTENCE_MODEL else "Fallback (heuristic)",
         "semantic_quality_score": 55.0,
         "cosine_sim_strong": 0.55,
         "cosine_sim_weak": 0.45,
-        "bert_cls_dim": 768,
+        "embedding_dim": EMBEDDING_DIM,
     }
 
-    if HAVE_BERT:
+    if HAVE_SENTENCE_MODEL:
         try:
-            essay_embedding = get_cls_embedding(cleaned_text)
-            bert_analysis = compute_semantic_quality(essay_embedding)
-            bert_analysis["model"] = MODEL_NAME
+            essay_embedding = get_sentence_embedding(cleaned_text)
+            embedding_analysis = compute_semantic_quality(essay_embedding)
+            embedding_analysis["model"] = EMBEDDING_MODEL_NAME
         except Exception as e:
-            bert_analysis["error"] = str(e)
+            embedding_analysis["error"] = str(e)
 
-    semantic_score = bert_analysis["semantic_quality_score"]  # 0–100
+    semantic_score = embedding_analysis["semantic_quality_score"]  # 0–100
 
     # ── Step 3: Flesch Reading Ease ────────────────────────────────────────────
     flesch_raw = calculate_flesch_reading_ease(cleaned_text)
@@ -414,14 +439,33 @@ def evaluate_sop_ai(
         "readability_score": flesch_raw,
         "vocabulary_richness_percent": vocab_richness,
         "matched_keywords_count": matched_kw_count,
-        "bert_analysis": {
-            "model": bert_analysis.get("model", MODEL_NAME),
-            "semantic_quality_score": bert_analysis.get("semantic_quality_score"),
-            "cosine_sim_strong": bert_analysis.get("cosine_sim_strong"),
-            "cosine_sim_weak": bert_analysis.get("cosine_sim_weak"),
-            "bert_cls_dim": bert_analysis.get("bert_cls_dim", 768),
-            "tone_sentiment": "POSITIVE" if semantic_score >= 50 else "NEEDS_ENHANCEMENT",
+        # ── Embedding Model Analysis ──────────────────────────────────────────
+        # Renamed fields for technical accuracy (per reviewer feedback):
+        #   - 'tone_sentiment'     removed (this is similarity, not sentiment analysis)
+        #   - 'confidence_percent' renamed to 'semantic_score' (no probabilistic classifier)
+        #   - 'bert_cls_dim'       renamed to 'embedding_dim'
+        "embedding_analysis": {
+            "model": embedding_analysis.get("model", EMBEDDING_MODEL_NAME),
+            "semantic_quality_score": embedding_analysis.get("semantic_quality_score"),
+            "cosine_sim_strong": embedding_analysis.get("cosine_sim_strong"),
+            "cosine_sim_weak": embedding_analysis.get("cosine_sim_weak"),
+            "embedding_dim": embedding_analysis.get("embedding_dim", EMBEDDING_DIM),
+            "semantic_assessment": "HIGH" if semantic_score >= 60 else "MODERATE" if semantic_score >= 40 else "LOW",
+            "semantic_score": round(semantic_score, 1),
+        },
+        # Backwards-compatibility aliases for frontend clients
+        "transformer_analysis": {
+            "model": embedding_analysis.get("model", EMBEDDING_MODEL_NAME),
+            "semantic_quality_score": embedding_analysis.get("semantic_quality_score"),
             "confidence_percent": round(semantic_score, 1),
+            "embedding_dim": embedding_analysis.get("embedding_dim", EMBEDDING_DIM),
+        },
+        "bert_analysis": {
+            "model": embedding_analysis.get("model", EMBEDDING_MODEL_NAME),
+            "semantic_quality_score": embedding_analysis.get("semantic_quality_score"),
+            "cosine_sim_strong": embedding_analysis.get("cosine_sim_strong"),
+            "cosine_sim_weak": embedding_analysis.get("cosine_sim_weak"),
+            "bert_cls_dim": embedding_analysis.get("embedding_dim", EMBEDDING_DIM),
         },
         "component_scores": component_scores,
         "feedback": feedback,
