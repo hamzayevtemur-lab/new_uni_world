@@ -1485,35 +1485,49 @@
                 lastExtractedPassportData = data;
                 document.getElementById('ocrResultBox').style.display = 'block';
 
-                const grid = document.getElementById('ocrExtractedGrid');
+                const qualityInfo = data.image_quality || {};
+                const qualityLabel = qualityInfo.quality_label || 'UNKNOWN';
+                const qualityScore = qualityInfo.image_quality_score ?? '--';
+                const mrzStatus   = data.mrz_extracted ? '✅ Extracted' : '⚠️ Not Detected';
+                const mrzColor    = data.mrz_extracted ? '#10b981' : '#f59e0b';
+                const ocrEngine   = data.ocr_engine || data.trocr_model || 'TrOCR (microsoft/trocr-base-printed)';
+
                 grid.innerHTML = `
                     <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
                         <span style="font-size:0.75rem;color:#64748b;font-weight:700;">PASSPORT NUMBER</span>
-                        <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.passport_number || 'FA7892104'}</div>
+                        <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.passport_number || 'Not Detected'}</div>
                     </div>
                     <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
                         <span style="font-size:0.75rem;color:#64748b;font-weight:700;">FULL NAME</span>
-                        <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.full_name || 'Temurbek Hamzaev'}</div>
+                        <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.full_name || 'Not Detected'}</div>
                     </div>
                     <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
                         <span style="font-size:0.75rem;color:#64748b;font-weight:700;">DATE OF BIRTH</span>
-                        <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.date_of_birth || '2003-05-14'}</div>
+                        <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.date_of_birth || 'Not Detected'}</div>
                     </div>
                     <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
                         <span style="font-size:0.75rem;color:#64748b;font-weight:700;">EXPIRY DATE</span>
-                        <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.passport_expiry || '2031-05-14'}</div>
+                        <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.passport_expiry || 'Not Detected'}</div>
                     </div>
                     <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
                         <span style="font-size:0.75rem;color:#64748b;font-weight:700;">NATIONALITY</span>
-                        <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.nationality || 'Uzbekistan'}</div>
+                        <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.nationality || 'Not Detected'}</div>
                     </div>
                     <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
-                        <span style="font-size:0.75rem;color:#64748b;font-weight:700;">DEEP LEARNING MODEL</span>
-                        <div style="font-size:0.95rem;font-weight:800;color:#2563eb;">${data.model_architecture || 'PyTorch 2D CNN'}</div>
+                        <span style="font-size:0.75rem;color:#64748b;font-weight:700;">GENDER</span>
+                        <div style="font-size:1.1rem;font-weight:800;color:#1e293b;">${data.gender || 'Not Detected'}</div>
+                    </div>
+                    <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;grid-column:span 2;">
+                        <span style="font-size:0.75rem;color:#64748b;font-weight:700;">MRZ STATUS (ICAO 9303)</span>
+                        <div style="font-size:1rem;font-weight:800;color:${mrzColor};">${mrzStatus}</div>
                     </div>
                     <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
-                        <span style="font-size:0.75rem;color:#64748b;font-weight:700;">MRZ CHECKSUM</span>
-                        <div style="font-size:1.1rem;font-weight:800;color:#10b981;">✅ Verified</div>
+                        <span style="font-size:0.75rem;color:#64748b;font-weight:700;">IMAGE QUALITY (MobileNetV3)</span>
+                        <div style="font-size:0.95rem;font-weight:800;color:#2563eb;">${qualityLabel} — ${qualityScore}%</div>
+                    </div>
+                    <div style="background:white;padding:0.8rem;border-radius:10px;border:1px solid #cbd5e1;">
+                        <span style="font-size:0.75rem;color:#64748b;font-weight:700;">OCR ENGINE</span>
+                        <div style="font-size:0.8rem;font-weight:700;color:#7c3aed;">${ocrEngine}</div>
                     </div>
                 `;
 
