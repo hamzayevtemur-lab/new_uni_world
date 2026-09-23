@@ -3,7 +3,6 @@ from pydantic import BaseModel
 from typing import Optional, List
 from ai.ocr_scanner import scan_document_ai
 from ai.sop_evaluator import evaluate_sop_ai
-from ai.rag_counselor import answer_counselor_rag
 
 router = APIRouter(prefix="/api/ai", tags=["AI Engineering Features"])
 
@@ -12,10 +11,6 @@ class SOPEvaluateRequest(BaseModel):
     sop_text: str
     target_country: Optional[str] = "General"
     target_major: Optional[str] = "Computer Science"
-
-
-class AIChatRequest(BaseModel):
-    message: str
 
 
 @router.post("/scan-document")
@@ -45,16 +40,3 @@ async def ai_evaluate_sop(data: SOPEvaluateRequest):
     result = evaluate_sop_ai(data.sop_text, data.target_country, data.target_major)
     return result
 
-
-@router.post("/counselor-chat")
-async def ai_counselor_chat(data: AIChatRequest):
-    """
-    [RAG Vector Architecture AI Counselor]
-    Retrieves semantically matched passages from vector knowledge base and synthesizes
-    counselor response with source citations.
-    """
-    if not data.message or not data.message.strip():
-        raise HTTPException(status_code=400, detail="Message cannot be empty.")
-
-    result = answer_counselor_rag(data.message)
-    return result

@@ -45,7 +45,6 @@ from typing import Dict, Any, List
 #   - BERT [CLS] is pre-trained for Masked LM & NSP, NOT similarity
 #   - SentenceTransformer is fine-tuned with siamese networks on NLI & STS
 #     datasets, making its embeddings meaningful for cosine similarity
-#   - This is the same model already used in the RAG counselor module
 try:
     from sentence_transformers import SentenceTransformer, util as st_util
 
