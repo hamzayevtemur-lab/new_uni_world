@@ -1132,16 +1132,24 @@
         let currentStudent = null;
         let currentDocs = [];
 
-        // Required standard document slots
+        // Official Uni World Required Documents Checklist (16 Document Types)
         const REQUIRED_DOCS = [
-            { key: 'passport', title: 'International Passport', icon: '🛂', desc: 'Main photo & personal details page (must be valid for at least 1.5 years)' },
-            { key: 'diploma_transcript', title: 'Diploma / Transcript', icon: '📜', desc: 'High school diploma, lyceum certificate, or bachelor transcript with marks' },
-            { key: 'language_cert', title: 'Language Certificate', icon: '🌐', desc: 'IELTS, TOEFL, Duolingo or Official English Medium of Instruction letter' },
-            { key: 'photo_id', title: 'Applicant Photo (3.5x4.5)', icon: '📸', desc: 'Clear passport-style photo with white background' },
-            { key: 'motivation_letter', title: 'Motivation Letter / SOP', icon: '📝', desc: 'Personal statement stating your study goals and reasons for choosing the university' },
-            { key: 'recommendation_letter', title: 'Recommendation Letter', icon: '🤝', desc: 'From school teacher, lyceum mentor, or university professor' },
-            { key: 'medical_check', title: 'Physical Examination Form', icon: '🏥', desc: 'Foreigner physical exam / Medical certificate 086-U' },
-            { key: 'bank_statement', title: 'Bank Statement / Sponsor Letter', icon: '🏦', desc: 'Proof of sufficient funds or sponsor financial guarantee' }
+            { key: 'passport', title: 'Passport (all pages — color scan)', icon: '🛂', desc: 'Full color scan of all passport pages (valid for min 1.5 years)', badge: 'Mandatory' },
+            { key: 'photo', title: 'Recent Photograph (white background)', icon: '📸', desc: 'Standard passport-size photo (3.5x4.5cm) with clean white background', badge: 'Mandatory' },
+            { key: 'police_clearance', title: 'Police Clearance Certificate', icon: '👮', desc: 'Official non-criminal record certificate / Sudlanmaganlik haqida maʼlumotnoma', badge: 'Mandatory' },
+            { key: 'ssc_certificate', title: 'SSC Certificate & Transcript', icon: '📜', desc: 'Secondary School / 10th Grade certificate and academic transcript', badge: 'Mandatory' },
+            { key: 'hsc_certificate', title: 'HSC Certificate & Transcript', icon: '🎓', desc: 'Higher Secondary / 12th Grade diploma, lyceum/college certificate with marks', badge: 'Mandatory' },
+            { key: 'bachelor_certificate', title: 'Bachelor\'s Certificate & Transcript', icon: '🏛️', desc: 'Undergraduate degree certificate and semester grade transcripts (if applicable)', badge: 'For Masters' },
+            { key: 'master_certificate', title: 'Master\'s Certificate & Transcript', icon: '🎖️', desc: 'Postgraduate degree certificate and transcripts (if applicable for PhD)', badge: 'For PhD' },
+            { key: 'medical_form', title: 'Physical Examination Record for Foreigners', icon: '🏥', desc: 'Official Foreigner Physical Examination Form (with blood test & chest X-ray)', badge: 'Mandatory' },
+            { key: 'bank_statement', title: 'Bank Statement / Proof of Funds', icon: '🏦', desc: 'Official bank balance certificate or financial sponsor guarantee letter', badge: 'Mandatory' },
+            { key: 'recommendation_letters', title: 'Two Recommendation Letters ★', icon: '✍️', desc: 'From school teachers, academic advisors, or university professors', badge: 'University Specific' },
+            { key: 'english_cert', title: 'English Proficiency Certificate ★', icon: '🌐', desc: 'IELTS, Duolingo, TOEFL, or English Medium of Instruction certificate', badge: 'University Specific' },
+            { key: 'study_plan', title: 'Study Plan / Statement of Purpose ★', icon: '📝', desc: 'Personal statement or research study plan outlining your academic objectives', badge: 'University Specific' },
+            { key: 'intro_video', title: 'Self-Introduction Video ★', icon: '🎥', desc: '1-2 minute video introducing yourself, language skills, and study goals', badge: 'University Specific' },
+            { key: 'signature', title: 'Handwritten Signature', icon: '✒️', desc: 'Clear signature on clean white paper for admission application forms', badge: 'Mandatory' },
+            { key: 'parents_nid', title: 'Parents\' National ID Card (NID)', icon: '🪪', desc: 'Color scan of Father\'s and Mother\'s National ID / Passport', badge: 'Mandatory' },
+            { key: 'extra_certificates', title: 'Extra-Curricular Certificates', icon: '🏆', desc: 'Olympiad diplomas, sports achievements, volunteering, or project awards', badge: 'Optional' }
         ];
 
         // ── Init & Session Check ──
@@ -1663,9 +1671,15 @@
                     linkHtml = `<a href="${uploaded.file_url}" target="_blank" class="doc-preview-link">👁️ View Uploaded File (${uploaded.file_name || 'View'})</a>`;
                 }
 
+                const badgeColor = slot.badge === 'Mandatory' ? '#dc2626' : slot.badge === 'Optional' ? '#64748b' : '#2563eb';
+                const badgeBg = slot.badge === 'Mandatory' ? '#fef2f2' : slot.badge === 'Optional' ? '#f8fafc' : '#eff6ff';
+
                 card.innerHTML = `
                     <div>
-                        <div class="doc-icon">${slot.icon}</div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                            <div class="doc-icon">${slot.icon}</div>
+                            <span style="font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:10px;background:${badgeBg};color:${badgeColor};border:1px solid ${badgeColor}33;">${slot.badge}</span>
+                        </div>
                         <div class="doc-title">${slot.title}</div>
                         <div class="doc-desc">${slot.desc}</div>
                         ${statusBadge}
