@@ -221,14 +221,18 @@ async def student_update_profile(p: StudentProfileUpdate, current=Depends(verify
                 duolingo_score = COALESCE(%s, duolingo_score),
                 target_country = COALESCE(%s, target_country),
                 target_degree = COALESCE(%s, target_degree),
+                target_university = COALESCE(%s, target_university),
                 target_major = COALESCE(%s, target_major),
+                secondary_major = COALESCE(%s, secondary_major),
+                instruction_language = COALESCE(%s, instruction_language),
                 updated_at = NOW()
             WHERE id = %s
         """, (
             p.full_name, p.phone, p.date_of_birth, p.gender, p.nationality,
             p.passport_number, p.passport_expiry, p.address, p.emergency_contact,
             p.high_school_name, p.gpa, p.ielts_score, p.duolingo_score,
-            p.target_country, p.target_degree, p.target_major,
+            p.target_country, p.target_degree, p.target_university,
+            p.target_major, p.secondary_major, p.instruction_language,
             current["student_id"]
         ))
         cur.execute("SELECT * FROM students WHERE id = %s", (current["student_id"],))

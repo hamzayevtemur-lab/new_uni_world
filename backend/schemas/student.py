@@ -17,7 +17,11 @@ class StudentProfileUpdate(BaseModel):
     duolingo_score: Optional[str] = None
     target_country: Optional[str] = None
     target_degree: Optional[str] = None
+    target_university: Optional[str] = None
     target_major: Optional[str] = None
+    secondary_major: Optional[str] = None
+    instruction_language: Optional[str] = None
+
 
 class StudentStatusUpdate(BaseModel):
     status: str

@@ -1229,8 +1229,14 @@
                             id="mCountry">—</span></div>
                     <div class="dossier-item"><span class="label">Target Degree:</span> <span class="val"
                             id="mDegree">—</span></div>
-                    <div class="dossier-item"><span class="label">Major:</span> <span class="val" id="mMajor">—</span>
-                    </div>
+                    <div class="dossier-item"><span class="label">Target University:</span> <span class="val"
+                            id="mTargetUniversity" style="font-weight:700;color:var(--primary);">—</span></div>
+                    <div class="dossier-item"><span class="label">1st Choice Major:</span> <span class="val"
+                            id="mMajor">—</span></div>
+                    <div class="dossier-item"><span class="label">2nd Choice Major:</span> <span class="val"
+                            id="mSecondaryMajor">—</span></div>
+                    <div class="dossier-item"><span class="label">Instruction Lang:</span> <span class="val"
+                            id="mInstructionLanguage">—</span></div>
                 </div>
             </div>
 
@@ -1561,7 +1567,10 @@
                 document.getElementById('mIelts').textContent = s.ielts_score || '—';
                 document.getElementById('mCountry').textContent = s.target_country || '—';
                 document.getElementById('mDegree').textContent = s.target_degree || '—';
+                document.getElementById('mTargetUniversity').textContent = s.target_university || '—';
                 document.getElementById('mMajor').textContent = s.target_major || '—';
+                document.getElementById('mSecondaryMajor').textContent = s.secondary_major || '—';
+                document.getElementById('mInstructionLanguage').textContent = s.instruction_language || 'English';
                 document.getElementById('mStatusSelect').value = s.status || 'Registered';
 
                 renderModalDocuments(docs);

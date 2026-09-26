@@ -170,11 +170,15 @@ def init_db():
         """
         )
 
-        # Add OTP and verification columns if upgrading existing table
+        # Add OTP, verification, and study preference columns if upgrading existing table
         add_column_if_not_exists(cur, "students", "email_verified", "BOOLEAN DEFAULT FALSE")
         add_column_if_not_exists(cur, "students", "otp_code", "VARCHAR(10)")
         add_column_if_not_exists(cur, "students", "otp_expires_at", "TIMESTAMP NULL DEFAULT NULL")
         add_column_if_not_exists(cur, "students", "approved_at", "TIMESTAMP NULL DEFAULT NULL")
+        add_column_if_not_exists(cur, "students", "target_university", "VARCHAR(255) NULL")
+        add_column_if_not_exists(cur, "students", "secondary_major", "VARCHAR(150) NULL")
+        add_column_if_not_exists(cur, "students", "instruction_language", "VARCHAR(50) DEFAULT 'English'")
+
 
         # Student Documents table
         cur.execute(

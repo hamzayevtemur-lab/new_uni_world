@@ -14,7 +14,7 @@ JWT_EXPIRE_HOURS = 24
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "Otaboy")
 ADMIN_PASSWORD_HASH = os.getenv(
     "ADMIN_PASSWORD_HASH",
-    "$2b$12$mIbmynOzDKeXHWJa2DShWewN/PGo5eeKN/caw4opVm3cyUP0LK6ay",
+    "$2b$12$QgJS3LfkNHC7AtskUmFLDezVGL45dqgbbzy1HSouSVfvt/0QojPmq",
 )
 
 MYSQL_HOST = os.getenv("MYSQL_HOST", "127.0.0.1")

@@ -960,10 +960,34 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Target Major / Faculty of Study</label>
-                        <input type="text" id="pTargetMajor"
-                            placeholder="e.g. Computer Science, International Business, Medicine, Mechanical Engineering">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>🏛️ Target / Preferred University</label>
+                            <input type="text" id="pTargetUniversity"
+                                placeholder="e.g. Wuxi University, Warsaw University of Technology, IU Germany, Vistula">
+                        </div>
+                        <div class="form-group">
+                            <label>🌐 Medium of Instruction</label>
+                            <select id="pInstructionLanguage">
+                                <option value="English">English</option>
+                                <option value="Chinese (with 1-Yr Language Prep)">Chinese (with 1-Yr Language Prep)</option>
+                                <option value="Bilingual (English + Chinese)">Bilingual (English + Chinese)</option>
+                                <option value="German / Polish">German / Polish</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>🎯 1st Choice Major / Faculty</label>
+                            <input type="text" id="pTargetMajor"
+                                placeholder="e.g. Computer Science, Software Engineering, International Business">
+                        </div>
+                        <div class="form-group">
+                            <label>🔄 2nd Choice Major (Alternative)</label>
+                            <input type="text" id="pSecondaryMajor"
+                                placeholder="e.g. Artificial Intelligence, Data Science, Finance">
+                        </div>
                     </div>
 
                     <button type="submit" class="btn-submit" style="max-width: 250px; margin-top: 1rem;">
@@ -1595,7 +1619,10 @@
             document.getElementById('pDuolingo').value = s.duolingo_score || '';
             if (s.target_country) document.getElementById('pTargetCountry').value = s.target_country;
             if (s.target_degree) document.getElementById('pTargetDegree').value = s.target_degree;
+            if (s.instruction_language) document.getElementById('pInstructionLanguage').value = s.instruction_language;
+            document.getElementById('pTargetUniversity').value = s.target_university || '';
             document.getElementById('pTargetMajor').value = s.target_major || '';
+            document.getElementById('pSecondaryMajor').value = s.secondary_major || '';
         }
 
         async function saveProfile(e) {
@@ -1617,7 +1644,10 @@
                 duolingo_score: document.getElementById('pDuolingo').value.trim(),
                 target_country: document.getElementById('pTargetCountry').value,
                 target_degree: document.getElementById('pTargetDegree').value,
-                target_major: document.getElementById('pTargetMajor').value.trim()
+                target_university: document.getElementById('pTargetUniversity').value.trim(),
+                target_major: document.getElementById('pTargetMajor').value.trim(),
+                secondary_major: document.getElementById('pSecondaryMajor').value.trim(),
+                instruction_language: document.getElementById('pInstructionLanguage').value
             };
 
             try {
