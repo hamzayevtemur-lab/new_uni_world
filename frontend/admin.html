@@ -12,32 +12,30 @@
         rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
             --primary-light: #60a5fa;
-            --primary-bg: #eff6ff;
+            --primary-glow: rgba(59, 130, 246, 0.25);
             --accent: #f59e0b;
             --success: #10b981;
-            --success-bg: #ecfdf5;
             --danger: #ef4444;
-            --danger-bg: #fef2f2;
-            --warning-bg: #fffbeb;
-            --dark: #0f172a;
-            --card-bg: #ffffff;
-            --border: #e2e8f0;
-            --border-light: #f1f5f9;
-            --text: #1e293b;
-            --text-muted: #64748b;
-            --text-light: #94a3b8;
-            --bg-canvas: #f8fafc;
+            --bg-canvas: #090d16;
+            --card-bg: #111827;
+            --card-bg-elevated: #1e293b;
+            --border: #1e293b;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-focus: #3b82f6;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-light: #64748b;
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 18px;
             --radius-xl: 24px;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
-            --shadow-lg: 0 12px 32px -4px rgba(15, 23, 42, 0.08);
-            --shadow-xl: 0 24px 48px -12px rgba(15, 23, 42, 0.16);
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
+            --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
+            --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);
+            --shadow-xl: 0 25px 60px -12px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.12);
         }
 
         * {
@@ -48,7 +46,7 @@
         }
 
         body {
-            background: var(--bg-canvas);
+            background: radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.08) 0%, transparent 45%), radial-gradient(circle at 85% 85%, rgba(99, 102, 241, 0.06) 0%, transparent 45%), var(--bg-canvas);
             min-height: 100vh;
             color: var(--text);
             padding: 1.5rem;
@@ -61,7 +59,7 @@
             justify-content: center;
             align-items: center;
             min-height: 92vh;
-            background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+            background: radial-gradient(circle at 50% 30%, rgba(30, 58, 138, 0.25) 0%, #090d16 100%);
             margin: -1.5rem;
             padding: 1.5rem;
             position: relative;
@@ -71,37 +69,38 @@
         #loginScreen::before {
             content: '';
             position: absolute;
-            width: 500px;
-            height: 500px;
+            width: 550px;
+            height: 550px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(37, 99, 235, 0.15), transparent 70%);
-            top: -100px;
-            right: -100px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15), transparent 70%);
+            top: -120px;
+            right: -120px;
             pointer-events: none;
         }
 
         #loginScreen::after {
             content: '';
             position: absolute;
-            width: 400px;
-            height: 400px;
+            width: 450px;
+            height: 450px;
             border-radius: 50%;
             background: radial-gradient(circle, rgba(245, 158, 11, 0.1), transparent 70%);
-            bottom: -50px;
-            left: -50px;
+            bottom: -80px;
+            left: -80px;
             pointer-events: none;
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.98);
+            background: rgba(17, 24, 39, 0.95);
             padding: 3rem 2.5rem;
             border-radius: var(--radius-xl);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-xl);
             width: 100%;
             max-width: 440px;
             position: relative;
             z-index: 10;
             backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .login-logo {
@@ -114,15 +113,15 @@
             height: 80px;
             border-radius: 20px;
             object-fit: cover;
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
             margin-bottom: 1rem;
-            border: 2px solid #e2e8f0;
+            border: 2px solid rgba(59, 130, 246, 0.35);
             padding: 2px;
-            background: white;
+            background: #1e293b;
         }
 
         .login-logo h1 {
-            color: #0f172a;
+            color: #f8fafc;
             font-size: 1.8rem;
             font-weight: 800;
             letter-spacing: -0.02em;
@@ -141,7 +140,7 @@
 
         .form-field label {
             display: block;
-            color: #334155;
+            color: #cbd5e1;
             font-weight: 700;
             margin-bottom: 0.5rem;
             font-size: 0.88rem;
@@ -153,12 +152,12 @@
         .form-field textarea {
             width: 100%;
             padding: 0.85rem 1.1rem;
-            border: 1.5px solid var(--border);
+            border: 1px solid #334155;
             border-radius: var(--radius-md);
             font-size: 0.95rem;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            background: #ffffff;
-            color: var(--text);
+            background: #1e293b;
+            color: #f8fafc;
             font-weight: 500;
         }
 
@@ -167,18 +166,18 @@
         .form-field textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-            background: white;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
+            background: #1e293b;
         }
 
         .form-field input::placeholder {
-            color: #94a3b8;
+            color: #64748b;
         }
 
         .login-btn {
             width: 100%;
             padding: 1rem;
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
             color: white;
             border: none;
             border-radius: var(--radius-md);
@@ -186,7 +185,7 @@
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -195,14 +194,14 @@
 
         .login-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.35);
-            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            box-shadow: 0 12px 24px rgba(59, 130, 246, 0.45);
+            background: linear-gradient(135deg, #2563eb, #1e40af);
         }
 
         .login-error {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #dc2626;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
             padding: 0.85rem 1rem;
             border-radius: var(--radius-md);
             margin-bottom: 1.2rem;
@@ -223,7 +222,7 @@
 
         /* ── Top Navbar ── */
         .admin-header {
-            background: #ffffff;
+            background: #111827;
             padding: 1.25rem 2rem;
             border-radius: var(--radius-lg);
             margin-bottom: 1.5rem;
@@ -231,7 +230,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid var(--border);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .header-brand-wrap {
@@ -245,12 +244,13 @@
             height: 48px;
             border-radius: 14px;
             object-fit: cover;
-            border: 2px solid #e2e8f0;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+            background: #1e293b;
         }
 
         .admin-header h1 {
-            color: #0f172a;
+            color: #f8fafc;
             font-size: 1.45rem;
             font-weight: 800;
             letter-spacing: -0.02em;
@@ -270,9 +270,9 @@
         }
 
         .session-info {
-            color: #047857;
-            background: #ecfdf5;
-            border: 1px solid #a7f3d0;
+            color: #34d399;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
             padding: 0.45rem 0.9rem;
             border-radius: 20px;
             font-size: 0.82rem;
@@ -283,10 +283,10 @@
         }
 
         .logout-btn {
-            background: #f8fafc;
-            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            color: #f87171;
             padding: 0.6rem 1.2rem;
-            border: 1px solid #fee2e2;
+            border: 1px solid rgba(239, 68, 68, 0.3);
             border-radius: 10px;
             cursor: pointer;
             font-weight: 700;
@@ -302,7 +302,7 @@
             color: white;
             border-color: #ef4444;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
         }
 
         /* ── Modern Stats KPI Grid ── */
@@ -314,13 +314,13 @@
         }
 
         .stat-card {
-            background: #ffffff;
+            background: #111827;
             padding: 1.5rem;
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
             position: relative;
             overflow: hidden;
-            border: 1px solid var(--border);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-top: 4px solid var(--primary);
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -334,12 +334,13 @@
         }
 
         .stat-card:nth-child(4) {
-            border-top-color: #6366f1;
+            border-top-color: #8b5cf6;
         }
 
         .stat-card:hover {
             transform: translateY(-3px);
             box-shadow: var(--shadow-lg);
+            border-color: rgba(255, 255, 255, 0.15);
         }
 
         .stat-card h3 {
@@ -352,7 +353,7 @@
         }
 
         .stat-card .number {
-            color: #0f172a;
+            color: #f8fafc;
             font-size: 2.2rem;
             font-weight: 800;
             letter-spacing: -0.03em;
@@ -364,7 +365,7 @@
             position: absolute;
             right: 1.2rem;
             top: 1.2rem;
-            opacity: 0.12;
+            opacity: 0.15;
             pointer-events: none;
         }
 
@@ -374,10 +375,10 @@
             gap: 0.5rem;
             margin-bottom: 1.5rem;
             flex-wrap: wrap;
-            background: #ffffff;
+            background: #111827;
             padding: 0.5rem;
             border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: var(--shadow-sm);
         }
 
@@ -389,7 +390,7 @@
             cursor: pointer;
             font-weight: 700;
             font-size: 0.9rem;
-            color: #64748b;
+            color: var(--text-muted);
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
@@ -397,14 +398,14 @@
         }
 
         .tab-btn:hover {
-            background: #f1f5f9;
-            color: #0f172a;
+            background: #1e293b;
+            color: #f8fafc;
         }
 
         .tab-btn.active {
-            background: var(--primary);
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
             color: white;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
         }
 
         .tab-btn.active .badge {
@@ -423,16 +424,16 @@
 
         /* ── Panels ── */
         .panel {
-            background: #ffffff;
+            background: #111827;
             padding: 2rem;
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
             margin-bottom: 1.5rem;
-            border: 1px solid var(--border);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .panel h2 {
-            color: #0f172a;
+            color: #f8fafc;
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
@@ -442,6 +443,10 @@
             letter-spacing: -0.02em;
             flex-wrap: wrap;
             gap: 1rem;
+        }
+
+        .panel p {
+            color: var(--text-muted);
         }
 
         .badge {
@@ -458,15 +463,15 @@
         }
 
         .badge-blue {
-            background: #2563eb;
+            background: #3b82f6;
         }
 
         /* ── Table Styling ── */
         .table-responsive {
             overflow-x: auto;
             border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            background: white;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #111827;
         }
 
         .crm-table {
@@ -477,11 +482,11 @@
         }
 
         .crm-table th {
-            background: #f8fafc;
-            color: #475569;
+            background: #1e293b;
+            color: #94a3b8;
             font-weight: 700;
             padding: 0.95rem 1.2rem;
-            border-bottom: 1.5px solid var(--border);
+            border-bottom: 1px solid #334155;
             text-transform: uppercase;
             font-size: 0.75rem;
             letter-spacing: 0.05em;
@@ -489,9 +494,9 @@
 
         .crm-table td {
             padding: 1rem 1.2rem;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             vertical-align: middle;
-            color: #334155;
+            color: #e2e8f0;
         }
 
         .crm-table tbody tr {
@@ -499,7 +504,7 @@
         }
 
         .crm-table tbody tr:hover {
-            background: #f8fafc;
+            background: rgba(30, 41, 59, 0.7);
         }
 
         .status-badge-table {
@@ -532,9 +537,9 @@
         }
 
         .btn-view {
-            background: #eff6ff;
-            color: #1d4ed8;
-            border-color: #bfdbfe;
+            background: rgba(59, 130, 246, 0.18);
+            color: #93c5fd;
+            border-color: rgba(59, 130, 246, 0.35);
         }
 
         .btn-view:hover {
@@ -542,27 +547,29 @@
             color: white;
             border-color: #2563eb;
             transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
         }
 
         .btn-autofill {
-            background: #fef3c7;
-            color: #92400e;
-            border-color: #fde68a;
+            background: rgba(245, 158, 11, 0.18);
+            color: #fde68a;
+            border-color: rgba(245, 158, 11, 0.35);
         }
 
         .btn-autofill:hover {
             background: #f59e0b;
-            color: white;
+            color: #0f172a;
             border-color: #f59e0b;
             transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
         }
 
         /* ── Modal Dialogs ── */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -575,7 +582,7 @@
         }
 
         .modal-box {
-            background: #ffffff;
+            background: #0f172a;
             border-radius: var(--radius-xl);
             width: 100%;
             max-width: 900px;
@@ -584,7 +591,8 @@
             padding: 2.2rem;
             box-shadow: var(--shadow-xl);
             animation: fadeIn 0.25s ease;
-            border: 1px solid var(--border);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #f8fafc;
         }
 
         .modal-header-row {
@@ -593,25 +601,25 @@
             align-items: center;
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 1.5px solid var(--border);
+            border-bottom: 1px solid #334155;
         }
 
         .modal-header-row h3 {
             font-size: 1.35rem;
-            color: #0f172a;
+            color: #f8fafc;
             font-weight: 800;
             letter-spacing: -0.02em;
         }
 
         .close-modal-btn {
-            background: #f1f5f9;
-            border: none;
+            background: #1e293b;
+            border: 1px solid #334155;
             width: 36px;
             height: 36px;
             border-radius: 50%;
             cursor: pointer;
             font-size: 1.1rem;
-            color: #64748b;
+            color: #94a3b8;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -619,8 +627,9 @@
         }
 
         .close-modal-btn:hover {
-            background: #fee2e2;
-            color: #ef4444;
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
         }
 
         /* ── Dossier Layout ── */
@@ -632,18 +641,18 @@
         }
 
         .dossier-card {
-            background: #f8fafc;
-            border: 1px solid var(--border);
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--radius-md);
             padding: 1.2rem;
         }
 
         .dossier-card h4 {
             font-size: 0.92rem;
-            color: #1e293b;
+            color: #f8fafc;
             margin-bottom: 0.8rem;
             font-weight: 700;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #334155;
             padding-bottom: 0.4rem;
             display: flex;
             align-items: center;
@@ -659,31 +668,31 @@
         }
 
         .dossier-item span.label {
-            color: #64748b;
+            color: #94a3b8;
             font-weight: 500;
         }
 
         .dossier-item span.val {
             font-weight: 700;
-            color: #0f172a;
+            color: #f8fafc;
             text-align: right;
         }
 
         /* ── Document Item in Modal ── */
         .doc-review-card {
-            border: 1px solid var(--border);
+            border: 1px solid #334155;
             border-radius: var(--radius-md);
             padding: 1rem;
             margin-bottom: 0.8rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #ffffff;
+            background: #1e293b;
             transition: border-color 0.15s;
         }
 
         .doc-review-card:hover {
-            border-color: #cbd5e1;
+            border-color: rgba(59, 130, 246, 0.4);
         }
 
         .doc-review-left {
@@ -698,8 +707,8 @@
 
         /* ── Autofill Helper Section ── */
         .autofill-box {
-            background: #f0fdf4;
-            border: 1.5px solid #86efac;
+            background: rgba(6, 78, 59, 0.35);
+            border: 1.5px solid rgba(16, 185, 129, 0.4);
             border-radius: var(--radius-lg);
             padding: 1.5rem;
             margin-bottom: 1.5rem;
@@ -707,32 +716,32 @@
 
         .bookmarklet-btn {
             display: inline-block;
-            background: linear-gradient(135deg, #16a34a, #15803d);
+            background: linear-gradient(135deg, #10b981, #059669);
             color: white;
             padding: 0.8rem 1.6rem;
             border-radius: var(--radius-md);
             font-weight: 800;
             text-decoration: none;
-            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.25);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
             cursor: grab;
             transition: all 0.2s;
         }
 
         .bookmarklet-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.35);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.45);
         }
 
         .copy-field-btn {
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
+            background: #1e293b;
+            border: 1px solid #334155;
             padding: 0.35rem 0.75rem;
             border-radius: 6px;
             font-size: 0.78rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.15s;
-            color: #475569;
+            color: #cbd5e1;
         }
 
         .copy-field-btn:hover {
@@ -749,10 +758,10 @@
         }
 
         .news-card {
-            border: 1px solid var(--border);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--radius-md);
             overflow: hidden;
-            background: white;
+            background: #1e293b;
             box-shadow: var(--shadow-sm);
             display: flex;
             flex-direction: column;
@@ -762,6 +771,7 @@
 
         .news-card:hover {
             box-shadow: var(--shadow-md);
+            border-color: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
         }
 
@@ -773,7 +783,7 @@
 
         .news-card-img-placeholder {
             height: 120px;
-            background: #f8fafc;
+            background: #111827;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -787,12 +797,12 @@
         .news-card-title {
             font-size: 1.05rem;
             font-weight: 700;
-            color: #0f172a;
+            color: #f8fafc;
             margin-bottom: 0.4rem;
         }
 
         .news-card-body-text {
-            color: #64748b;
+            color: #94a3b8;
             font-size: 0.88rem;
             line-height: 1.5;
             margin-bottom: 0.8rem;
@@ -800,15 +810,15 @@
 
         .news-card-meta {
             font-size: 0.78rem;
-            color: #94a3b8;
+            color: #64748b;
             display: flex;
             justify-content: space-between;
         }
 
         .news-card-actions {
             padding: 0.8rem 1.2rem;
-            background: #f8fafc;
-            border-top: 1px solid var(--border);
+            background: #111827;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             gap: 0.6rem;
         }
@@ -826,42 +836,45 @@
         }
 
         .edit-btn {
-            background: #fef3c7;
-            color: #b45309;
-            border-color: #fde68a;
+            background: rgba(245, 158, 11, 0.18);
+            color: #fde68a;
+            border-color: rgba(245, 158, 11, 0.35);
         }
 
         .edit-btn:hover {
-            background: #fde68a;
+            background: #f59e0b;
+            color: #0f172a;
         }
 
         .delete-btn {
-            background: #fee2e2;
-            color: #b91c1c;
-            border-color: #fecaca;
+            background: rgba(239, 68, 68, 0.18);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, 0.35);
         }
 
         .delete-btn:hover {
-            background: #fecaca;
+            background: #ef4444;
+            color: white;
         }
 
         .approve-btn {
-            background: #d1fae5;
-            color: #065f46;
-            border-color: #a7f3d0;
+            background: rgba(16, 185, 129, 0.18);
+            color: #6ee7b7;
+            border-color: rgba(16, 185, 129, 0.35);
         }
 
         .approve-btn:hover {
-            background: #a7f3d0;
+            background: #10b981;
+            color: #0f172a;
         }
 
         /* ── Comments ── */
         .comment-item {
-            border: 1px solid var(--border);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 1.2rem;
             border-radius: var(--radius-md);
             margin-bottom: 1rem;
-            background: white;
+            background: #1e293b;
         }
 
         .comment-header {
@@ -879,7 +892,7 @@
         .author-circle {
             width: 40px;
             height: 40px;
-            background: var(--primary);
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
             color: white;
             border-radius: 50%;
             display: flex;
@@ -907,7 +920,7 @@
 
         .submit-btn {
             padding: 0.85rem 1.6rem;
-            background: var(--primary);
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
             color: white;
             border: none;
             border-radius: 10px;
@@ -917,15 +930,15 @@
         }
 
         .submit-btn:hover {
-            background: var(--primary-dark);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
         }
 
         .cancel-btn {
             padding: 0.85rem 1.6rem;
-            background: #f1f5f9;
-            color: #475569;
-            border: 1px solid #e2e8f0;
+            background: #1e293b;
+            color: #cbd5e1;
+            border: 1px solid #334155;
             border-radius: 10px;
             font-weight: 700;
             cursor: pointer;
@@ -933,7 +946,8 @@
         }
 
         .cancel-btn:hover {
-            background: #e2e8f0;
+            background: #334155;
+            color: #ffffff;
         }
 
         /* ── Toast Notifications ── */
@@ -941,11 +955,12 @@
             position: fixed;
             bottom: 2rem;
             right: 2rem;
-            background: #0f172a;
+            background: #1e293b;
             color: white;
             padding: 1rem 1.5rem;
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             z-index: 99999;
             transform: translateY(100px);
             opacity: 0;
@@ -963,11 +978,13 @@
         }
 
         .toast.success {
-            background: #059669;
+            background: #065f46;
+            border-color: #10b981;
         }
 
         .toast.error {
-            background: #dc2626;
+            background: #7f1d1d;
+            border-color: #ef4444;
         }
 
         @keyframes fadeIn {
@@ -1192,8 +1209,8 @@
 
                     <div id="autofillResults" style="display:none;">
                         <div class="autofill-box">
-                            <h3 style="color:#166534;margin-bottom:0.6rem;">⚡ Quick Browser Autofill Bookmarklet</h3>
-                            <p style="color:#15803d;font-size:0.9rem;margin-bottom:1rem;">
+                            <h3 style="color:#6ee7b7;margin-bottom:0.6rem;">⚡ Quick Browser Autofill Bookmarklet</h3>
+                            <p style="color:#a7f3d0;font-size:0.9rem;margin-bottom:1rem;">
                                 <strong>How to use:</strong> Open the university's online application portal (e.g. Wuxi
                                 University portal) in a new tab, then click the button below or drag it to your browser bookmarks
                                 bar. It will instantly auto-fill the student's name, passport, DOB, email, and grades into the
@@ -1207,12 +1224,12 @@
                         </div>
 
                         <!-- Data fields with 1-click copy -->
-                        <h3 style="margin-bottom:1rem;color:#0f172a;">📋 Fast-Copy Application Dossier Fields</h3>
+                        <h3 style="margin-bottom:1rem;color:#f8fafc;">📋 Fast-Copy Application Dossier Fields</h3>
                         <div class="dossier-grid" id="autofillFieldsGrid">
                             <!-- Populated dynamically -->
                         </div>
 
-                        <h3 style="margin:1.5rem 0 1rem;color:#0f172a;">📁 Verified Student Document Links (Ready to Attach)</h3>
+                        <h3 style="margin:1.5rem 0 1rem;color:#f8fafc;">📁 Verified Student Document Links (Ready to Attach)</h3>
                         <div id="autofillDocsList" style="display:flex;gap:0.8rem;flex-wrap:wrap;">
                             <!-- Populated dynamically -->
                         </div>
@@ -1693,26 +1710,27 @@
             }
 
             tbody.innerHTML = students.map(s => {
-                let badgeColor = '#dbeafe';
-                let textColor = '#1e40af';
-                if (s.status === 'Docs Submitted') { badgeColor = '#fef3c7'; textColor = '#b45309'; }
-                if (s.status === 'Ready for Application') { badgeColor = '#e0e7ff'; textColor = '#4338ca'; }
-                if (s.status === 'Applied') { badgeColor = '#ede9fe'; textColor = '#6d28d9'; }
-                if (s.status === 'Offer Received' || s.status === 'Visa Stage') { badgeColor = '#d1fae5'; textColor = '#065f46'; }
+                let badgeColor = 'rgba(59, 130, 246, 0.2)';
+                let textColor = '#93c5fd';
+                if (s.status === 'Docs Submitted') { badgeColor = 'rgba(245, 158, 11, 0.2)'; textColor = '#fde68a'; }
+                if (s.status === 'Ready for Application') { badgeColor = 'rgba(99, 102, 241, 0.2)'; textColor = '#c7d2fe'; }
+                if (s.status === 'Applied') { badgeColor = 'rgba(168, 85, 247, 0.2)'; textColor = '#e9d5ff'; }
+                if (s.status === 'Offer Received' || s.status === 'Visa Stage') { badgeColor = 'rgba(16, 185, 129, 0.2)'; textColor = '#a7f3d0'; }
+                if (s.status === 'Enrolled') { badgeColor = 'rgba(16, 185, 129, 0.3)'; textColor = '#6ee7b7'; }
 
                 return `
                 <tr>
                     <td>
                         <strong>${escHtml(s.full_name)}</strong><br>
-                        <span style="font-size:0.8rem;color:#64748b;">${escHtml(s.email)}</span>
+                        <span style="font-size:0.8rem;color:var(--text-muted);">${escHtml(s.email)}</span>
                     </td>
                     <td>
                         <strong>${s.passport_number ? escHtml(s.passport_number) : '<em>No Passport</em>'}</strong><br>
-                        <span style="font-size:0.8rem;color:#64748b;">${escHtml(s.phone || '—')}</span>
+                        <span style="font-size:0.8rem;color:var(--text-muted);">${escHtml(s.phone || '—')}</span>
                     </td>
                     <td>
                         ${escHtml(s.target_country || 'Not set')}<br>
-                        <span style="font-size:0.8rem;color:#64748b;">${escHtml(s.target_degree || '')} (${escHtml(s.target_major || 'Major open')})</span>
+                        <span style="font-size:0.8rem;color:var(--text-muted);">${escHtml(s.target_degree || '')} (${escHtml(s.target_major || 'Major open')})</span>
                     </td>
                     <td>
                         <span style="font-weight:700;color:${s.verified_doc_count > 0 ? '#10b981' : '#f59e0b'}">
