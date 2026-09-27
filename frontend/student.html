@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Portal - Uni World</title>
+    <link rel="icon" type="image/jpeg" href="/static/images/logo.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
@@ -72,14 +73,21 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #2563eb, #3b82f6);
-            color: white;
-            font-size: 1.8rem;
-            border-radius: 18px;
+            width: 72px;
+            height: 72px;
+            background: white;
+            border-radius: 20px;
             margin-bottom: 1rem;
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.18);
+            border: 2px solid rgba(37, 99, 235, 0.12);
+            overflow: hidden;
+            padding: 4px;
+        }
+        .brand-header .logo-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 16px;
         }
 
         .brand-header h1 {
@@ -667,7 +675,9 @@
     <div id="authScreen">
         <div class="auth-card">
             <div class="brand-header">
-                <div class="logo-badge">🎓</div>
+                <div class="logo-badge">
+                    <img src="/static/images/logo.jpg" alt="Uni World Logo">
+                </div>
                 <h1>Uni World Portal</h1>
                 <p>Student Admission &amp; Document Hub</p>
             </div>
@@ -788,11 +798,21 @@
 
         <!-- Top Header -->
         <header class="dashboard-header">
-            <div class="student-meta">
-                <div class="avatar-badge" id="studentAvatar">U</div>
-                <div>
-                    <h2 id="studentDisplayName">Student Name</h2>
-                    <p id="studentDisplayEmail">student@uniworld.uz</p>
+            <div style="display:flex;align-items:center;gap:1.4rem;">
+                <a href="/" style="display:flex;align-items:center;gap:0.75rem;text-decoration:none;">
+                    <img src="/static/images/logo.jpg" alt="Uni World" style="width:48px;height:48px;border-radius:14px;object-fit:cover;box-shadow:0 4px 14px rgba(0,0,0,0.1);border:2px solid #e2e8f0;">
+                    <div style="line-height:1.2;">
+                        <span style="font-weight:800;color:var(--dark);font-size:1.1rem;letter-spacing:-0.02em;display:block;">UNI WORLD</span>
+                        <span style="font-size:0.75rem;color:var(--primary);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;">Student Hub</span>
+                    </div>
+                </a>
+                <div style="width:1px;height:38px;background:var(--border);" class="hide-mobile"></div>
+                <div class="student-meta">
+                    <div class="avatar-badge" id="studentAvatar">U</div>
+                    <div>
+                        <h2 id="studentDisplayName">Student Name</h2>
+                        <p id="studentDisplayEmail">student@uniworld.uz</p>
+                    </div>
                 </div>
             </div>
             <div class="header-actions">
